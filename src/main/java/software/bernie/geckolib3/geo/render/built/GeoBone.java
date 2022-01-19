@@ -3,6 +3,8 @@ package software.bernie.geckolib3.geo.render.built;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.core.snapshot.BoneSnapshot;
 
@@ -193,5 +195,44 @@ public class GeoBone implements IBone {
 	@Override
 	public float getPivotZ() {
 		return this.rotationPointZ;
+	}
+
+	/**
+	 * Performs a recursive copy of this bone.
+	 * @param parent The cloned parent of this bone, or null if this bone is a top level bone.
+	 * @return A copy of this bone.
+	 */
+	public GeoBone copy(@Nullable GeoBone parent) {
+		GeoBone out = new GeoBone();
+		out.parent = parent;
+		// Assuming nothing ever mutates the child cubes, we can re-use the same list.
+		out.childCubes = this.childCubes;
+
+		out.scaleX = this.scaleX;
+		out.scaleY = this.scaleY;
+		out.scaleZ = this.scaleZ;
+		out.positionX = this.positionX;
+		out.positionY = this.positionY;
+		out.positionZ = this.positionZ;
+		out.rotationPointX = this.rotationPointX;
+		out.rotationPointY = this.rotationPointY;
+		out.rotationPointZ = this.rotationPointZ;
+		out.rotateX = this.rotateX;
+		out.rotateY = this.rotateY;
+		out.rotateZ = this.rotateZ;
+
+		out.name = this.name;
+		out.initialSnapshot = this.initialSnapshot;
+		out.mirror = this.mirror;
+		out.inflate = this.inflate;
+		out.dontRender = this.dontRender;
+		out.isHidden = this.isHidden;
+		out.reset = this.reset;
+
+		for (GeoBone childBone : this.childBones) {
+			out.childBones.add(childBone.copy(out));
+		}
+
+		return out;
 	}
 }

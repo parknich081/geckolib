@@ -35,4 +35,16 @@ public class GeoModel {
 		}
 		return null;
 	}
+
+	public GeoModel copy() {
+		GeoModel out = new GeoModel();
+
+		out.properties = this.properties;
+
+		for (GeoBone bone : topLevelBones) {
+			out.topLevelBones.add(bone.copy(null));
+		}
+
+		return out;
+	}
 }
