@@ -6,15 +6,19 @@ import org.apache.commons.lang3.Validate;
 
 public class GeoVertex {
 	public final Vector3f position;
-	public float textureU;
-	public float textureV;
+	public final float textureU;
+	public final float textureV;
 
 	public GeoVertex(float x, float y, float z) {
 		this.position = new Vector3f(x, y, z);
+		this.textureU = 0f;
+		this.textureV = 0f;
 	}
 
 	public GeoVertex(double x, double y, double z) {
 		this.position = new Vector3f((float) x, (float) y, (float) z);
+		this.textureU = 0f;
+		this.textureV = 0f;
 	}
 
 	public GeoVertex setTextureUV(float texU, float texV) {

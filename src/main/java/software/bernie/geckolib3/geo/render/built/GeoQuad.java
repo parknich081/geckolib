@@ -4,12 +4,12 @@ import net.minecraft.core.Direction;
 import com.mojang.math.Vector3f;
 
 public class GeoQuad {
-	public GeoVertex[] vertices;
+	public final GeoVertex[] vertices;
 	public final Vector3f normal;
-	public Direction direction;
+	public final Direction direction;
 
 	public GeoQuad(GeoVertex[] verticesIn, float u1, float v1, float uSize, float vSize, float texWidth,
-			float texHeight, Boolean mirrorIn, Direction directionIn) {
+			float texHeight, boolean mirrorIn, Direction directionIn) {
 		this.direction = directionIn;
 		this.vertices = verticesIn;
 
@@ -34,7 +34,7 @@ public class GeoQuad {
 		// u1, v2 - Bottom left corner of uv region
 		// u2, v2 - Bottom right corner of uv region
 
-		if (mirrorIn != null && mirrorIn) {
+		if (mirrorIn) {
 			vertices[0] = verticesIn[0].setTextureUV(u1, v1); // Top left corner
 			vertices[1] = verticesIn[1].setTextureUV(u2, v1); // Top right corner
 			vertices[2] = verticesIn[2].setTextureUV(u2, v2); // Bottom left corner
@@ -50,13 +50,13 @@ public class GeoQuad {
 		// which helps the game do lighting properly or something idk i didnt pay
 		// attention in physics we were in remote learning gimme a break
 		this.normal = directionIn.step();
-		if (mirrorIn != null && mirrorIn) {
+		if (mirrorIn) {
 			this.normal.mul(-1.0F, 1.0F, 1.0F);
 		}
 	}
 
 	public GeoQuad(GeoVertex[] verticesIn, double[] uvCoords, double[] uvSize, float texWidth, float texHeight,
-			Boolean mirrorIn, Direction directionIn) {
+			boolean mirrorIn, Direction directionIn) {
 		this(verticesIn, (float) uvCoords[0], (float) uvCoords[1], (float) uvSize[0], (float) uvSize[1], texWidth,
 				texHeight, mirrorIn, directionIn);
 	}
