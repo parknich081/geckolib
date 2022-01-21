@@ -9,9 +9,12 @@ public abstract class GeoModelProvider<T> {
 	public double lastGameTickTime;
 	public boolean shouldCrashOnMissing = false;
 
+	@Deprecated
 	public GeoModel getModel(ResourceLocation location) {
 		return GeckoLibCache.getInstance().getGeoModels().get(location);
 	}
+
+	public abstract GeoModel getModel(T object);
 
 	public abstract ResourceLocation getModelLocation(T object);
 

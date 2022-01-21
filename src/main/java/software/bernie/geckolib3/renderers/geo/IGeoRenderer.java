@@ -122,7 +122,4 @@ public interface IGeoRenderer<T> {
 		return new Color(255, 255, 255, 255);
 	}
 
-	default Integer getUniqueID(T animatable) {
-		return animatable.hashCode();
-	}
 }

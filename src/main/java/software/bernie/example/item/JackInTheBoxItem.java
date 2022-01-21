@@ -19,7 +19,8 @@ import software.bernie.example.GeckoLibMod;
 import software.bernie.example.client.renderer.item.JackInTheBoxRenderer;
 import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -31,10 +32,10 @@ import software.bernie.geckolib3.network.GeckoLibNetwork;
 import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
+public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
 	private static final String CONTROLLER_NAME = "popupController";
 	private static final int ANIM_OPEN = 0;
-	public AnimationFactory factory = new AnimationFactory(this);
+	public AnimationFactory<ItemStack> factory = new AnimationFactory<>(this::registerControllers);
 
 	public JackInTheBoxItem(Properties properties) {
 		super(properties.tab(GeckoLibMod.geckolibItemGroup));
@@ -54,14 +55,13 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 		});
 	}
 
-	private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+	private <P extends Item & IAnimated> PlayState predicate(AnimationEvent<P> event) {
 		// Not setting an animation here as that's handled below
 		return PlayState.CONTINUE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public void registerControllers(AnimationData data) {
+	public void registerControllers(ItemStack stack, AnimationData data) {
 		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 20, this::predicate);
 
 		// Registering a sound listener just makes it so when any sound keyframe is hit
@@ -74,7 +74,7 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 	}
 
 	@SuppressWarnings("resource")
-	private <ENTITY extends IAnimatable> void soundListener(SoundKeyframeEvent<ENTITY> event) {
+	private <ENTITY extends IAnimated> void soundListener(SoundKeyframeEvent<ENTITY> event) {
 		// The animation for the JackInTheBoxItem has a sound keyframe at time 0:00.
 		// As soon as that keyframe gets hit this method fires and it starts playing the
 		// sound to the current player.
@@ -87,8 +87,8 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.factory;
+	public AnimationData getAnimationData(ItemStack key) {
+		return factory.getOrCreateAnimationData(key);
 	}
 
 	@Override

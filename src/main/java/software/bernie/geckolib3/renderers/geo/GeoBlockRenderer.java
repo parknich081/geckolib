@@ -18,17 +18,18 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimatable>
+public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 		implements IGeoRenderer<T>, BlockEntityRenderer {
 	static {
-		AnimationController.addModelFetcher((IAnimatable object) -> {
+		AnimationController.addModelFetcher((IAnimated object) -> {
 			if (object instanceof BlockEntity) {
 				BlockEntity tile = (BlockEntity) object;
 				BlockEntityRenderer<BlockEntity> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher()
@@ -56,7 +57,8 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimatable>
 
 	public void render(T tile, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
 		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(tile));
-		modelProvider.setLivingAnimations(tile, this.getUniqueID(tile));
+		AnimationData data = tile.getAnimationData();
+		modelProvider.setLivingAnimations(tile, data);
 		stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0, 0.5);
@@ -71,11 +73,6 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimatable>
 				(float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
 				(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		stack.popPose();
-	}
-
-	@Override
-	public Integer getUniqueID(T animatable) {
-		return animatable.getBlockPos().hashCode();
 	}
 
 	@Override

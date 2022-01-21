@@ -13,7 +13,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.example.registry.ItemRegistry;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -22,8 +23,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.item.GeoArmorItem;
 
-public class PotatoArmorItem extends GeoArmorItem implements IAnimatable {
-	private AnimationFactory factory = new AnimationFactory(this);
+public class PotatoArmorItem extends GeoArmorItem implements IAnimatableSingleton<ItemStack> {
+	private final AnimationFactory<ItemStack> factory = new AnimationFactory<>(this::registerControllers);
 
 	public PotatoArmorItem(ArmorMaterial materialIn, EquipmentSlot slot, Properties builder) {
 		super(materialIn, slot, builder.tab(GeckoLibMod.geckolibItemGroup));
@@ -31,7 +32,7 @@ public class PotatoArmorItem extends GeoArmorItem implements IAnimatable {
 
 	// Predicate runs every frame
 	@SuppressWarnings("unused")
-	private <P extends IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+	private <P extends IAnimated> PlayState predicate(AnimationEvent<P> event) {
 		// This is all the extradata this event carries. The livingentity is the entity
 		// that's wearing the armor. The itemstack and equipmentslottype are self
 		// explanatory.
@@ -74,13 +75,12 @@ public class PotatoArmorItem extends GeoArmorItem implements IAnimatable {
 	// All you need to do here is add your animation controllers to the
 	// AnimationData
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public void registerControllers(AnimationData data) {
+	public void registerControllers(ItemStack stack, AnimationData data) {
 		data.addAnimationController(new AnimationController(this, "controller", 20, this::predicate));
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.factory;
+	public AnimationData getAnimationData(ItemStack key) {
+		return factory.getOrCreateAnimationData(key);
 	}
 }

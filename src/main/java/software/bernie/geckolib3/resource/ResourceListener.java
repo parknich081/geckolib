@@ -2,7 +2,11 @@ package software.bernie.geckolib3.resource;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.compat.FlywheelCompat;
 
 public class ResourceListener {
 	public static void registerReloadListener() {
@@ -14,6 +18,11 @@ public class ResourceListener {
 			ReloadableResourceManager reloadable = (ReloadableResourceManager) Minecraft.getInstance()
 					.getResourceManager();
 			reloadable.registerReloadListener(GeckoLibCache.getInstance()::reload);
+
+			if (ModList.get()
+					.isLoaded("flywheel")) {
+				MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, FlywheelCompat::init);
+			}
 		} else {
 			GeckoLib.LOGGER.warn(
 					"Minecraft.getInstance() was null, could not register reload listeners. Ignore if datagenning.");

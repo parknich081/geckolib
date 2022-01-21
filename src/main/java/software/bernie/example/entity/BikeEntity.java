@@ -15,18 +15,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class BikeEntity extends Animal implements IAnimatable {
-	private final AnimationFactory factory = new AnimationFactory(this);
+public class BikeEntity extends Animal implements IAnimated {
+	private final AnimationData data = new AnimationData();
 
-	private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+	private <E extends IAnimated> PlayState predicate(AnimationEvent<E> event) {
 		event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bike.idle", true));
 		return PlayState.CONTINUE;
 	}
@@ -34,6 +33,7 @@ public class BikeEntity extends Animal implements IAnimatable {
 	public BikeEntity(EntityType<? extends Animal> type, Level worldIn) {
 		super(type, worldIn);
 		this.noCulling = true;
+		data.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
 	}
 
 	@Override
@@ -83,18 +83,12 @@ public class BikeEntity extends Animal implements IAnimatable {
 	}
 
 	@Override
-	public void registerControllers(AnimationData data) {
-		data.addAnimationController(new AnimationController<BikeEntity>(this, "controller", 0, this::predicate));
-	}
-
-	@Override
-	public AnimationFactory getFactory() {
-		return this.factory;
-	}
-
-	@Override
 	public AgeableMob getBreedOffspring(ServerLevel p_241840_1_, AgeableMob p_241840_2_) {
 		return null;
 	}
 
+	@Override
+	public AnimationData getAnimationData() {
+		return data;
+	}
 }

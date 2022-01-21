@@ -2,6 +2,7 @@ package software.bernie.geckolib3.geo.render.built;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -42,6 +43,13 @@ public class GeoBone implements IBone {
 	private float rotateZ;
 
 	public Object extraData;
+
+	/**
+	 * The original GeoBone that was deserialized from the JSON file.
+	 *
+	 * Kind of a gross way to preserve equality, but good enough for now.
+	 */
+	private GeoBone original = this;
 
 	@Override
 	public void setModelRendererName(String modelRendererName) {
@@ -204,6 +212,7 @@ public class GeoBone implements IBone {
 	 */
 	public GeoBone copy(@Nullable GeoBone parent) {
 		GeoBone out = new GeoBone();
+		out.original = this.original;
 		out.parent = parent;
 		// Assuming nothing ever mutates the child cubes, we can re-use the same list.
 		out.childCubes = this.childCubes;
@@ -234,5 +243,19 @@ public class GeoBone implements IBone {
 		}
 
 		return out;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GeoBone geoBone = (GeoBone) o;
+		return geoBone.original == this.original;
+	}
+
+	@Override
+	public int hashCode() {
+		// Can't call original.hashCode() because it would cause a StackOverflowError.
+		return System.identityHashCode(this.original);
 	}
 }

@@ -19,20 +19,20 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.RenderProperties;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.util.GeckoLibUtil;
 
 @SuppressWarnings("unchecked")
-public abstract class GeoItemRenderer<T extends Item & IAnimatable> extends BlockEntityWithoutLevelRenderer
+public abstract class GeoItemRenderer<T extends Item & IAnimated> extends BlockEntityWithoutLevelRenderer
 		implements IGeoRenderer<T> {
 	// Register a model fetcher for this renderer
 	static {
-		AnimationController.addModelFetcher((IAnimatable object) -> {
+		AnimationController.addModelFetcher((IAnimated object) -> {
 			if (object instanceof Item) {
 				Item item = (Item) object;
 				BlockEntityWithoutLevelRenderer renderer = RenderProperties.get(item).getItemStackRenderer();
@@ -91,7 +91,8 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatable> extends Bloc
 		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(animatable));
 		AnimationEvent itemEvent = new AnimationEvent(animatable, 0, 0, Minecraft.getInstance().getFrameTime(),
 				false, Collections.singletonList(itemStack));
-		modelProvider.setLivingAnimations(animatable, this.getUniqueID(animatable), itemEvent);
+		AnimationData data = animatable.getAnimationData();
+		modelProvider.setLivingAnimations(animatable, data, itemEvent);
 		stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0.5, 0.5);
@@ -111,8 +112,4 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatable> extends Bloc
 		return this.modelProvider.getTextureLocation(instance);
 	}
 
-	@Override
-	public Integer getUniqueID(T animatable) {
-		return GeckoLibUtil.getIDFromStack(currentItemStack);
-	}
 }

@@ -4,19 +4,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.example.registry.TileRegistry;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class FertilizerTileEntity extends BlockEntity implements IAnimatable {
-	private final AnimationFactory manager = new AnimationFactory(this);
+public class FertilizerTileEntity extends BlockEntity implements IAnimated {
+	private final AnimationData data = new AnimationData();
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <E extends BlockEntity & IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationEvent<E> event) {
 		AnimationController controller = event.getController();
 		controller.transitionLengthTicks = 0;
 		if (event.getAnimatable().getLevel().isRaining()) {
@@ -31,16 +30,11 @@ public class FertilizerTileEntity extends BlockEntity implements IAnimatable {
 
 	public FertilizerTileEntity(BlockPos pos, BlockState state) {
 		super(TileRegistry.FERTILIZER.get(), pos, state);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void registerControllers(AnimationData data) {
 		data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.manager;
+	public AnimationData getAnimationData() {
+		return data;
 	}
 }

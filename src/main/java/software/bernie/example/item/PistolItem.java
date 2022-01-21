@@ -23,7 +23,8 @@ import net.minecraftforge.network.PacketDistributor;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.example.client.renderer.item.PistolRender;
 import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -34,9 +35,9 @@ import software.bernie.geckolib3.network.GeckoLibNetwork;
 import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class PistolItem extends Item implements IAnimatable, ISyncable {
+public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
 
-	public AnimationFactory factory = new AnimationFactory(this);
+	public final AnimationFactory<ItemStack> factory = new AnimationFactory<>(this::registerControllers);
 	public String controllerName = "controller";
 	public static final int ANIM_OPEN = 0;
 
@@ -111,19 +112,18 @@ public class PistolItem extends Item implements IAnimatable, ISyncable {
 		return arrow;
 	}
 
-	public <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+	public <P extends Item & IAnimated> PlayState predicate(AnimationEvent<P> event) {
 		return PlayState.CONTINUE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public void registerControllers(AnimationData data) {
+	public void registerControllers(ItemStack stack, AnimationData data) {
 		data.addAnimationController(new AnimationController(this, controllerName, 1, this::predicate));
 	}
 
 	@Override
-	public AnimationFactory getFactory() {
-		return this.factory;
+	public AnimationData getAnimationData(ItemStack key) {
+		return factory.getOrCreateAnimationData(key);
 	}
 
 	@Override

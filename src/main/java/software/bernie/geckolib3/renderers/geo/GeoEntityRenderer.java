@@ -29,10 +29,11 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
@@ -40,10 +41,10 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.util.AnimationUtils;
 
 @SuppressWarnings("unchecked")
-public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> extends EntityRenderer<T>
+public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
 	static {
-		AnimationController.addModelFetcher((IAnimatable object) -> {
+		AnimationController.addModelFetcher((IAnimated object) -> {
 			if (object instanceof Entity) {
 				return (IAnimatableModel<Object>) AnimationUtils.getGeoModelForEntity((Entity) object);
 			}
@@ -134,9 +135,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		AnimationEvent<T> predicate = new AnimationEvent<T>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(entity));
-		if (modelProvider instanceof IAnimatableModel) {
-			((IAnimatableModel<T>) modelProvider).setLivingAnimations(entity, this.getUniqueID(entity), predicate);
-		}
+		AnimationData data = entity.getAnimationData();
+		modelProvider.setLivingAnimations(entity, data, predicate);
 
 		stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
@@ -159,11 +159,6 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		}
 		stack.popPose();
 		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
-	}
-
-	@Override
-	public Integer getUniqueID(T animatable) {
-		return animatable.getUUID().hashCode();
 	}
 
 	@Override
