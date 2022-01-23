@@ -19,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.RenderProperties;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -28,16 +29,16 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 @SuppressWarnings("unchecked")
-public abstract class GeoItemRenderer<T extends Item & IAnimated> extends BlockEntityWithoutLevelRenderer
+public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<ItemStack>> extends BlockEntityWithoutLevelRenderer
 		implements IGeoRenderer<T> {
 	// Register a model fetcher for this renderer
 	static {
-		AnimationController.addModelFetcher((IAnimated object) -> {
+		AnimationController.addModelFetcher((Object object) -> {
 			if (object instanceof Item) {
 				Item item = (Item) object;
 				BlockEntityWithoutLevelRenderer renderer = RenderProperties.get(item).getItemStackRenderer();
 				if (renderer instanceof GeoItemRenderer) {
-					return (IAnimatableModel<Object>) ((GeoItemRenderer<?>) renderer).getGeoModelProvider();
+					return ((GeoItemRenderer<?>) renderer).getGeoModelProvider();
 				}
 			}
 			return null;
@@ -84,14 +85,13 @@ public abstract class GeoItemRenderer<T extends Item & IAnimated> extends BlockE
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void render(T animatable, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn,
 			ItemStack itemStack) {
 		this.currentItemStack = itemStack;
 		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(animatable));
 		AnimationEvent itemEvent = new AnimationEvent(animatable, 0, 0, Minecraft.getInstance().getFrameTime(),
 				false, Collections.singletonList(itemStack));
-		AnimationData data = animatable.getAnimationData();
+		AnimationData data = animatable.getAnimationData(itemStack);
 		modelProvider.setLivingAnimations(animatable, data, itemEvent);
 		stack.pushPose();
 		stack.translate(0, 0.01f, 0);

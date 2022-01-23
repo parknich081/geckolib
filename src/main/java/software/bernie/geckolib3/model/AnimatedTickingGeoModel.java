@@ -19,9 +19,8 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 		return this.getAnimationProcessor().isNotEmpty();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent customPredicate) {
+	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent<T> customPredicate) {
 		// Each animation has it's own collection of animations (called the
 		// EntityAnimationManager), which allows for multiple independent animations
 		if (manager.startTick == null) {
@@ -43,10 +42,12 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 			predicate = customPredicate;
 		}
 
+		manager.setModelRendererList(getModel(entity).getBones());
+
 		predicate.animationTick = seekTime;
 		getAnimationProcessor().preAnimationSetup(predicate.getAnimatable(), seekTime);
 		if (this.getAnimationProcessor().isNotEmpty()) {
-			getAnimationProcessor().tickAnimation(entity, manager, seekTime, predicate,
+			getAnimationProcessor().tickAnimation(manager, seekTime, predicate,
 					GeckoLibCache.getInstance().parser, shouldCrashOnMissing);
 		}
 

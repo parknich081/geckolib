@@ -26,12 +26,11 @@ import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.util.AnimationUtils;
 
-@SuppressWarnings("unchecked")
 public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
 
 	static {
-		AnimationController.addModelFetcher((IAnimated object) -> {
+		AnimationController.addModelFetcher((Object object) -> {
 			if (object instanceof Entity) {
 				return (IAnimatableModel<Object>) AnimationUtils.getGeoModelForEntity((Entity) object);
 			}

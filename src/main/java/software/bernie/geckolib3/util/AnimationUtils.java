@@ -12,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class AnimationUtils {
 	public static double convertTicksToSeconds(double ticks) {
 		return ticks / 20;
@@ -30,7 +29,7 @@ public class AnimationUtils {
 		return (EntityRenderer<T>) renderManager.getRenderer(entity);
 	}
 
-	public static <T extends Entity> GeoModelProvider getGeoModelForEntity(T entity) {
+	public static <T extends Entity> GeoModelProvider<T> getGeoModelForEntity(T entity) {
 		EntityRenderer<T> entityRenderer = getRenderer(entity);
 
 		if (entityRenderer instanceof IGeoRenderer) {

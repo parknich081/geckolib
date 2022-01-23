@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class JsonKeyFrameUtils {
-	private static VectorKeyFrameList<KeyFrame<IValue>> convertJson(List<Map.Entry<String, JsonElement>> element,
+	private static VectorKeyFrameList<IValue> convertJson(List<Map.Entry<String, JsonElement>> element,
 			boolean isRotation, MolangParser parser) throws NumberFormatException, MolangException {
 		IValue previousXValue = null;
 		IValue previousYValue = null;
@@ -153,7 +153,7 @@ public class JsonKeyFrameUtils {
 	 * @return the vector key frame list
 	 * @throws NumberFormatException The number format exception
 	 */
-	public static VectorKeyFrameList<KeyFrame<IValue>> convertJsonToKeyFrames(
+	public static VectorKeyFrameList<IValue> convertJsonToKeyFrames(
 			List<Map.Entry<String, JsonElement>> element, MolangParser parser)
 			throws NumberFormatException, MolangException {
 		return convertJson(element, false, parser);
@@ -167,10 +167,10 @@ public class JsonKeyFrameUtils {
 	 * @return the vector key frame list
 	 * @throws NumberFormatException
 	 */
-	public static VectorKeyFrameList<KeyFrame<IValue>> convertJsonToRotationKeyFrames(
+	public static VectorKeyFrameList<IValue> convertJsonToRotationKeyFrames(
 			List<Map.Entry<String, JsonElement>> element, MolangParser parser)
 			throws NumberFormatException, MolangException {
-		VectorKeyFrameList<KeyFrame<IValue>> frameList = convertJson(element, true, parser);
+		VectorKeyFrameList<IValue> frameList = convertJson(element, true, parser);
 		return new VectorKeyFrameList(frameList.xKeyFrames, frameList.yKeyFrames, frameList.zKeyFrames);
 	}
 

@@ -17,7 +17,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -31,7 +30,7 @@ import software.bernie.geckolib3.model.provider.IAnimatableModelProvider;
 import software.bernie.geckolib3.resource.GeckoLibCache;
 import software.bernie.geckolib3.util.MolangUtils;
 
-public abstract class AnimatedGeoModel<T extends IAnimated> extends GeoModelProvider<T>
+public abstract class AnimatedGeoModel<T> extends GeoModelProvider<T>
 		implements IAnimatableModel<T>, IAnimatableModelProvider<T> {
 	private final AnimationProcessor<T> animationProcessor;
 
@@ -39,9 +38,8 @@ public abstract class AnimatedGeoModel<T extends IAnimated> extends GeoModelProv
 		this.animationProcessor = new AnimationProcessor<>(this);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent customPredicate) {
+	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent<T> customPredicate) {
 		// Each animation has it's own collection of animations (called the
 		// EntityAnimationManager), which allows for multiple independent animations
 		if (manager.startTick == null) {
@@ -58,32 +56,32 @@ public abstract class AnimatedGeoModel<T extends IAnimated> extends GeoModelProv
 
 		AnimationEvent<T> predicate;
 		if (customPredicate == null) {
-			predicate = new AnimationEvent<T>(entity, 0, 0, 0, false, Collections.emptyList());
+			predicate = new AnimationEvent<>(entity, 0, 0, 0, false, Collections.emptyList());
 		} else {
 			predicate = customPredicate;
 		}
 
+		manager.setModelRendererList(getModel(entity).getBones());
+
 		predicate.animationTick = seekTime;
 		animationProcessor.preAnimationSetup(predicate.getAnimatable(), seekTime);
 		if (this.animationProcessor.isNotEmpty()) {
-			animationProcessor.tickAnimation(entity, manager, seekTime, predicate, GeckoLibCache.getInstance().parser,
+			animationProcessor.tickAnimation(manager, seekTime, predicate, GeckoLibCache.getInstance().parser,
 					shouldCrashOnMissing);
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public AnimationProcessor getAnimationProcessor() {
+	public AnimationProcessor<T> getAnimationProcessor() {
 		return this.animationProcessor;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Animation getAnimation(String name, IAnimated animatable) {
+	public Animation getAnimation(String name, T animatable) {
 		AnimationFile animation = GeckoLibCache.getInstance().getAnimations()
-				.get(this.getAnimationFileLocation((T) animatable));
+				.get(this.getAnimationFileLocation(animatable));
 		if (animation == null) {
-			throw new GeckoLibException(this.getAnimationFileLocation((T) animatable),
+			throw new GeckoLibException(this.getAnimationFileLocation(animatable),
 					"Could not find animation file. Please double check name.");
 		}
 		return animation.getAnimation(name);
@@ -104,7 +102,7 @@ public abstract class AnimatedGeoModel<T extends IAnimated> extends GeoModelProv
 	}
 
 	@Override
-	public void setMolangQueries(IAnimated animatable, double currentTick) {
+	public void setMolangQueries(T animatable, double currentTick) {
 		MolangParser parser = GeckoLibCache.getInstance().parser;
 		Minecraft minecraftInstance = Minecraft.getInstance();
 

@@ -1,11 +1,14 @@
 package software.bernie.geckolib3.geo.render.built;
 
+import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import com.google.common.collect.ImmutableList;
 
 public class GeoModel {
 	public List<GeoBone> topLevelBones = new ArrayList<>();
@@ -21,6 +24,21 @@ public class GeoModel {
 			}
 		}
 		return Optional.empty();
+	}
+
+	public List<IBone> getBones() {
+		ImmutableList.Builder<IBone> bones = ImmutableList.builder();
+		for (GeoBone bone : topLevelBones) {
+			getBonesRecursively(bone, bones);
+		}
+		return bones.build();
+	}
+
+	private void getBonesRecursively(GeoBone bone, ImmutableList.Builder<IBone> bones) {
+		bones.add(bone);
+		for (GeoBone child : bone.childBones) {
+			getBonesRecursively(child, bones);
+		}
 	}
 
 	private GeoBone getBoneRecursively(String name, GeoBone bone) {

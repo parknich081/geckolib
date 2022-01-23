@@ -28,7 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.IAnimated;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -36,23 +36,21 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends EntityRenderer implements IGeoRenderer {
-	private final AnimatedGeoModel<IAnimated> modelProvider;
-	private final T animatable;
-	protected final List<GeoLayerRenderer> layerRenderers = Lists.newArrayList();
-	private IAnimated currentAnimatable;
-	private static final Map<Class<? extends IAnimated>, GeoReplacedEntityRenderer> renderers = new ConcurrentHashMap<>();
+public abstract class GeoReplacedEntityRenderer<E extends Entity> extends EntityRenderer<E> implements IGeoRenderer<E> {
+	private final AnimatedGeoModel<E> modelProvider;
+	private final IAnimatableSingleton<E> animatable;
+	protected final List<GeoLayerRenderer<E>> layerRenderers = Lists.newArrayList();
+	private static final Map<Class<?>, GeoReplacedEntityRenderer<?>> renderers = new ConcurrentHashMap<>();
 
 	static {
-		AnimationController.addModelFetcher((IAnimated object) -> {
-			GeoReplacedEntityRenderer renderer = renderers.get(object.getClass());
+		AnimationController.addModelFetcher((Object object) -> {
+			GeoReplacedEntityRenderer<?> renderer = renderers.get(object.getClass());
 			return renderer == null ? null : renderer.getGeoModelProvider();
 		});
 	}
 
 	public GeoReplacedEntityRenderer(EntityRendererProvider.Context renderManager,
-			AnimatedGeoModel<IAnimated> modelProvider, T animatable) {
+			AnimatedGeoModel<E> modelProvider, IAnimatableSingleton<E> animatable) {
 		super(renderManager);
 		this.modelProvider = modelProvider;
 		this.animatable = animatable;
@@ -61,20 +59,19 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends Ent
 		}
 	}
 
-	public static GeoReplacedEntityRenderer getRenderer(Class<? extends IAnimated> item) {
+	public static GeoReplacedEntityRenderer<?> getRenderer(Class<?> item) {
 		return renderers.get(item);
 	}
 
 	@Override
-	public void render(Entity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+	public void render(E entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
 			MultiBufferSource bufferIn, int packedLightIn) {
 		this.render(entityIn, this.animatable, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 
 	@SuppressWarnings("resource")
-	public void render(Entity entity, IAnimated animatable, float entityYaw, float partialTicks, PoseStack stack,
+	public void render(E entity, IAnimatableSingleton<E> animatable, float entityYaw, float partialTicks, PoseStack stack,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		this.currentAnimatable = animatable;
 		LivingEntity entityLiving;
 		if (entity instanceof LivingEntity) {
 			entityLiving = (LivingEntity) entity;
@@ -142,16 +139,16 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends Ent
 		entityModelData.headPitch = -f6;
 		entityModelData.netHeadYaw = -f2;
 
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(animatable));
-		AnimationEvent predicate = new AnimationEvent(animatable, limbSwing, limbSwingAmount, partialTicks,
+		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(entity));
+		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 
-		AnimationData data = animatable.getAnimationData();
-		modelProvider.setLivingAnimations(animatable, data, predicate);
+		AnimationData data = animatable.getAnimationData(entity);
+		modelProvider.setLivingAnimations(entity, data, predicate);
 
 		stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
-		Color renderColor = getRenderColor(animatable, partialTicks, stack, bufferIn, null, packedLightIn);
+		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
 				getTextureLocation(entity));
 		boolean invis = entity.isInvisibleTo(Minecraft.getInstance().player);
@@ -161,7 +158,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends Ent
 				(float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
 
 		if (!entity.isSpectator()) {
-			for (GeoLayerRenderer layerRenderer : this.layerRenderers) {
+			for (GeoLayerRenderer<E> layerRenderer : this.layerRenderers) {
 				layerRenderer.render(stack, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks,
 						f7, f2, f6);
 			}
@@ -181,12 +178,12 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends Ent
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(Entity entity) {
-		return getTextureLocation(currentAnimatable);
+	public ResourceLocation getTextureLocation(E entity) {
+		return modelProvider.getTextureLocation(entity);
 	}
 
 	@Override
-	public AnimatedGeoModel getGeoModelProvider() {
+	public AnimatedGeoModel<E> getGeoModelProvider() {
 		return this.modelProvider;
 	}
 
@@ -280,12 +277,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimated> extends Ent
 		return (float) livingBase.tickCount + partialTicks;
 	}
 
-	@Override
-	public ResourceLocation getTextureLocation(Object instance) {
-		return this.modelProvider.getTextureLocation((IAnimated) instance);
-	}
-
-	public final boolean addLayer(GeoLayerRenderer<? extends LivingEntity> layer) {
+	public final boolean addLayer(GeoLayerRenderer<E> layer) {
 		return this.layerRenderers.add(layer);
 	}
 }

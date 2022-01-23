@@ -29,7 +29,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 		implements IGeoRenderer<T>, BlockEntityRenderer {
 	static {
-		AnimationController.addModelFetcher((IAnimated object) -> {
+		AnimationController.addModelFetcher((Object object) -> {
 			if (object instanceof BlockEntity) {
 				BlockEntity tile = (BlockEntity) object;
 				BlockEntityRenderer<BlockEntity> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher()

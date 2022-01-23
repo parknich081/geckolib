@@ -12,7 +12,7 @@ import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 
-public abstract class GeoLayerRenderer<T extends Entity & IAnimated> {
+public abstract class GeoLayerRenderer<T extends Entity> {
 	private final IGeoRenderer<T> entityRenderer;
 
 	public GeoLayerRenderer(IGeoRenderer<T> entityRendererIn) {
