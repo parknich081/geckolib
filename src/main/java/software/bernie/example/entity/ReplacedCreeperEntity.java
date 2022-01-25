@@ -14,12 +14,11 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 public class ReplacedCreeperEntity implements IAnimatableSingleton<Creeper> {
 	private final AnimationFactory<Creeper> factory = new AnimationFactory<>(this::registerControllers);
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void registerControllers(Creeper creeper, AnimationData data) {
-		data.addAnimationController(new AnimationController(this, "controller", 20, this::predicate));
+		data.addAnimationController(new AnimationController<>(creeper, "controller", 20, this::predicate));
 	}
 
-	private <P extends IAnimated> PlayState predicate(AnimationEvent<P> event) {
+	private PlayState predicate(AnimationEvent<Creeper> event) {
 		if (!(event.getLimbSwingAmount() > -0.15F && event.getLimbSwingAmount() < 0.15F)) {
 			event.getController().setAnimation(new AnimationBuilder().addAnimation("creeper_walk", true));
 		} else {

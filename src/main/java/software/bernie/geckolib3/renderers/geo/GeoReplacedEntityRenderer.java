@@ -36,7 +36,7 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-public abstract class GeoReplacedEntityRenderer<E extends Entity> extends EntityRenderer<E> implements IGeoRenderer<E> {
+public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends EntityRenderer<E> implements IGeoRenderer<E> {
 	private final AnimatedGeoModel<E> modelProvider;
 	private final IAnimatableSingleton<E> animatable;
 	protected final List<GeoLayerRenderer<E>> layerRenderers = Lists.newArrayList();
@@ -72,22 +72,16 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 	@SuppressWarnings("resource")
 	public void render(E entity, IAnimatableSingleton<E> animatable, float entityYaw, float partialTicks, PoseStack stack,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		LivingEntity entityLiving;
-		if (entity instanceof LivingEntity) {
-			entityLiving = (LivingEntity) entity;
-		} else {
-			throw (new RuntimeException("Replaced renderer was not an instanceof LivingEntity"));
-		}
 
 		stack.pushPose();
 		boolean shouldSit = entity.isPassenger()
 				&& (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
 		EntityModelData entityModelData = new EntityModelData();
 		entityModelData.isSitting = shouldSit;
-		entityModelData.isChild = entityLiving.isBaby();
+		entityModelData.isChild = entity.isBaby();
 
-		float f = Mth.rotLerp(partialTicks, entityLiving.yBodyRotO, entityLiving.yBodyRot);
-		float f1 = Mth.rotLerp(partialTicks, entityLiving.yHeadRotO, entityLiving.yHeadRot);
+		float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
+		float f1 = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
 		float f2 = f1 - f;
 		if (shouldSit && entity.getVehicle() instanceof LivingEntity) {
 			LivingEntity livingentity = (LivingEntity) entity.getVehicle();
@@ -112,22 +106,22 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 
 		float f6 = Mth.lerp(partialTicks, entity.getXRot(), entity.getXRot());
 		if (entity.getPose() == Pose.SLEEPING) {
-			Direction direction = entityLiving.getBedOrientation();
+			Direction direction = entity.getBedOrientation();
 			if (direction != null) {
 				float f4 = entity.getEyeHeight(Pose.STANDING) - 0.1F;
 				stack.translate((float) (-direction.getStepX()) * f4, 0.0D, (float) (-direction.getStepZ()) * f4);
 			}
 		}
-		float f7 = this.handleRotationFloat(entityLiving, partialTicks);
-		this.applyRotations(entityLiving, stack, f7, f, partialTicks);
-		this.preRenderCallback(entityLiving, stack, partialTicks);
+		float f7 = this.handleRotationFloat(entity, partialTicks);
+		this.applyRotations(entity, stack, f7, f, partialTicks);
+		this.preRenderCallback(entity, stack, partialTicks);
 
 		float limbSwingAmount = 0.0F;
 		float limbSwing = 0.0F;
 		if (!shouldSit && entity.isAlive()) {
-			limbSwingAmount = Mth.lerp(partialTicks, entityLiving.animationSpeedOld, entityLiving.animationSpeed);
-			limbSwing = entityLiving.animationPosition - entityLiving.animationSpeed * (1.0F - partialTicks);
-			if (entityLiving.isBaby()) {
+			limbSwingAmount = Mth.lerp(partialTicks, entity.animationSpeedOld, entity.animationSpeed);
+			limbSwing = entity.animationPosition - entity.animationSpeed * (1.0F - partialTicks);
+			if (entity.isBaby()) {
 				limbSwing *= 3.0F;
 			}
 
@@ -139,7 +133,7 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 		entityModelData.headPitch = -f6;
 		entityModelData.netHeadYaw = -f2;
 
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(entity));
+		GeoModel model = modelProvider.getModel(entity);
 		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 
@@ -153,7 +147,7 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 				getTextureLocation(entity));
 		boolean invis = entity.isInvisibleTo(Minecraft.getInstance().player);
 		render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn,
-				getPackedOverlay(entityLiving, this.getOverlayProgress(entityLiving, partialTicks)),
+				getPackedOverlay(entity, this.getOverlayProgress(entity, partialTicks)),
 				(float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
 				(float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
 
@@ -170,11 +164,11 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
 	}
 
-	protected float getOverlayProgress(LivingEntity livingEntityIn, float partialTicks) {
+	protected float getOverlayProgress(E livingEntityIn, float partialTicks) {
 		return 0.0F;
 	}
 
-	protected void preRenderCallback(LivingEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
+	protected void preRenderCallback(E entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
 	}
 
 	@Override
@@ -252,7 +246,7 @@ public abstract class GeoReplacedEntityRenderer<E extends Entity> extends Entity
 	}
 
 	@Override
-	public boolean shouldShowName(Entity entity) {
+	public boolean shouldShowName(E entity) {
 		double d0 = this.entityRenderDispatcher.distanceToSqr(entity);
 		float f = entity.isDiscrete() ? 32.0F : 64.0F;
 		if (d0 >= (double) (f * f)) {

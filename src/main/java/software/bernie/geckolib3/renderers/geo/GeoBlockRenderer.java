@@ -25,9 +25,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
-		implements IGeoRenderer<T>, BlockEntityRenderer {
+		implements IGeoRenderer<T>, BlockEntityRenderer<T> {
 	static {
 		AnimationController.addModelFetcher((Object object) -> {
 			if (object instanceof BlockEntity) {
@@ -50,13 +49,13 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 	}
 
 	@Override
-	public void render(BlockEntity tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn,
+	public void render(T tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn,
 			int combinedLightIn, int combinedOverlayIn) {
-		this.render((T) tile, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
+		this.render(tile, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
 	}
 
 	public void render(T tile, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(tile));
+		GeoModel model = modelProvider.getModel(tile);
 		AnimationData data = tile.getAnimationData();
 		modelProvider.setLivingAnimations(tile, data);
 		stack.pushPose();

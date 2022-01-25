@@ -48,7 +48,7 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 	@Override
 	public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(entityIn));
+		GeoModel model = modelProvider.getModel(entityIn);
 		matrixStackIn.pushPose();
 		matrixStackIn.mulPose(
 				Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));

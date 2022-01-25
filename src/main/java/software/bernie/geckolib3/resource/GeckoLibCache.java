@@ -9,8 +9,11 @@ import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.eliotlash.molang.MolangParser;
 
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.server.packs.resources.PreparableReloadListener.PreparationBarrier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -22,35 +25,42 @@ import software.bernie.geckolib3.file.GeoModelLoader;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.molang.MolangRegistrar;
 
-public class GeckoLibCache {
+public class GeckoLibCache implements PreparableReloadListener {
 	private static GeckoLibCache INSTANCE;
 
 	private final AnimationFileLoader animationLoader;
 	private final GeoModelLoader modelLoader;
 
-	public final MolangParser parser = new MolangParser();
+	public final ThreadLocal<MolangParser> parser = ThreadLocal.withInitial(() -> {
+		MolangParser p = new MolangParser();
+		MolangRegistrar.registerVars(p);
+		return p;
+	});
 
-	public Map<ResourceLocation, AnimationFile> getAnimations() {
-		if (!GeckoLib.hasInitialized) {
-			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
-		}
-		return animations;
+	public GeoModel getModel(ResourceLocation location) {
+		checkInitialized();
+		return geoModels.get(location);
 	}
 
-	public Map<ResourceLocation, GeoModel> getGeoModels() {
+	public AnimationFile getAnimation(ResourceLocation location) {
+		checkInitialized();
+		return animations.get(location);
+	}
+
+	private static void checkInitialized() {
 		if (!GeckoLib.hasInitialized) {
 			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
 		}
-		return geoModels;
 	}
 
 	private Map<ResourceLocation, AnimationFile> animations = Collections.emptyMap();
+
 	private Map<ResourceLocation, GeoModel> geoModels = Collections.emptyMap();
 
 	protected GeckoLibCache() {
 		this.animationLoader = new AnimationFileLoader();
 		this.modelLoader = new GeoModelLoader();
-		MolangRegistrar.registerVars(parser);
+		//MolangRegistrar.registerVars(parser);
 	}
 
 	public static GeckoLibCache getInstance() {
@@ -61,19 +71,27 @@ public class GeckoLibCache {
 		return INSTANCE;
 	}
 
+	@Override
 	public CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager,
 			ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor,
 			Executor gameExecutor) {
 		Map<ResourceLocation, AnimationFile> animations = new HashMap<>();
 		Map<ResourceLocation, GeoModel> geoModels = new HashMap<>();
-		return CompletableFuture.allOf(loadResources(backgroundExecutor, resourceManager, "animations",
-				animation -> animationLoader.loadAllAnimations(parser, animation, resourceManager), animations::put),
-				loadResources(backgroundExecutor, resourceManager, "geo",
-						resource -> modelLoader.loadModel(resourceManager, resource), geoModels::put))
+		return CompletableFuture.allOf(loadAnimations(resourceManager, backgroundExecutor, animations), loadModels(resourceManager, backgroundExecutor, geoModels))
 				.thenCompose(stage::wait).thenAcceptAsync(empty -> {
 					this.animations = animations;
 					this.geoModels = geoModels;
 				}, gameExecutor);
+	}
+
+	private CompletableFuture<Void> loadModels(ResourceManager resourceManager, Executor backgroundExecutor, Map<ResourceLocation, GeoModel> geoModels) {
+		return loadResources(backgroundExecutor, resourceManager, "geo",
+				resource -> modelLoader.loadModel(resourceManager, resource), geoModels::put);
+	}
+
+	private CompletableFuture<Void> loadAnimations(ResourceManager resourceManager, Executor backgroundExecutor, Map<ResourceLocation, AnimationFile> animations) {
+		return loadResources(backgroundExecutor, resourceManager, "animations",
+				animation -> animationLoader.loadAllAnimations(parser.get(), animation, resourceManager), animations::put);
 	}
 
 	private static <T> CompletableFuture<Void> loadResources(Executor executor, ResourceManager resourceManager,

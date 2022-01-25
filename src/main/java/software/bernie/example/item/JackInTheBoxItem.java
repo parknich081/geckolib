@@ -35,7 +35,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
 	private static final String CONTROLLER_NAME = "popupController";
 	private static final int ANIM_OPEN = 0;
-	public AnimationFactory<ItemStack> factory = new AnimationFactory<>(this::registerControllers);
+	public AnimationFactory<Integer> factory = new AnimationFactory<>(this::registerControllers);
 
 	public JackInTheBoxItem(Properties properties) {
 		super(properties.tab(GeckoLibMod.geckolibItemGroup));
@@ -55,14 +55,13 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		});
 	}
 
-	private <P extends Item & IAnimated> PlayState predicate(AnimationEvent<P> event) {
+	private PlayState predicate(AnimationEvent<? extends JackInTheBoxItem> event) {
 		// Not setting an animation here as that's handled below
 		return PlayState.CONTINUE;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerControllers(ItemStack stack, AnimationData data) {
-		AnimationController controller = new AnimationController(this, CONTROLLER_NAME, 20, this::predicate);
+	public void registerControllers(Integer stack, AnimationData data) {
+		AnimationController<JackInTheBoxItem> controller = new AnimationController<>(this, CONTROLLER_NAME, 20, this::predicate);
 
 		// Registering a sound listener just makes it so when any sound keyframe is hit
 		// the method will be called.
@@ -73,8 +72,7 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		data.addAnimationController(controller);
 	}
 
-	@SuppressWarnings("resource")
-	private <ENTITY extends IAnimated> void soundListener(SoundKeyframeEvent<ENTITY> event) {
+	private void soundListener(SoundKeyframeEvent<JackInTheBoxItem> event) {
 		// The animation for the JackInTheBoxItem has a sound keyframe at time 0:00.
 		// As soon as that keyframe gets hit this method fires and it starts playing the
 		// sound to the current player.
@@ -88,7 +86,7 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 
 	@Override
 	public AnimationData getAnimationData(ItemStack key) {
-		return factory.getOrCreateAnimationData(key);
+		return factory.getOrCreateAnimationData(GeckoLibUtil.getIDFromStack(key));
 	}
 
 	@Override
@@ -104,13 +102,12 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		return super.use(world, player, hand);
 	}
 
-	@SuppressWarnings({ "rawtypes", "resource" })
 	@Override
 	public void onAnimationSync(int id, int state) {
 		if (state == ANIM_OPEN) {
 			// Always use GeckoLibUtil to get AnimationControllers when you don't have
 			// access to an AnimationEvent
-			final AnimationController controller = GeckoLibUtil.getControllerForID(this.factory, id, CONTROLLER_NAME);
+			final AnimationController<?> controller = GeckoLibUtil.getControllerForID(this.factory, id, CONTROLLER_NAME);
 
 			if (controller.getAnimationState() == AnimationState.Stopped) {
 				final LocalPlayer player = Minecraft.getInstance().player;

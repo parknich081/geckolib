@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import software.bernie.example.client.model.entity.ReplacedCreeperModel;
 import software.bernie.example.entity.ReplacedCreeperEntity;
@@ -16,8 +15,7 @@ public class ReplacedCreeperRenderer extends GeoReplacedEntityRenderer<Creeper> 
 	}
 
 	@Override
-	protected void preRenderCallback(LivingEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
-		Creeper creeper = (Creeper) entitylivingbaseIn;
+	protected void preRenderCallback(Creeper creeper, PoseStack matrixStackIn, float partialTickTime) {
 		float f = creeper.getSwelling(partialTickTime);
 		float f1 = 1.0F + Mth.sin(f * 100.0F) * f * 0.01F;
 		f = Mth.clamp(f, 0.0F, 1.0F);
@@ -29,8 +27,7 @@ public class ReplacedCreeperRenderer extends GeoReplacedEntityRenderer<Creeper> 
 	}
 
 	@Override
-	protected float getOverlayProgress(LivingEntity livingEntityIn, float partialTicks) {
-		Creeper creeper = (Creeper) livingEntityIn;
+	protected float getOverlayProgress(Creeper creeper, float partialTicks) {
 		float f = creeper.getSwelling(partialTicks);
 		return (int) (f * 10.0F) % 2 == 0 ? 0.0F : Mth.clamp(f, 0.5F, 1.0F);
 	}

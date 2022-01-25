@@ -4,6 +4,8 @@ import java.util.Collections;
 
 import javax.annotation.Nullable;
 
+import com.jozufozu.flywheel.util.AnimationTickHolder;
+
 import net.minecraft.client.Minecraft;
 import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimationTickable;
@@ -23,18 +25,6 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent<T> customPredicate) {
 		// Each animation has it's own collection of animations (called the
 		// EntityAnimationManager), which allows for multiple independent animations
-		if (manager.startTick == null) {
-			manager.startTick = (double) (entity.tickTimer() + Minecraft.getInstance().getFrameTime());
-		}
-
-		if (!Minecraft.getInstance().isPaused() || manager.shouldPlayWhilePaused) {
-			manager.tick = (entity.tickTimer() + Minecraft.getInstance().getFrameTime());
-			double gameTick = manager.tick;
-			double deltaTicks = gameTick - lastGameTickTime;
-			seekTime += deltaTicks;
-			lastGameTickTime = gameTick;
-		}
-
 		AnimationEvent<T> predicate;
 		if (customPredicate == null) {
 			predicate = new AnimationEvent<T>(entity, 0, 0, 0, false, Collections.emptyList());
@@ -44,11 +34,11 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 
 		manager.setModelRendererList(getModel(entity).getBones());
 
-		predicate.animationTick = seekTime;
-		getAnimationProcessor().preAnimationSetup(predicate.getAnimatable(), seekTime);
+		predicate.animationTick = AnimationTickHolder.getPartialTicks();
+		getAnimationProcessor().preAnimationSetup(predicate.getAnimatable(), AnimationTickHolder.getPartialTicks());
 		if (this.getAnimationProcessor().isNotEmpty()) {
-			getAnimationProcessor().tickAnimation(manager, seekTime, predicate,
-					GeckoLibCache.getInstance().parser, shouldCrashOnMissing);
+			getAnimationProcessor().tickAnimation(manager, AnimationTickHolder.getRenderTime(), predicate,
+					GeckoLibCache.getInstance().parser.get(), shouldCrashOnMissing);
 		}
 
 		if (!Minecraft.getInstance().isPaused() || manager.shouldPlayWhilePaused) {

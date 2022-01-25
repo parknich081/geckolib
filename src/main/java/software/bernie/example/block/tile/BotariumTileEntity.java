@@ -14,7 +14,6 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class BotariumTileEntity extends BlockEntity implements IAnimated {
 	private final AnimationData factory = new AnimationData();
 
-	@SuppressWarnings("unchecked")
 	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationEvent<E> event) {
 		event.getController().transitionLengthTicks = 0;
 		event.getController().setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));

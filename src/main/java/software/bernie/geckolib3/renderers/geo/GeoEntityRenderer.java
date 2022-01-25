@@ -133,7 +133,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 
 		AnimationEvent<T> predicate = new AnimationEvent<T>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(entity));
+		GeoModel model = modelProvider.getModel(entity);
 		AnimationData data = entity.getAnimationData();
 		modelProvider.setLivingAnimations(entity, data, predicate);
 

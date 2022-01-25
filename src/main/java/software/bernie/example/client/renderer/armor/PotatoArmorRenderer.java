@@ -1,7 +1,9 @@
 package software.bernie.example.client.renderer.armor;
 
+import net.minecraft.world.item.ItemStack;
 import software.bernie.example.client.model.armor.PotatoArmorModel;
 import software.bernie.example.item.PotatoArmorItem;
+import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
 
 public class PotatoArmorRenderer extends GeoArmorRenderer<PotatoArmorItem> {
@@ -20,5 +22,10 @@ public class PotatoArmorRenderer extends GeoArmorRenderer<PotatoArmorItem> {
 		this.leftLegBone = "leftLeg";
 		this.rightBootBone = "rightBoot";
 		this.leftBootBone = "leftBoot";
+	}
+
+	@Override
+	protected AnimationData getAnimationData(ItemStack stack) {
+		return currentArmorItem.getAnimationData(stack);
 	}
 }

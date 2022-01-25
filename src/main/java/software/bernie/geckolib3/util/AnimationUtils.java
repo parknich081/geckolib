@@ -33,7 +33,7 @@ public class AnimationUtils {
 		EntityRenderer<T> entityRenderer = getRenderer(entity);
 
 		if (entityRenderer instanceof IGeoRenderer) {
-			return ((IGeoRenderer<?>) entityRenderer).getGeoModelProvider();
+			return ((IGeoRenderer<T>) entityRenderer).getGeoModelProvider();
 		}
 		return null;
 	}

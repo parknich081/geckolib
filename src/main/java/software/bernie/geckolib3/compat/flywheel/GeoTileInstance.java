@@ -51,6 +51,7 @@ public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEnt
 		}
 
 		data = blockEntity.getAnimationData();
+		data.setModelRendererList(model.getBones());
 	}
 
 	@Override

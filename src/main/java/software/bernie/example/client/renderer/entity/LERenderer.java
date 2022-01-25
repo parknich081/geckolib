@@ -8,10 +8,9 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 public class LERenderer extends GeoEntityRenderer<LEEntity> {
 
-    @SuppressWarnings("unchecked")
 	public LERenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new LEModel());
-        this.addLayer(new GeoExampleLayer(this));
+        this.addLayer(new GeoExampleLayer<>(this));
         this.shadowRadius = 0.25f;
     }
 }

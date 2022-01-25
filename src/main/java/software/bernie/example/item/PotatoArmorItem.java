@@ -23,7 +23,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.item.GeoArmorItem;
 
-public class PotatoArmorItem extends GeoArmorItem implements IAnimatableSingleton<ItemStack> {
+public class PotatoArmorItem extends GeoArmorItem {
 	private final AnimationFactory<ItemStack> factory = new AnimationFactory<>(this::registerControllers);
 
 	public PotatoArmorItem(ArmorMaterial materialIn, EquipmentSlot slot, Properties builder) {
@@ -32,7 +32,7 @@ public class PotatoArmorItem extends GeoArmorItem implements IAnimatableSingleto
 
 	// Predicate runs every frame
 	@SuppressWarnings("unused")
-	private <P extends IAnimated> PlayState predicate(AnimationEvent<P> event) {
+	private PlayState predicate(AnimationEvent<PotatoArmorItem> event) {
 		// This is all the extradata this event carries. The livingentity is the entity
 		// that's wearing the armor. The itemstack and equipmentslottype are self
 		// explanatory.
@@ -74,9 +74,8 @@ public class PotatoArmorItem extends GeoArmorItem implements IAnimatableSingleto
 
 	// All you need to do here is add your animation controllers to the
 	// AnimationData
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerControllers(ItemStack stack, AnimationData data) {
-		data.addAnimationController(new AnimationController(this, "controller", 20, this::predicate));
+		data.addAnimationController(new AnimationController<>(this, "controller", 20, this::predicate));
 	}
 
 	@Override

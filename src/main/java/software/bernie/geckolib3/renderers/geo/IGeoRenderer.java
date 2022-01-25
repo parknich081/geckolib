@@ -96,8 +96,7 @@ public interface IGeoRenderer<T> {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	GeoModelProvider getGeoModelProvider();
+	GeoModelProvider<T> getGeoModelProvider();
 
 	ResourceLocation getTextureLocation(T instance);
 

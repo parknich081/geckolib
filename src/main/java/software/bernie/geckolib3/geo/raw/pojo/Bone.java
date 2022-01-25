@@ -208,4 +208,9 @@ public class Bone {
 	public void setTextureMeshes(TextureMesh[] value) {
 		this.textureMeshes = value;
 	}
+
+	@Override
+	public String toString() {
+		return "Bone{" + "name='" + name + '\'' + ", parent='" + parent + '\'' + '}';
+	}
 }

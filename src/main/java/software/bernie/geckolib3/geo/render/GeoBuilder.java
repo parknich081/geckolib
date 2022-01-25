@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GeoBuilder implements IGeoBuilder {
-    private static Map<String, IGeoBuilder> moddedGeoBuilders = new HashMap<>();
-    private static IGeoBuilder defaultBuilder = new GeoBuilder();
+    private static final Map<String, IGeoBuilder> moddedGeoBuilders = new HashMap<>();
+    private static final IGeoBuilder defaultBuilder = new GeoBuilder();
 
     public static void registerGeoBuilder(String modID, IGeoBuilder builder) {
         moddedGeoBuilders.put(modID, builder);
@@ -32,14 +32,13 @@ public class GeoBuilder implements IGeoBuilder {
     public GeoModel constructGeoModel(RawGeometryTree geometryTree) {
         GeoModel model = new GeoModel();
         model.properties = geometryTree.properties;
-        for (RawBoneGroup rawBone : geometryTree.topLevelBones.values()) {
+        for (RawBoneGroup rawBone : geometryTree.getTopLevelBones()) {
             model.topLevelBones.add(this.constructBone(rawBone, geometryTree.properties, null));
         }
         return model;
     }
 
-    @Override
-    public GeoBone constructBone(RawBoneGroup bone, ModelProperties properties, GeoBone parent) {
+    protected GeoBone constructBone(RawBoneGroup bone, ModelProperties properties, GeoBone parent) {
         GeoBone geoBone = new GeoBone();
 
         Bone rawBone = bone.selfBone;
@@ -69,7 +68,7 @@ public class GeoBuilder implements IGeoBuilder {
             }
         }
 
-        for (RawBoneGroup child : bone.children.values()) {
+        for (RawBoneGroup child : bone.getChildren()) {
             geoBone.childBones.add(constructBone(child, properties, geoBone));
         }
 

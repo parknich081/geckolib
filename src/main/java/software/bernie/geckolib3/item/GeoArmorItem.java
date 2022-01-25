@@ -12,9 +12,10 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IItemRenderProperties;
+import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
 
-public abstract class GeoArmorItem extends ArmorItem {
+public abstract class GeoArmorItem extends ArmorItem implements IAnimatableSingleton<ItemStack> {
 	public GeoArmorItem(ArmorMaterial materialIn, EquipmentSlot slot, Properties builder) {
 		super(materialIn, slot, builder);
 	}
@@ -28,18 +29,19 @@ public abstract class GeoArmorItem extends ArmorItem {
 			@Override
 			public <A extends HumanoidModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack,
 					EquipmentSlot armorSlot, A _default) {
-				return (A) GeoArmorRenderer.getRenderer(GeoArmorItem.this.getClass()).applyEntityStats(_default)
-						.applySlot(armorSlot).setCurrentItem(entityLiving, itemStack, armorSlot);
+				return (A) GeoArmorRenderer.getRenderer(GeoArmorItem.this.getClass())
+						.setCurrentItem(entityLiving, itemStack, armorSlot)
+						.applyEntityStats(_default)
+						.applySlot(armorSlot);
 			}
 		});
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Nullable
 	@Override
 	public final String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-		Class<? extends ArmorItem> clazz = this.getClass();
-		GeoArmorRenderer renderer = GeoArmorRenderer.getRenderer(clazz);
-		return renderer.getTextureLocation((ArmorItem) stack.getItem()).toString();
+		Class<? extends GeoArmorItem> clazz = this.getClass();
+		GeoArmorRenderer<? super GeoArmorItem> renderer = GeoArmorRenderer.getRenderer(clazz);
+		return renderer.getTextureLocation((GeoArmorItem) stack.getItem()).toString();
 	}
 }

@@ -26,7 +26,6 @@ import java.util.Map;
 /**
  * Helper class to convert json to keyframes
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class JsonKeyFrameUtils {
 	private static VectorKeyFrameList<IValue> convertJson(List<Map.Entry<String, JsonElement>> element,
 			boolean isRotation, MolangParser parser) throws NumberFormatException, MolangException {
@@ -34,9 +33,9 @@ public class JsonKeyFrameUtils {
 		IValue previousYValue = null;
 		IValue previousZValue = null;
 
-		List<KeyFrame<IValue>> xKeyFrames = new ArrayList();
-		List<KeyFrame<IValue>> yKeyFrames = new ArrayList();
-		List<KeyFrame<IValue>> zKeyFrames = new ArrayList();
+		List<KeyFrame<IValue>> xKeyFrames = new ArrayList<>();
+		List<KeyFrame<IValue>> yKeyFrames = new ArrayList<>();
+		List<KeyFrame<IValue>> zKeyFrames = new ArrayList<>();
 
 		for (int i = 0; i < element.size(); i++) {
 			Map.Entry<String, JsonElement> keyframe = element.get(i);
@@ -48,7 +47,7 @@ public class JsonKeyFrameUtils {
 			Double currentKeyFrameLocation = NumberUtils.isCreatable(keyframe.getKey())
 					? Double.parseDouble(keyframe.getKey())
 					: 0;
-			Double animationTimeDifference = currentKeyFrameLocation - previousKeyFrameLocation;
+			double animationTimeDifference = currentKeyFrameLocation - previousKeyFrameLocation;
 
 			JsonArray vectorJsonArray = getKeyFrameVector(keyframe.getValue());
 			IValue xValue = parseExpression(parser, vectorJsonArray.get(0));

@@ -1,69 +1,58 @@
 package software.bernie.geckolib3.geo.raw.tree;
 
+import net.minecraft.resources.ResourceLocation;
+import software.bernie.geckolib3.geo.exception.GeckoLibException;
 import software.bernie.geckolib3.geo.raw.pojo.Bone;
 import software.bernie.geckolib3.geo.raw.pojo.MinecraftGeometry;
 import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
 import software.bernie.geckolib3.geo.raw.pojo.RawGeoModel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class RawGeometryTree {
-	public HashMap<String, RawBoneGroup> topLevelBones = new HashMap<>();
-	public ModelProperties properties;
+	private final List<RawBoneGroup> topLevelBones;
+	public final ModelProperties properties;
 
-	public static RawGeometryTree parseHierarchy(RawGeoModel model) {
+	public RawGeometryTree(List<RawBoneGroup> topLevelBones, ModelProperties properties) {
+		this.topLevelBones = topLevelBones;
+		this.properties = properties;
+	}
 
-		RawGeometryTree hierarchy = new RawGeometryTree();
+	public Collection<RawBoneGroup> getTopLevelBones() {
+		return topLevelBones;
+	}
+
+	public static RawGeometryTree parseHierarchy(ResourceLocation location, RawGeoModel model) {
+
 		MinecraftGeometry geometry = model.getMinecraftGeometry()[0];
-		hierarchy.properties = geometry.getProperties();
-		List<Bone> bones = new ArrayList<>(Arrays.asList(geometry.getBones()));
 
-		int index = bones.size() - 1;
-		while (true) {
-			Bone bone = bones.get(index);
+		Bone[] allBones = geometry.getBones();
+
+		// create bone groups ahead of time
+		Map<String, RawBoneGroup> boneGroups = RawBoneGroup.createBoneGroups(allBones);
+		List<RawBoneGroup> topLevelBones = new ArrayList<>();
+
+		for (Bone bone : allBones) {
 			if (!hasParent(bone)) {
-				hierarchy.topLevelBones.put(bone.getName(), new RawBoneGroup(bone));
-				bones.remove(bone);
+				// if this bone has no parent, it is a top level bone
+				topLevelBones.add(boneGroups.get(bone.getName()));
 			} else {
-				RawBoneGroup groupFromHierarchy = getGroupFromHierarchy(hierarchy, bone.getParent());
-				if (groupFromHierarchy != null) {
-					groupFromHierarchy.children.put(bone.getName(), new RawBoneGroup(bone));
-					bones.remove(bone);
-				}
-			}
+				// otherwise, find the parent bone group and add this bone to its children
+				RawBoneGroup parentBone = boneGroups.get(bone.getParent());
 
-			if (index == 0) {
-				index = bones.size() - 1;
-				if (index == -1) {
-					break;
+				if (parentBone == null) {
+					// but if the parent bone doesn't exist, throw an exception
+					throw new GeckoLibException(location, "Bone '" + bone.getName() + "' refers to parent '" + bone.getParent() + "' which does not exist.");
 				}
-			} else {
-				index--;
+
+				parentBone.addChild(boneGroups.get(bone.getName()));
 			}
 		}
-		return hierarchy;
+		return new RawGeometryTree(topLevelBones, geometry.getProperties());
 	}
 
 	public static boolean hasParent(Bone bone) {
 		return bone.getParent() != null;
 	}
 
-	public static RawBoneGroup getGroupFromHierarchy(RawGeometryTree hierarchy, String bone) {
-		HashMap<String, RawBoneGroup> flatList = new HashMap<>();
-		for (RawBoneGroup group : hierarchy.topLevelBones.values()) {
-			flatList.put(group.selfBone.getName(), group);
-			traverse(flatList, group);
-		}
-		return flatList.get(bone);
-	}
-
-	public static void traverse(HashMap<String, RawBoneGroup> flatList, RawBoneGroup group) {
-		for (RawBoneGroup child : group.children.values()) {
-			flatList.put(child.selfBone.getName(), child);
-			traverse(flatList, child);
-		}
-	}
 }

@@ -14,6 +14,7 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -32,15 +33,13 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.GeoUtils;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleton<ItemStack>> extends HumanoidModel
-		implements IGeoRenderer<T> {
-	private static final Map<Class<? extends ArmorItem>, GeoArmorRenderer> renderers = new ConcurrentHashMap<>();
+public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidModel implements IGeoRenderer<T> {
+	private static final Map<Class<? extends ArmorItem>, GeoArmorRenderer<?>> renderers = new ConcurrentHashMap<>();
 
 	static {
 		AnimationController.addModelFetcher((Object object) -> {
 			if (object instanceof ArmorItem) {
-				GeoArmorRenderer renderer = renderers.get(object.getClass());
+				GeoArmorRenderer<?> renderer = renderers.get(object.getClass());
 				return renderer == null ? null : renderer.getGeoModelProvider();
 			}
 			return null;
@@ -63,16 +62,16 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 	public String rightBootBone = "armorRightBoot";
 	public String leftBootBone = "armorLeftBoot";
 
-	public static void registerArmorRenderer(Class<? extends ArmorItem> itemClass, GeoArmorRenderer renderer) {
+	public static <A extends ArmorItem> void registerArmorRenderer(Class<? extends A> itemClass, GeoArmorRenderer<? super A> renderer) {
 		renderers.put(itemClass, renderer);
 	}
 
-	public static GeoArmorRenderer getRenderer(Class<? extends ArmorItem> item) {
-		final GeoArmorRenderer renderer = renderers.get(item);
+	public static <A extends ArmorItem> GeoArmorRenderer<? super A> getRenderer(Class<? extends A> item) {
+		final GeoArmorRenderer<?> renderer = renderers.get(item);
 		if (renderer == null) {
 			throw new IllegalArgumentException("Renderer not registered for item " + item);
 		}
-		return renderer;
+		return (GeoArmorRenderer<? super A>) renderer;
 	}
 
 	private final AnimatedGeoModel<T> modelProvider;
@@ -81,6 +80,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 		super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
 		this.modelProvider = modelProvider;
 	}
+
+	protected abstract AnimationData getAnimationData(ItemStack stack);
 
 	@Override
 	public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn,
@@ -91,11 +92,11 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 	public void render(float partialTicks, PoseStack stack, VertexConsumer bufferIn, int packedLightIn) {
 		stack.translate(0.0D, 24 / 16F, 0.0D);
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
+		GeoModel model = modelProvider.getModel(currentArmorItem);
 
-		AnimationEvent itemEvent = new AnimationEvent(this.currentArmorItem, 0, 0, 0, false,
+		AnimationEvent<T> itemEvent = new AnimationEvent<>(this.currentArmorItem, 0, 0, 0, false,
 				Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
-		AnimationData data = currentArmorItem.getAnimationData(itemStack);
+		AnimationData data = getAnimationData(itemStack);
 		modelProvider.setLivingAnimations(currentArmorItem, data, itemEvent);
 		this.fitToBiped();
 		stack.pushPose();
@@ -116,7 +117,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 
 	protected void fitToBiped() {
 		if (!(this.entityLiving instanceof ArmorStand)) {
-			AnimationData data = currentArmorItem.getAnimationData(itemStack);
+			AnimationData data = getAnimationData(itemStack);
 			if (this.headBone != null) {
 				IBone headBone = data.getBone(this.headBone);
 				GeoUtils.copyRotations(this.head, headBone);
@@ -194,7 +195,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 	/**
 	 * Everything after this point needs to be called every frame before rendering
 	 */
-	public GeoArmorRenderer setCurrentItem(LivingEntity entityLiving, ItemStack itemStack,
+	public GeoArmorRenderer<T> setCurrentItem(LivingEntity entityLiving, ItemStack itemStack,
 			EquipmentSlot armorSlot) {
 		this.entityLiving = entityLiving;
 		this.itemStack = itemStack;
@@ -203,7 +204,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 		return this;
 	}
 
-	public final GeoArmorRenderer applyEntityStats(HumanoidModel defaultArmor) {
+	public final GeoArmorRenderer<T> applyEntityStats(HumanoidModel defaultArmor) {
 		this.young = defaultArmor.young;
 		this.crouching = defaultArmor.crouching;
 		this.riding = defaultArmor.riding;
@@ -213,8 +214,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 	}
 
 	@SuppressWarnings("incomplete-switch")
-	public GeoArmorRenderer applySlot(EquipmentSlot slot) {
-		modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
+	public GeoArmorRenderer<T> applySlot(EquipmentSlot slot) {
+		modelProvider.getModel(currentArmorItem);
 
 		IBone headBone = this.getAndHideBone(this.headBone);
 		IBone bodyBone = this.getAndHideBone(this.bodyBone);
@@ -256,8 +257,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatableSingleto
 
 	protected IBone getAndHideBone(String boneName) {
 		if (boneName != null) {
-			final IBone bone = currentArmorItem.getAnimationData(itemStack).getBone(boneName);
-			bone.setHidden(true);
+			final IBone bone = getAnimationData(itemStack).getBone(boneName);
+			if (bone != null) bone.setHidden(true);
 			return bone;
 		}
 		return null;

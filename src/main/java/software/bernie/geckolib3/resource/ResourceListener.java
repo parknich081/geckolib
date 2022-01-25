@@ -17,7 +17,7 @@ public class ResourceListener {
 			}
 			ReloadableResourceManager reloadable = (ReloadableResourceManager) Minecraft.getInstance()
 					.getResourceManager();
-			reloadable.registerReloadListener(GeckoLibCache.getInstance()::reload);
+			reloadable.registerReloadListener(GeckoLibCache.getInstance());
 
 			if (ModList.get()
 					.isLoaded("flywheel")) {

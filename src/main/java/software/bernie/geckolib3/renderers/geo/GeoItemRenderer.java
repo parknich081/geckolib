@@ -88,8 +88,8 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<Item
 	public void render(T animatable, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn,
 			ItemStack itemStack) {
 		this.currentItemStack = itemStack;
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(animatable));
-		AnimationEvent itemEvent = new AnimationEvent(animatable, 0, 0, Minecraft.getInstance().getFrameTime(),
+		GeoModel model = modelProvider.getModel(animatable);
+		AnimationEvent<T> itemEvent = new AnimationEvent<>(animatable, 0, 0, Minecraft.getInstance().getFrameTime(),
 				false, Collections.singletonList(itemStack));
 		AnimationData data = animatable.getAnimationData(itemStack);
 		modelProvider.setLivingAnimations(animatable, data, itemEvent);
