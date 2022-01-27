@@ -20,8 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.geo.render.built.GeoBone;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.geo.render.AnimatingBone;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEntityInstance<T> implements DynamicInstance {
@@ -39,19 +39,19 @@ public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEnt
 		this.modelProvider = modelProvider;
 		stack = new MatrixTransformStack();
 
-		GeoModel model = modelProvider.getModel(tile);
-		RenderType state = states.apply(modelProvider.getTextureLocation(tile));
+		AnimatingModel model = modelProvider.getModel(tile);
+		RenderType state = states.apply(modelProvider.getTextureResource(tile));
 
 		stack.translate(getInstancePosition())
 				.translate(0.5, 0.01, 0.5)
 				.rotateToFace(getFacing());
 
-		for (GeoBone bone : model.topLevelBones) {
+		for (AnimatingBone bone : model.getAllBones()) {
 			topLevelBones.add(new GeoInstanceTree(materialManager, state, bone));
 		}
 
 		data = blockEntity.getAnimationData();
-		data.setModelRendererList(model.getBones());
+		data.setBoneTree(model);
 	}
 
 	@Override

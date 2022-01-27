@@ -8,9 +8,8 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
-import software.bernie.geckolib3.model.provider.GeoModelProvider;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public abstract class GeoLayerRenderer<T extends Entity> {
 	private final IGeoRenderer<T> entityRenderer;
@@ -19,7 +18,7 @@ public abstract class GeoLayerRenderer<T extends Entity> {
 		this.entityRenderer = entityRendererIn;
 	}
 
-	protected void renderCopyModel(GeoModelProvider<T> modelProviderIn,
+	protected void renderCopyModel(AnimatedGeoModel<T> modelProviderIn,
 			ResourceLocation textureLocationIn, PoseStack matrixStackIn, MultiBufferSource bufferIn,
 			int packedLightIn, T entityIn, float partialTicks, float red, float green, float blue) {
 		if (!entityIn.isInvisible()) {
@@ -28,11 +27,11 @@ public abstract class GeoLayerRenderer<T extends Entity> {
 		}
 	}
 
-	protected void renderModel(GeoModelProvider<T> modelProviderIn,
+	protected void renderModel(AnimatedGeoModel<T> modelProviderIn,
 			ResourceLocation textureLocationIn, PoseStack matrixStackIn, MultiBufferSource bufferIn,
 			int packedLightIn, T entityIn, float partialTicks, float red, float green, float blue) {
 		if (entityIn instanceof LivingEntity) {
-			GeoModel model = modelProviderIn.getModel(entityIn);
+			AnimatingModel model = modelProviderIn.getModel(entityIn);
 			RenderType renderType = this.getRenderType(textureLocationIn);
 			VertexConsumer ivertexbuilder = bufferIn.getBuffer(renderType);
 
@@ -45,8 +44,7 @@ public abstract class GeoLayerRenderer<T extends Entity> {
 		return RenderType.entityCutout(textureLocation);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public GeoModelProvider<T> getEntityModel() {
+	public AnimatedGeoModel<T> getEntityModel() {
 		return this.entityRenderer.getGeoModelProvider();
 	}
 
@@ -55,7 +53,7 @@ public abstract class GeoLayerRenderer<T extends Entity> {
 	}
 
 	protected ResourceLocation getEntityTexture(T entityIn) {
-		return this.entityRenderer.getTextureLocation(entityIn);
+		return this.entityRenderer.getGeoModelProvider().getTextureResource(entityIn);
 	}
 
 	public abstract void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn,

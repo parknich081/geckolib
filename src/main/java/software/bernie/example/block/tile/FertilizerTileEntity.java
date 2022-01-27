@@ -14,8 +14,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class FertilizerTileEntity extends BlockEntity implements IAnimated {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationEvent<E> event) {
-		AnimationController<E> controller = event.getController();
+	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
 		controller.transitionLengthTicks = 0;
 		if (event.getAnimatable().getLevel().isRaining()) {
 			controller.setAnimation(new AnimationBuilder().addAnimation("fertilizer.animation.deploy", true)

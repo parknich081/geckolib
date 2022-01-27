@@ -8,17 +8,17 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ReplacedCreeperModel extends AnimatedGeoModel<Creeper> {
 	@Override
-	public ResourceLocation getModelLocation(Creeper object) {
+	public ResourceLocation getModelResource(Creeper object) {
 		return new ResourceLocation(GeckoLib.ModID, "geo/creeper.geo.json");
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(Creeper object) {
+	public ResourceLocation getTextureResource(Creeper object) {
 		return new ResourceLocation(GeckoLib.ModID, "textures/model/entity/creeper.png");
 	}
 
 	@Override
-	public ResourceLocation getAnimationFileLocation(Creeper animatable) {
+	public ResourceLocation getAnimationFileResource(Creeper animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/creeper.animation.json");
 	}
 }

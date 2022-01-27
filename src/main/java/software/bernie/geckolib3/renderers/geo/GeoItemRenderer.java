@@ -20,30 +20,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.RenderProperties;
 import software.bernie.geckolib3.core.IAnimatableSingleton;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-@SuppressWarnings("unchecked")
 public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<ItemStack>> extends BlockEntityWithoutLevelRenderer
 		implements IGeoRenderer<T> {
-	// Register a model fetcher for this renderer
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			if (object instanceof Item) {
-				Item item = (Item) object;
-				BlockEntityWithoutLevelRenderer renderer = RenderProperties.get(item).getItemStackRenderer();
-				if (renderer instanceof GeoItemRenderer) {
-					return ((GeoItemRenderer<?>) renderer).getGeoModelProvider();
-				}
-			}
-			return null;
-		});
-	}
 
 	protected AnimatedGeoModel<T> modelProvider;
 	protected ItemStack currentItemStack;
@@ -88,7 +73,7 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<Item
 	public void render(T animatable, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn,
 			ItemStack itemStack) {
 		this.currentItemStack = itemStack;
-		GeoModel model = modelProvider.getModel(animatable);
+		AnimatingModel model = modelProvider.getModel(animatable);
 		AnimationEvent<T> itemEvent = new AnimationEvent<>(animatable, 0, 0, Minecraft.getInstance().getFrameTime(),
 				false, Collections.singletonList(itemStack));
 		AnimationData data = animatable.getAnimationData(itemStack);
@@ -107,9 +92,8 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<Item
 		stack.popPose();
 	}
 
-	@Override
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 }

@@ -32,7 +32,7 @@ public class PotatoArmorItem extends GeoArmorItem {
 
 	// Predicate runs every frame
 	@SuppressWarnings("unused")
-	private PlayState predicate(AnimationEvent<PotatoArmorItem> event) {
+	private PlayState predicate(AnimationController<PotatoArmorItem> controller, AnimationEvent<PotatoArmorItem> event) {
 		// This is all the extradata this event carries. The livingentity is the entity
 		// that's wearing the armor. The itemstack and equipmentslottype are self
 		// explanatory.
@@ -42,7 +42,7 @@ public class PotatoArmorItem extends GeoArmorItem {
 
 		// Always loop the animation but later on in this method we'll decide whether or
 		// not to actually play it
-		event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.potato_armor.new", true));
+		controller.setAnimation(new AnimationBuilder().addAnimation("animation.potato_armor.new", true));
 
 		// If the living entity is an armorstand just play the animation nonstop
 		if (livingEntity instanceof ArmorStand) {

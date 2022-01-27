@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +23,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +33,7 @@ import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
@@ -41,13 +43,6 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 	private final IAnimatableSingleton<E> animatable;
 	protected final List<GeoLayerRenderer<E>> layerRenderers = Lists.newArrayList();
 	private static final Map<Class<?>, GeoReplacedEntityRenderer<?>> renderers = new ConcurrentHashMap<>();
-
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			GeoReplacedEntityRenderer<?> renderer = renderers.get(object.getClass());
-			return renderer == null ? null : renderer.getGeoModelProvider();
-		});
-	}
 
 	public GeoReplacedEntityRenderer(EntityRendererProvider.Context renderManager,
 			AnimatedGeoModel<E> modelProvider, IAnimatableSingleton<E> animatable) {
@@ -83,8 +78,7 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
 		float f1 = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
 		float f2 = f1 - f;
-		if (shouldSit && entity.getVehicle() instanceof LivingEntity) {
-			LivingEntity livingentity = (LivingEntity) entity.getVehicle();
+		if (shouldSit && entity.getVehicle() instanceof LivingEntity livingentity) {
 			f = Mth.rotLerp(partialTicks, livingentity.yBodyRotO, livingentity.yBodyRot);
 			f2 = f1 - f;
 			float f3 = Mth.wrapDegrees(f2);
@@ -133,7 +127,7 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		entityModelData.headPitch = -f6;
 		entityModelData.netHeadYaw = -f2;
 
-		GeoModel model = modelProvider.getModel(entity);
+		AnimatingModel model = modelProvider.getModel(entity);
 		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 
@@ -172,8 +166,9 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 	}
 
 	@Override
+	@Nonnull
 	public ResourceLocation getTextureLocation(E entity) {
-		return modelProvider.getTextureLocation(entity);
+		return modelProvider.getTextureResource(entity);
 	}
 
 	@Override

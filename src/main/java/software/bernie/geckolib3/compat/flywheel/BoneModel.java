@@ -3,13 +3,9 @@ package software.bernie.geckolib3.compat.flywheel;
 import java.nio.ByteBuffer;
 
 import com.jozufozu.flywheel.api.vertex.VertexList;
-import com.jozufozu.flywheel.backend.gl.buffer.VecBuffer;
 import com.jozufozu.flywheel.core.Formats;
 import com.jozufozu.flywheel.core.model.Model;
-import com.jozufozu.flywheel.core.vertex.PosTexNormalVertex;
-import com.jozufozu.flywheel.core.vertex.PosTexNormalVertexListUnsafe;
 import com.jozufozu.flywheel.core.vertex.PosTexNormalWriterUnsafe;
-import com.jozufozu.flywheel.util.RenderMath;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;

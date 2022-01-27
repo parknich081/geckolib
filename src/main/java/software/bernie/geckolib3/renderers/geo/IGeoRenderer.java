@@ -8,15 +8,18 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
+
+import software.bernie.geckolib3.geo.render.AnimatingBone;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.geo.render.built.*;
-import software.bernie.geckolib3.model.provider.GeoModelProvider;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.RenderUtils;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
 public interface IGeoRenderer<T> {
-	default void render(GeoModel model, T animatable, float partialTicks, RenderType type, PoseStack matrixStackIn,
+	default void render(AnimatingModel model, T animatable, float partialTicks, RenderType type, PoseStack matrixStackIn,
 			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,
 			int packedOverlayIn, float red, float green, float blue, float alpha) {
 		renderEarly(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
@@ -28,13 +31,13 @@ public interface IGeoRenderer<T> {
 		renderLate(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
 				packedOverlayIn, red, green, blue, alpha);
 		// Render all top level bones
-		for (GeoBone group : model.topLevelBones) {
+		for (AnimatingBone group : model.getTopLevelBones()) {
 			renderRecursively(group, matrixStackIn, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue,
 					alpha);
 		}
 	}
 
-	default void renderRecursively(GeoBone bone, PoseStack stack, VertexConsumer bufferIn, int packedLightIn,
+	default void renderRecursively(AnimatingBone bone, PoseStack stack, VertexConsumer bufferIn, int packedLightIn,
 			int packedOverlayIn, float red, float green, float blue, float alpha) {
 		stack.pushPose();
 		RenderUtils.translate(bone, stack);
@@ -44,12 +47,12 @@ public interface IGeoRenderer<T> {
 		RenderUtils.moveBackFromPivot(bone, stack);
 
 		if (!bone.isHidden) {
-			for (GeoCube cube : bone.childCubes) {
+			for (GeoCube cube : bone.bone.childCubes) {
 				stack.pushPose();
 				renderCube(cube, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 				stack.popPose();
 			}
-			for (GeoBone childBone : bone.childBones) {
+			for (AnimatingBone childBone : bone.childBones) {
 				renderRecursively(childBone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 			}
 		}
@@ -96,9 +99,7 @@ public interface IGeoRenderer<T> {
 		}
 	}
 
-	GeoModelProvider<T> getGeoModelProvider();
-
-	ResourceLocation getTextureLocation(T instance);
+	AnimatedGeoModel<T> getGeoModelProvider();
 
 	default void renderEarly(T animatable, PoseStack stackIn, float ticks,
 			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,

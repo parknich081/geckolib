@@ -1,71 +1,90 @@
 package software.bernie.geckolib3.geo.render.built;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import javax.annotation.Nullable;
 
-import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.core.snapshot.BoneSnapshot;
+import org.apache.commons.lang3.ArrayUtils;
 
-public class GeoBone implements IBone {
-	public GeoBone parent;
+import com.google.common.collect.ImmutableList;
+import com.mojang.math.Vector3f;
 
-	public List<GeoBone> childBones = new ArrayList<>();
-	public List<GeoCube> childCubes = new ArrayList<>();
+import software.bernie.geckolib3.core.processor.ImmutableBone;
+import software.bernie.geckolib3.geo.raw.pojo.Bone;
+import software.bernie.geckolib3.geo.raw.pojo.Cube;
+import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
+import software.bernie.geckolib3.geo.raw.tree.RawBoneGroup;
+import software.bernie.geckolib3.util.VectorUtils;
 
-	public String name;
-	private BoneSnapshot initialSnapshot;
+public class GeoBone implements ImmutableBone {
+	@Nullable
+	public final GeoBone parent;
 
-	public Boolean mirror;
-	public Double inflate;
-	public Boolean dontRender;
-	public boolean isHidden;
-	// I still have no idea what this field does, but its in the json file so
-	// ¯\_(ツ)_/¯
-	public Boolean reset;
+	public final ImmutableList<GeoBone> childBones;
+	public final ImmutableList<GeoCube> childCubes;
 
-	private float scaleX = 1;
-	private float scaleY = 1;
-	private float scaleZ = 1;
+	public final String name;
 
-	private float positionX;
-	private float positionY;
-	private float positionZ;
+	public final boolean isHidden;
 
-	public float rotationPointX;
-	public float rotationPointY;
-	public float rotationPointZ;
+	public final float scaleX = 1;
+	public final float scaleY = 1;
+	public final float scaleZ = 1;
 
-	private float rotateX;
-	private float rotateY;
-	private float rotateZ;
+	public final float positionX = 0;
+	public final float positionY = 0;
+	public final float positionZ = 0;
 
-	public Object extraData;
+	public final float rotationPointX;
+	public final float rotationPointY;
+	public final float rotationPointZ;
+
+	public final float rotationX;
+	public final float rotationY;
+	public final float rotationZ;
 
 	/**
-	 * The original GeoBone that was deserialized from the JSON file.
+	 * Deserializes a bone from a raw bone group.
 	 *
-	 * Kind of a gross way to preserve equality, but good enough for now.
+	 * @param bone The raw bone group.
+	 * @param properties The properties of the model.
+	 * @param parent This bone's parent, or null if this is the root bone.
+	 * @implNote {@code parent.childBones} will be uninitialized.
 	 */
-	private GeoBone original = this;
+	public GeoBone(RawBoneGroup bone, ModelProperties properties, @Nullable GeoBone parent) {
+		Bone rawBone = bone.selfBone;
+		Vector3f rotation = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(rawBone.getRotation()));
+		Vector3f pivot = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(rawBone.getPivot()));
+		rotation.mul(-1, -1, 1);
 
-	@Override
-	public void setModelRendererName(String modelRendererName) {
-		this.name = modelRendererName;
-	}
+		this.isHidden = rawBone.getNeverRender() != null && rawBone.getNeverRender();
+		this.parent = parent;
+		this.name = rawBone.getName();
 
-	@Override
-	public void saveInitialSnapshot() {
-		if (this.initialSnapshot == null) {
-			this.initialSnapshot = new BoneSnapshot(this, true);
+		this.rotationX = (float) Math.toRadians(rotation.x());
+		this.rotationY = (float) Math.toRadians(rotation.y());
+		this.rotationZ = (float) Math.toRadians(rotation.z());
+
+		this.rotationPointX = -pivot.x();
+		this.rotationPointY = pivot.y();
+		this.rotationPointZ = pivot.z();
+
+		ImmutableList.Builder<GeoCube> cubes = ImmutableList.builder();
+
+		boolean mirror = rawBone.getMirror() != null && rawBone.getMirror();
+		Double boneInflate = rawBone.getInflate() == null ? null : rawBone.getInflate() / 16;
+		if (!ArrayUtils.isEmpty(rawBone.getCubes())) {
+			for (Cube cube : rawBone.getCubes()) {
+				cubes.add(new GeoCube(cube, properties, boneInflate, mirror));
+			}
 		}
-	}
 
-	@Override
-	public BoneSnapshot getInitialSnapshot() {
-		return this.initialSnapshot;
+		this.childCubes = cubes.build();
+		ImmutableList.Builder<GeoBone> bones = ImmutableList.builder();
+
+		for (RawBoneGroup child : bone.getChildren()) {
+			bones.add(new GeoBone(child, properties, this));
+		}
+
+		this.childBones = bones.build();
 	}
 
 	@Override
@@ -73,21 +92,19 @@ public class GeoBone implements IBone {
 		return this.name;
 	}
 
-	// Boilerplate code incoming
-
 	@Override
 	public float getRotationX() {
-		return rotateX;
+		return rotationX;
 	}
 
 	@Override
 	public float getRotationY() {
-		return rotateY;
+		return rotationY;
 	}
 
 	@Override
 	public float getRotationZ() {
-		return rotateZ;
+		return rotationZ;
 	}
 
 	@Override
@@ -121,73 +138,8 @@ public class GeoBone implements IBone {
 	}
 
 	@Override
-	public void setRotationX(float value) {
-		this.rotateX = value;
-	}
-
-	@Override
-	public void setRotationY(float value) {
-		this.rotateY = value;
-	}
-
-	@Override
-	public void setRotationZ(float value) {
-		this.rotateZ = value;
-	}
-
-	@Override
-	public void setPositionX(float value) {
-		this.positionX = value;
-	}
-
-	@Override
-	public void setPositionY(float value) {
-		this.positionY = value;
-	}
-
-	@Override
-	public void setPositionZ(float value) {
-		this.positionZ = value;
-	}
-
-	@Override
-	public void setScaleX(float value) {
-		this.scaleX = value;
-	}
-
-	@Override
-	public void setScaleY(float value) {
-		this.scaleY = value;
-	}
-
-	@Override
-	public void setScaleZ(float value) {
-		this.scaleZ = value;
-	}
-
-	@Override
 	public boolean isHidden() {
 		return this.isHidden;
-	}
-
-	@Override
-	public void setHidden(boolean hidden) {
-		this.isHidden = hidden;
-	}
-
-	@Override
-	public void setPivotX(float value) {
-		this.rotationPointX = value;
-	}
-
-	@Override
-	public void setPivotY(float value) {
-		this.rotationPointY = value;
-	}
-
-	@Override
-	public void setPivotZ(float value) {
-		this.rotationPointZ = value;
 	}
 
 	@Override
@@ -205,57 +157,8 @@ public class GeoBone implements IBone {
 		return this.rotationPointZ;
 	}
 
-	/**
-	 * Performs a recursive copy of this bone.
-	 * @param parent The cloned parent of this bone, or null if this bone is a top level bone.
-	 * @return A copy of this bone.
-	 */
-	public GeoBone copy(@Nullable GeoBone parent) {
-		GeoBone out = new GeoBone();
-		out.original = this.original;
-		out.parent = parent;
-		// Assuming nothing ever mutates the child cubes, we can re-use the same list.
-		out.childCubes = this.childCubes;
-
-		out.scaleX = this.scaleX;
-		out.scaleY = this.scaleY;
-		out.scaleZ = this.scaleZ;
-		out.positionX = this.positionX;
-		out.positionY = this.positionY;
-		out.positionZ = this.positionZ;
-		out.rotationPointX = this.rotationPointX;
-		out.rotationPointY = this.rotationPointY;
-		out.rotationPointZ = this.rotationPointZ;
-		out.rotateX = this.rotateX;
-		out.rotateY = this.rotateY;
-		out.rotateZ = this.rotateZ;
-
-		out.name = this.name;
-		out.initialSnapshot = this.initialSnapshot;
-		out.mirror = this.mirror;
-		out.inflate = this.inflate;
-		out.dontRender = this.dontRender;
-		out.isHidden = this.isHidden;
-		out.reset = this.reset;
-
-		for (GeoBone childBone : this.childBones) {
-			out.childBones.add(childBone.copy(out));
-		}
-
-		return out;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		GeoBone geoBone = (GeoBone) o;
-		return geoBone.original == this.original;
-	}
-
-	@Override
-	public int hashCode() {
-		// Can't call original.hashCode() because it would cause a StackOverflowError.
-		return System.identityHashCode(this.original);
+	@Nullable
+	public GeoBone getParent() {
+		return this.parent;
 	}
 }

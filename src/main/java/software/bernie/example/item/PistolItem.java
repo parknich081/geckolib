@@ -112,7 +112,7 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 		return arrow;
 	}
 
-	public PlayState predicate(AnimationEvent<PistolItem> event) {
+	public PlayState predicate(AnimationController<PistolItem> controller, AnimationEvent<PistolItem> event) {
 		return PlayState.CONTINUE;
 	}
 

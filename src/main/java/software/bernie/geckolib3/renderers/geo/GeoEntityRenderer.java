@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -30,26 +29,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
 import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.IAnimatableModel;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
-import software.bernie.geckolib3.util.AnimationUtils;
 
 public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			if (object instanceof Entity) {
-				return (IAnimatableModel<Object>) AnimationUtils.getGeoModelForEntity((Entity) object);
-			}
-			return null;
-		});
-	}
 
 	private final AnimatedGeoModel<T> modelProvider;
 	protected final List<GeoLayerRenderer<T>> layerRenderers = Lists.newArrayList();
@@ -133,7 +120,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 
 		AnimationEvent<T> predicate = new AnimationEvent<T>(entity, limbSwing, limbSwingAmount, partialTicks,
 				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-		GeoModel model = modelProvider.getModel(entity);
+		AnimatingModel model = modelProvider.getModel(entity);
 		AnimationData data = entity.getAnimationData();
 		modelProvider.setLivingAnimations(entity, data, predicate);
 
@@ -177,7 +164,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 	}
 
 	@Override
-	public GeoModelProvider<T> getGeoModelProvider() {
+	public AnimatedGeoModel<T> getGeoModelProvider() {
 		return this.modelProvider;
 	}
 
@@ -273,7 +260,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 
 	@Override
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 	public final boolean addLayer(GeoLayerRenderer<T> layer) {

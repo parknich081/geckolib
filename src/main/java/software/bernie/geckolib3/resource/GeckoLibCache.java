@@ -9,13 +9,10 @@ import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.eliotlash.molang.MolangParser;
 
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.server.packs.resources.PreparableReloadListener.PreparationBarrier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.GeckoLib;
@@ -31,11 +28,15 @@ public class GeckoLibCache implements PreparableReloadListener {
 	private final AnimationFileLoader animationLoader;
 	private final GeoModelLoader modelLoader;
 
-	public final ThreadLocal<MolangParser> parser = ThreadLocal.withInitial(() -> {
+	private final ThreadLocal<MolangParser> parser = ThreadLocal.withInitial(() -> {
 		MolangParser p = new MolangParser();
 		MolangRegistrar.registerVars(p);
 		return p;
 	});
+
+	public MolangParser getParser() {
+		return parser.get();
+	}
 
 	public GeoModel getModel(ResourceLocation location) {
 		checkInitialized();
@@ -91,7 +92,7 @@ public class GeckoLibCache implements PreparableReloadListener {
 
 	private CompletableFuture<Void> loadAnimations(ResourceManager resourceManager, Executor backgroundExecutor, Map<ResourceLocation, AnimationFile> animations) {
 		return loadResources(backgroundExecutor, resourceManager, "animations",
-				animation -> animationLoader.loadAllAnimations(parser.get(), animation, resourceManager), animations::put);
+				animation -> animationLoader.loadAllAnimations(getParser(), animation, resourceManager), animations::put);
 	}
 
 	private static <T> CompletableFuture<Void> loadResources(Executor executor, ResourceManager resourceManager,

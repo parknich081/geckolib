@@ -16,8 +16,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class GeoExampleEntity extends PathfinderMob implements IAnimated, IAnimationTickable {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends IAnimated> PlayState predicate(AnimationEvent<E> event) {
-		event.getController().setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
+	private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		controller.setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
 		return PlayState.CONTINUE;
 	}
 

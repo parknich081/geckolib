@@ -55,7 +55,7 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		});
 	}
 
-	private PlayState predicate(AnimationEvent<? extends JackInTheBoxItem> event) {
+	private PlayState predicate(AnimationController<JackInTheBoxItem> controller, AnimationEvent<JackInTheBoxItem> event) {
 		// Not setting an animation here as that's handled below
 		return PlayState.CONTINUE;
 	}

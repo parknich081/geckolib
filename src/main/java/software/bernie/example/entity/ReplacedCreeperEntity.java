@@ -18,11 +18,11 @@ public class ReplacedCreeperEntity implements IAnimatableSingleton<Creeper> {
 		data.addAnimationController(new AnimationController<>(creeper, "controller", 20, this::predicate));
 	}
 
-	private PlayState predicate(AnimationEvent<Creeper> event) {
+	private PlayState predicate(AnimationController<Creeper> controller, AnimationEvent<Creeper> event) {
 		if (!(event.getLimbSwingAmount() > -0.15F && event.getLimbSwingAmount() < 0.15F)) {
-			event.getController().setAnimation(new AnimationBuilder().addAnimation("creeper_walk", true));
+			controller.setAnimation(new AnimationBuilder().addAnimation("creeper_walk", true));
 		} else {
-			event.getController().setAnimation(new AnimationBuilder().addAnimation("creeper_idle", true));
+			controller.setAnimation(new AnimationBuilder().addAnimation("creeper_idle", true));
 		}
 		return PlayState.CONTINUE;
 	}

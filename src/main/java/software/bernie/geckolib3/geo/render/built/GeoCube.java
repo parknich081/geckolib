@@ -12,12 +12,7 @@ public class GeoCube {
 	public final Vector3f rotation;
 	public final Vector3f size = new Vector3f();
 
-	public static GeoCube createFromPojoCube(Cube cubeIn, ModelProperties properties, Double boneInflate,
-			Boolean mirror) {
-		return new GeoCube(cubeIn, properties, boneInflate, mirror);
-	}
-
-	private GeoCube(Cube cubeIn, ModelProperties properties, Double boneInflate, Boolean mirror) {
+	public GeoCube(Cube cubeIn, ModelProperties properties, Double boneInflate, Boolean mirror) {
 		UvUnion uvUnion = cubeIn.getUv();
 		boolean cubeMirror = cubeIn.getMirror() != null && cubeIn.getMirror();
 

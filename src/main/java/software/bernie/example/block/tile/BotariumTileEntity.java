@@ -14,9 +14,9 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class BotariumTileEntity extends BlockEntity implements IAnimated {
 	private final AnimationData factory = new AnimationData();
 
-	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationEvent<E> event) {
-		event.getController().transitionLengthTicks = 0;
-		event.getController().setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));
+	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		controller.transitionLengthTicks = 0;
+		controller.setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));
 		return PlayState.CONTINUE;
 	}
 

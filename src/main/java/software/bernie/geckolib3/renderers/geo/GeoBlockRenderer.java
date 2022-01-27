@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -19,27 +18,12 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.IAnimatableModel;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 		implements IGeoRenderer<T>, BlockEntityRenderer<T> {
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			if (object instanceof BlockEntity) {
-				BlockEntity tile = (BlockEntity) object;
-				BlockEntityRenderer<BlockEntity> renderer = Minecraft.getInstance().getBlockEntityRenderDispatcher()
-						.getRenderer(tile);
-				if (renderer instanceof GeoBlockRenderer) {
-					return (IAnimatableModel<Object>) ((GeoBlockRenderer<?>) renderer).getGeoModelProvider();
-				}
-			}
-			return null;
-		});
-	}
 
 	private final AnimatedGeoModel<T> modelProvider;
 
@@ -55,7 +39,7 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 	}
 
 	public void render(T tile, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
-		GeoModel model = modelProvider.getModel(tile);
+		AnimatingModel model = modelProvider.getModel(tile);
 		AnimationData data = tile.getAnimationData();
 		modelProvider.setLivingAnimations(tile, data);
 		stack.pushPose();
@@ -113,8 +97,7 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 		}
 	}
 
-	@Override
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 }

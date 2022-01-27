@@ -79,6 +79,6 @@ public class GeckoLibUtil {
 	}
 
 	public static <A> AnimationController<?> getControllerForID(AnimationFactory<A> factory, A id, String controllerName) {
-		return factory.getOrCreateAnimationData(id).getAnimationControllers().get(controllerName);
+		return factory.getOrCreateAnimationData(id).getAnimationController(controllerName);
 	}
 }

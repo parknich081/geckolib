@@ -9,12 +9,13 @@ import com.jozufozu.flywheel.core.materials.model.ModelData;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.renderer.RenderType;
+import software.bernie.geckolib3.geo.render.AnimatingBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.util.RenderUtils;
 
 public class GeoInstanceTree {
 
-	public final GeoBone bone;
+	public final AnimatingBone bone;
 	private final ModelData boneInstance;
 
 	private final List<GeoInstanceTree> children;
@@ -36,21 +37,21 @@ public class GeoInstanceTree {
 	private float lastPivotY = Float.NaN;
 	private float lastPivotZ = Float.NaN;
 
-	public GeoInstanceTree(MaterialManager materialManager, RenderType tex, GeoBone bone) {
+	public GeoInstanceTree(MaterialManager materialManager, RenderType tex, AnimatingBone bone) {
 		this.bone = bone;
 
-		if (bone.childCubes.isEmpty()) {
+		if (bone.bone.childCubes.isEmpty()) {
 			boneInstance = null;
 		} else {
 			boneInstance = materialManager.cutout(tex)
 					.material(Materials.TRANSFORMED)
-					.model(bone, () -> new BoneModel(bone))
+					.model(bone.bone, () -> new BoneModel(bone.bone))
 					.createInstance()
 					.loadIdentity();
 		}
 
 		ImmutableList.Builder<GeoInstanceTree> builder = ImmutableList.builder();
-		for (GeoBone childBone : bone.childBones) {
+		for (AnimatingBone childBone : bone.childBones) {
 			builder.add(new GeoInstanceTree(materialManager, tex, childBone));
 		}
 

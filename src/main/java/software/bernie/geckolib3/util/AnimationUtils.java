@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
-import software.bernie.geckolib3.model.provider.GeoModelProvider;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 public class AnimationUtils {
@@ -29,7 +29,7 @@ public class AnimationUtils {
 		return (EntityRenderer<T>) renderManager.getRenderer(entity);
 	}
 
-	public static <T extends Entity> GeoModelProvider<T> getGeoModelForEntity(T entity) {
+	public static <T extends Entity> AnimatedGeoModel<T> getGeoModelForEntity(T entity) {
 		EntityRenderer<T> entityRenderer = getRenderer(entity);
 
 		if (entityRenderer instanceof IGeoRenderer) {

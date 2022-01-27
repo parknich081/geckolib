@@ -1,16 +1,11 @@
 package software.bernie.geckolib3.geo.render;
 
-import com.mojang.math.Vector3f;
-import org.apache.commons.lang3.ArrayUtils;
-import software.bernie.geckolib3.geo.raw.pojo.Bone;
-import software.bernie.geckolib3.geo.raw.pojo.Cube;
-import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
+import com.google.common.collect.ImmutableList;
+
 import software.bernie.geckolib3.geo.raw.tree.RawBoneGroup;
 import software.bernie.geckolib3.geo.raw.tree.RawGeometryTree;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
-import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
-import software.bernie.geckolib3.util.VectorUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,48 +25,11 @@ public class GeoBuilder implements IGeoBuilder {
 
     @Override
     public GeoModel constructGeoModel(RawGeometryTree geometryTree) {
-        GeoModel model = new GeoModel();
-        model.properties = geometryTree.properties;
+        ImmutableList.Builder<GeoBone> boneBuilder = ImmutableList.builder();
         for (RawBoneGroup rawBone : geometryTree.getTopLevelBones()) {
-            model.topLevelBones.add(this.constructBone(rawBone, geometryTree.properties, null));
+            boneBuilder.add(new GeoBone(rawBone, geometryTree.properties, null));
         }
-        return model;
+        return new GeoModel(boneBuilder.build(), geometryTree.properties);
     }
 
-    protected GeoBone constructBone(RawBoneGroup bone, ModelProperties properties, GeoBone parent) {
-        GeoBone geoBone = new GeoBone();
-
-        Bone rawBone = bone.selfBone;
-        Vector3f rotation = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(rawBone.getRotation()));
-        Vector3f pivot = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(rawBone.getPivot()));
-        rotation.mul(-1, -1, 1);
-
-        geoBone.mirror = rawBone.getMirror();
-        geoBone.dontRender = rawBone.getNeverRender();
-        geoBone.reset = rawBone.getReset();
-        geoBone.inflate = rawBone.getInflate();
-        geoBone.parent = parent;
-        geoBone.setModelRendererName(rawBone.getName());
-
-        geoBone.setRotationX((float) Math.toRadians(rotation.x()));
-        geoBone.setRotationY((float) Math.toRadians(rotation.y()));
-        geoBone.setRotationZ((float) Math.toRadians(rotation.z()));
-
-        geoBone.rotationPointX = -pivot.x();
-        geoBone.rotationPointY = pivot.y();
-        geoBone.rotationPointZ = pivot.z();
-
-        if (!ArrayUtils.isEmpty(rawBone.getCubes())) {
-            for (Cube cube : rawBone.getCubes()) {
-                geoBone.childCubes.add(GeoCube.createFromPojoCube(cube, properties,
-                        geoBone.inflate == null ? null : geoBone.inflate / 16, geoBone.mirror));
-            }
-        }
-
-        for (RawBoneGroup child : bone.getChildren()) {
-            geoBone.childBones.add(constructBone(child, properties, geoBone));
-        }
-
-        return geoBone;
-    }
 }

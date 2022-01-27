@@ -16,27 +16,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.IAnimatableModel;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
-import software.bernie.geckolib3.util.AnimationUtils;
 
 public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
-
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			if (object instanceof Entity) {
-				return (IAnimatableModel<Object>) AnimationUtils.getGeoModelForEntity((Entity) object);
-			}
-			return null;
-		});
-	}
 
 	private final AnimatedGeoModel<T> modelProvider;
 
@@ -48,7 +35,7 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 	@Override
 	public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		GeoModel model = modelProvider.getModel(entityIn);
+		AnimatingModel model = modelProvider.getModel(entityIn);
 		matrixStackIn.pushPose();
 		matrixStackIn.mulPose(
 				Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
@@ -80,13 +67,13 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 	}
 
 	@Override
-	public GeoModelProvider<T> getGeoModelProvider() {
+	public AnimatedGeoModel<T> getGeoModelProvider() {
 		return this.modelProvider;
 	}
 
 	@Override
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 }

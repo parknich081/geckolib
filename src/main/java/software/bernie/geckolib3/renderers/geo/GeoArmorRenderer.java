@@ -14,7 +14,6 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -23,28 +22,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.processor.IBone;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.GeoUtils;
 
 public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidModel implements IGeoRenderer<T> {
 	private static final Map<Class<? extends ArmorItem>, GeoArmorRenderer<?>> renderers = new ConcurrentHashMap<>();
-
-	static {
-		AnimationController.addModelFetcher((Object object) -> {
-			if (object instanceof ArmorItem) {
-				GeoArmorRenderer<?> renderer = renderers.get(object.getClass());
-				return renderer == null ? null : renderer.getGeoModelProvider();
-			}
-			return null;
-		});
-	}
 
 	protected T currentArmorItem;
 	protected LivingEntity entityLiving;
@@ -92,7 +80,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	public void render(float partialTicks, PoseStack stack, VertexConsumer bufferIn, int packedLightIn) {
 		stack.translate(0.0D, 24 / 16F, 0.0D);
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		GeoModel model = modelProvider.getModel(currentArmorItem);
+		AnimatingModel model = modelProvider.getModel(currentArmorItem);
 
 		AnimationEvent<T> itemEvent = new AnimationEvent<>(this.currentArmorItem, 0, 0, 0, false,
 				Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
@@ -187,9 +175,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 		return this.modelProvider;
 	}
 
-	@Override
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 	/**
@@ -215,7 +202,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 	@SuppressWarnings("incomplete-switch")
 	public GeoArmorRenderer<T> applySlot(EquipmentSlot slot) {
-		modelProvider.getModel(currentArmorItem);
+		AnimatingModel model = modelProvider.getModel(currentArmorItem);
+		getAnimationData(itemStack).setBoneTree(model);
 
 		IBone headBone = this.getAndHideBone(this.headBone);
 		IBone bodyBone = this.getAndHideBone(this.bodyBone);
