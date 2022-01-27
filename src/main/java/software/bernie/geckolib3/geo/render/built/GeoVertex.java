@@ -1,8 +1,9 @@
 package software.bernie.geckolib3.geo.render.built;
 
-import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+
+import com.mojang.math.Vector3f;
 
 public class GeoVertex {
 	public final Vector3f position;

@@ -24,12 +24,12 @@ public class GeckoLib {
 	 * onInitializeClient in fabric, otherwise models and animations won't be
 	 * loaded. If you are shadowing Geckolib into your mod, don't call this, you
 	 * will instead call
-	 * 
+	 *
 	 * <pre>
-	* {@code
+	 * {@code
 	 * GeckoLib.hasInitialized = true;
 	 * DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ResourceListener::registerReloadListener);
-	* }
+	 * }
 	 * </pre>
 	 */
 	synchronized public static void initialize() {

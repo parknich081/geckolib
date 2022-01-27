@@ -1,8 +1,9 @@
 package software.bernie.geckolib3.geo.render.built;
 
+import com.mojang.math.Vector3f;
+
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
 import software.bernie.geckolib3.geo.raw.pojo.*;
 import software.bernie.geckolib3.util.VectorUtils;
 
@@ -118,30 +119,17 @@ public class GeoCube {
 			Vec3 UVSize = VectorUtils.fromArray(cubeIn.getSize());
 			UVSize = new Vec3(Math.floor(UVSize.x), Math.floor(UVSize.y), Math.floor(UVSize.z));
 
-			quadNorth = new GeoQuad(new GeoVertex[] { P3, P7, P5, P1 },
-					new double[] { UV[0] + UVSize.z, UV[1] + UVSize.z }, new double[] { UVSize.x, UVSize.y },
-					texWidth, texHeight, cubeMirror, Direction.NORTH);
-			quadSouth = new GeoQuad(new GeoVertex[] { P8, P4, P2, P6 },
-					new double[] { UV[0] + UVSize.z + UVSize.x + UVSize.z, UV[1] + UVSize.z },
-					new double[] { UVSize.x, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.SOUTH);
-			quadUp = new GeoQuad(new GeoVertex[] { P4, P8, P7, P3 }, new double[] { UV[0] + UVSize.z, UV[1] },
-					new double[] { UVSize.x, UVSize.z }, texWidth, texHeight, cubeMirror, Direction.UP);
-			quadDown = new GeoQuad(new GeoVertex[] { P1, P5, P6, P2 },
-					new double[] { UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z },
-					new double[] { UVSize.x, -UVSize.z }, texWidth, texHeight, cubeMirror, Direction.DOWN);
+			quadNorth = new GeoQuad(new GeoVertex[]{ P3, P7, P5, P1 }, new double[]{ UV[0] + UVSize.z, UV[1] + UVSize.z }, new double[]{ UVSize.x, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.NORTH);
+			quadSouth = new GeoQuad(new GeoVertex[]{ P8, P4, P2, P6 }, new double[]{ UV[0] + UVSize.z + UVSize.x + UVSize.z, UV[1] + UVSize.z }, new double[]{ UVSize.x, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.SOUTH);
+			quadUp = new GeoQuad(new GeoVertex[]{ P4, P8, P7, P3 }, new double[]{ UV[0] + UVSize.z, UV[1] }, new double[]{ UVSize.x, UVSize.z }, texWidth, texHeight, cubeMirror, Direction.UP);
+			quadDown = new GeoQuad(new GeoVertex[]{ P1, P5, P6, P2 }, new double[]{ UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z }, new double[]{ UVSize.x, -UVSize.z }, texWidth, texHeight, cubeMirror, Direction.DOWN);
 
 			if (cubeMirror == Boolean.TRUE || mirror == Boolean.TRUE) {
-				quadWest = new GeoQuad(new GeoVertex[] { P7, P8, P6, P5 },
-						new double[] { UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z },
-						new double[] { UVSize.z, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.WEST);
-				quadEast = new GeoQuad(new GeoVertex[] { P4, P3, P1, P2 }, new double[] { UV[0], UV[1] + UVSize.z },
-						new double[] { UVSize.z, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.EAST);
+				quadWest = new GeoQuad(new GeoVertex[]{ P7, P8, P6, P5 }, new double[]{ UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z }, new double[]{ UVSize.z, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.WEST);
+				quadEast = new GeoQuad(new GeoVertex[]{ P4, P3, P1, P2 }, new double[]{ UV[0], UV[1] + UVSize.z }, new double[]{ UVSize.z, UVSize.y }, texWidth, texHeight, cubeMirror, Direction.EAST);
 			} else {
-				quadWest = new GeoQuad(new GeoVertex[] { P4, P3, P1, P2 },
-						new double[] { UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z },
-						new double[] { UVSize.z, UVSize.y }, texWidth, texHeight, false, Direction.WEST);
-				quadEast = new GeoQuad(new GeoVertex[] { P7, P8, P6, P5 }, new double[] { UV[0], UV[1] + UVSize.z },
-						new double[] { UVSize.z, UVSize.y }, texWidth, texHeight, false, Direction.EAST);
+				quadWest = new GeoQuad(new GeoVertex[]{ P4, P3, P1, P2 }, new double[]{ UV[0] + UVSize.z + UVSize.x, UV[1] + UVSize.z }, new double[]{ UVSize.z, UVSize.y }, texWidth, texHeight, false, Direction.WEST);
+				quadEast = new GeoQuad(new GeoVertex[]{ P7, P8, P6, P5 }, new double[]{ UV[0], UV[1] + UVSize.z }, new double[]{ UVSize.z, UVSize.y }, texWidth, texHeight, false, Direction.EAST);
 			}
 		}
 
@@ -158,8 +146,7 @@ public class GeoCube {
 		if (face == null) {
 			return null;
 		} else {
-			return new GeoQuad(new GeoVertex[]{v0, v1, v2, v3}, face.getUv(), face.getUvSize(), texWidth, texHeight,
-					mirror, dir);
+			return new GeoQuad(new GeoVertex[]{ v0, v1, v2, v3 }, face.getUv(), face.getUvSize(), texWidth, texHeight, mirror, dir);
 		}
 	}
 

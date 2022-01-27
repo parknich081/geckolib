@@ -22,8 +22,7 @@ import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends EntityRenderer<T>
-		implements IGeoRenderer<T> {
+public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends EntityRenderer<T> implements IGeoRenderer<T> {
 
 	private final AnimatedGeoModel<T> modelProvider;
 
@@ -37,23 +36,17 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 			MultiBufferSource bufferIn, int packedLightIn) {
 		AnimatingModel model = modelProvider.getModel(entityIn);
 		matrixStackIn.pushPose();
-		matrixStackIn.mulPose(
-				Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
+		matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
 		matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
 		RenderSystem.setShaderTexture(0, getTextureLocation(entityIn));
 		Color renderColor = getRenderColor(entityIn, partialTicks, matrixStackIn, bufferIn, null, packedLightIn);
-		RenderType renderType = getRenderType(entityIn, partialTicks, matrixStackIn, bufferIn, null, packedLightIn,
-				getTextureLocation(entityIn));
-		render(model, entityIn, partialTicks, renderType, matrixStackIn, bufferIn, null, packedLightIn,
-				getPackedOverlay(entityIn, 0), (float) renderColor.getRed() / 255f,
-				(float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f,
-				(float) renderColor.getAlpha() / 255);
+		RenderType renderType = getRenderType(entityIn, partialTicks, matrixStackIn, bufferIn, null, packedLightIn, getTextureLocation(entityIn));
+		render(model, entityIn, partialTicks, renderType, matrixStackIn, bufferIn, null, packedLightIn, getPackedOverlay(entityIn, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 
 		float lastLimbDistance = 0.0F;
 		float limbSwing = 0.0F;
 		EntityModelData entityModelData = new EntityModelData();
-		AnimationEvent<T> predicate = new AnimationEvent<T>(entityIn, limbSwing, lastLimbDistance, partialTicks,
-				!(lastLimbDistance > -0.15F && lastLimbDistance < 0.15F), Collections.singletonList(entityModelData));
+		AnimationEvent<T> predicate = new AnimationEvent<T>(entityIn, limbSwing, lastLimbDistance, partialTicks, !(lastLimbDistance > -0.15F && lastLimbDistance < 0.15F), Collections.singletonList(entityModelData));
 
 		AnimationData data = entityIn.getAnimationData();
 

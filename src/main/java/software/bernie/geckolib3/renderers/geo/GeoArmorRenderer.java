@@ -10,24 +10,22 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.GeoUtils;
 
@@ -50,7 +48,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	public String rightBootBone = "armorRightBoot";
 	public String leftBootBone = "armorLeftBoot";
 
-	public static <A extends ArmorItem> void registerArmorRenderer(Class<? extends A> itemClass, GeoArmorRenderer<? super A> renderer) {
+	public static <A extends ArmorItem> void registerArmorRenderer(Class<? extends A> itemClass,
+			GeoArmorRenderer<? super A> renderer) {
 		renderers.put(itemClass, renderer);
 	}
 
@@ -82,19 +81,15 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 		stack.scale(-1.0F, -1.0F, 1.0F);
 		AnimatingModel model = modelProvider.getModel(currentArmorItem);
 
-		AnimationEvent<T> itemEvent = new AnimationEvent<>(this.currentArmorItem, 0, 0, 0, false,
-				Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
+		AnimationEvent<T> itemEvent = new AnimationEvent<>(this.currentArmorItem, 0, 0, 0, false, Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
 		AnimationData data = getAnimationData(itemStack);
 		modelProvider.setLivingAnimations(currentArmorItem, data, itemEvent);
 		this.fitToBiped();
 		stack.pushPose();
 		RenderSystem.setShaderTexture(0, getTextureLocation(currentArmorItem));
 		Color renderColor = getRenderColor(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn);
-		RenderType renderType = getRenderType(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn,
-				getTextureLocation(currentArmorItem));
-		render(model, currentArmorItem, partialTicks, renderType, stack, null, bufferIn, packedLightIn,
-				OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
-				(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		RenderType renderType = getRenderType(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn, getTextureLocation(currentArmorItem));
+		render(model, currentArmorItem, partialTicks, renderType, stack, null, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		if (ModList.get().isLoaded("patchouli")) {
 			PatchouliCompat.patchouliLoaded(stack);
 		}
@@ -182,8 +177,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	/**
 	 * Everything after this point needs to be called every frame before rendering
 	 */
-	public GeoArmorRenderer<T> setCurrentItem(LivingEntity entityLiving, ItemStack itemStack,
-			EquipmentSlot armorSlot) {
+	public GeoArmorRenderer<T> setCurrentItem(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot) {
 		this.entityLiving = entityLiving;
 		this.itemStack = itemStack;
 		this.armorSlot = armorSlot;
@@ -216,28 +210,20 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 		switch (slot) {
 		case HEAD:
-			if (headBone != null)
-				headBone.setHidden(false);
+			if (headBone != null) headBone.setHidden(false);
 			break;
 		case CHEST:
-			if (bodyBone != null)
-				bodyBone.setHidden(false);
-			if (rightArmBone != null)
-				rightArmBone.setHidden(false);
-			if (leftArmBone != null)
-				leftArmBone.setHidden(false);
+			if (bodyBone != null) bodyBone.setHidden(false);
+			if (rightArmBone != null) rightArmBone.setHidden(false);
+			if (leftArmBone != null) leftArmBone.setHidden(false);
 			break;
 		case LEGS:
-			if (rightLegBone != null)
-				rightLegBone.setHidden(false);
-			if (leftLegBone != null)
-				leftLegBone.setHidden(false);
+			if (rightLegBone != null) rightLegBone.setHidden(false);
+			if (leftLegBone != null) leftLegBone.setHidden(false);
 			break;
 		case FEET:
-			if (rightBootBone != null)
-				rightBootBone.setHidden(false);
-			if (leftBootBone != null)
-				leftBootBone.setHidden(false);
+			if (rightBootBone != null) rightBootBone.setHidden(false);
+			if (leftBootBone != null) leftBootBone.setHidden(false);
 			break;
 		}
 		return this;

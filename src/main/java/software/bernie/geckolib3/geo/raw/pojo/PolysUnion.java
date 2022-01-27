@@ -1,5 +1,7 @@
 package software.bernie.geckolib3.geo.raw.pojo;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,8 +12,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import java.io.IOException;
-
 @JsonDeserialize(using = PolysUnion.Deserializer.class)
 @JsonSerialize(using = PolysUnion.Serializer.class)
 public class PolysUnion {
@@ -20,8 +20,9 @@ public class PolysUnion {
 
 	static class Deserializer extends JsonDeserializer<PolysUnion> {
 		@Override
-		public PolysUnion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-				throws IOException, JsonProcessingException {
+		public PolysUnion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws
+				IOException,
+				JsonProcessingException {
 			PolysUnion value = new PolysUnion();
 			switch (jsonParser.currentToken()) {
 			case VALUE_STRING:
@@ -44,8 +45,8 @@ public class PolysUnion {
 
 	static class Serializer extends JsonSerializer<PolysUnion> {
 		@Override
-		public void serialize(PolysUnion obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-				throws IOException {
+		public void serialize(PolysUnion obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws
+				IOException {
 			if (obj.doubleArrayArrayArrayValue != null) {
 				jsonGenerator.writeObject(obj.doubleArrayArrayArrayValue);
 				return;

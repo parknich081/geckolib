@@ -1,9 +1,11 @@
 package software.bernie.geckolib3.util;
 
-import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
+
+import com.mojang.math.Vector3f;
+
+import net.minecraft.world.phys.Vec3;
 
 public class VectorUtils {
 	public static Vec3 fromArray(double[] array) {

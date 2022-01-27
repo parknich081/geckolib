@@ -1,10 +1,13 @@
 package software.bernie.geckolib3.geo.raw.tree;
 
-import software.bernie.geckolib3.geo.raw.pojo.Bone;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+
+import software.bernie.geckolib3.geo.raw.pojo.Bone;
 
 public class RawBoneGroup {
 	private final List<RawBoneGroup> children = new ArrayList<>();

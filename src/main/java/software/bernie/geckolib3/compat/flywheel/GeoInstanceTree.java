@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.renderer.RenderType;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
-import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.util.RenderUtils;
 
 public class GeoInstanceTree {
@@ -43,11 +42,8 @@ public class GeoInstanceTree {
 		if (bone.bone.childCubes.isEmpty()) {
 			boneInstance = null;
 		} else {
-			boneInstance = materialManager.cutout(tex)
-					.material(Materials.TRANSFORMED)
-					.model(bone.bone, () -> new BoneModel(bone.bone))
-					.createInstance()
-					.loadIdentity();
+			boneInstance = materialManager.cutout(tex).material(Materials.TRANSFORMED)
+					.model(bone.bone, () -> new BoneModel(bone.bone)).createInstance().loadIdentity();
 		}
 
 		ImmutableList.Builder<GeoInstanceTree> builder = ImmutableList.builder();
@@ -62,7 +58,7 @@ public class GeoInstanceTree {
 	 * Figure out what needs to be done this frame.
 	 *
 	 * <p>
-	 *     This calculates the minimal amount of work needed to correctly update this bone.
+	 * This calculates the minimal amount of work needed to correctly update this bone.
 	 * </p>
 	 *
 	 * @return The task we will perform.
@@ -86,8 +82,7 @@ public class GeoInstanceTree {
 			UpdateTask childTask = child.recursiveCheckNeedsUpdate();
 
 			// don't early return here because we need to check all the children too
-			if (childTask.needsParentPassthrough())
-				action = UpdateTask.PASSTHROUGH;
+			if (childTask.needsParentPassthrough()) action = UpdateTask.PASSTHROUGH;
 		}
 
 		return action;
@@ -124,7 +119,7 @@ public class GeoInstanceTree {
 	/**
 	 * Calculates the bone transform matrix and passes it on to the children.
 	 *
-	 * @param stack The MatrixStack we'll use to compute all the bone transforms.
+	 * @param stack       The MatrixStack we'll use to compute all the bone transforms.
 	 * @param thisChanged If true, all descendent nodes will be updated regardless of their {@link #action}
 	 */
 	private void update(PoseStack stack, boolean thisChanged) {
@@ -136,8 +131,7 @@ public class GeoInstanceTree {
 		RenderUtils.moveBackFromPivot(bone, stack);
 
 		if (thisChanged) {
-			if (boneInstance != null)
-				boneInstance.setTransform(stack);
+			if (boneInstance != null) boneInstance.setTransform(stack);
 
 			for (GeoInstanceTree child : children) {
 				child.update(stack, true);
@@ -152,23 +146,11 @@ public class GeoInstanceTree {
 	}
 
 	private boolean boneNeedsUpdate() {
-		return this.lastScaleX != bone.getScaleX()
-				|| this.lastScaleY != bone.getScaleY()
-				|| this.lastScaleZ != bone.getScaleZ()
-				|| this.lastPositionX != bone.getPositionX()
-				|| this.lastPositionY != bone.getPositionY()
-				|| this.lastPositionZ != bone.getPositionZ()
-				|| this.lastRotationX != bone.getRotationX()
-				|| this.lastRotationY != bone.getRotationY()
-				|| this.lastRotationZ != bone.getRotationZ()
-				|| this.lastPivotX != bone.getPivotX()
-				|| this.lastPivotY != bone.getPivotY()
-				|| this.lastPivotZ != bone.getPivotZ();
+		return this.lastScaleX != bone.getScaleX() || this.lastScaleY != bone.getScaleY() || this.lastScaleZ != bone.getScaleZ() || this.lastPositionX != bone.getPositionX() || this.lastPositionY != bone.getPositionY() || this.lastPositionZ != bone.getPositionZ() || this.lastRotationX != bone.getRotationX() || this.lastRotationY != bone.getRotationY() || this.lastRotationZ != bone.getRotationZ() || this.lastPivotX != bone.getPivotX() || this.lastPivotY != bone.getPivotY() || this.lastPivotZ != bone.getPivotZ();
 	}
 
 	private void hide() {
-		if (boneInstance != null)
-			boneInstance.setEmptyTransform();
+		if (boneInstance != null) boneInstance.setEmptyTransform();
 
 		children.forEach(GeoInstanceTree::hide);
 
@@ -176,16 +158,14 @@ public class GeoInstanceTree {
 	}
 
 	public void delete() {
-		if (boneInstance != null)
-			boneInstance.delete();
+		if (boneInstance != null) boneInstance.delete();
 
 		children.forEach(GeoInstanceTree::delete);
 	}
 
 	public void updateLight(int blockLight, int skyLight) {
 		if (boneInstance != null) {
-			boneInstance.setBlockLight(blockLight)
-					.setSkyLight(skyLight);
+			boneInstance.setBlockLight(blockLight).setSkyLight(skyLight);
 		}
 
 		for (GeoInstanceTree child : children) {

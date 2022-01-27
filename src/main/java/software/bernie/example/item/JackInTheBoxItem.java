@@ -19,7 +19,6 @@ import software.bernie.example.GeckoLibMod;
 import software.bernie.example.client.renderer.item.JackInTheBoxRenderer;
 import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -55,7 +54,8 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		});
 	}
 
-	private PlayState predicate(AnimationController<JackInTheBoxItem> controller, AnimationEvent<JackInTheBoxItem> event) {
+	private PlayState predicate(AnimationController<JackInTheBoxItem> controller,
+			AnimationEvent<JackInTheBoxItem> event) {
 		// Not setting an animation here as that's handled below
 		return PlayState.CONTINUE;
 	}

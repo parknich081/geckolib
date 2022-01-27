@@ -1,7 +1,6 @@
 package software.bernie.example.client.model.entity;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
 import software.bernie.example.entity.GeoExampleEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;

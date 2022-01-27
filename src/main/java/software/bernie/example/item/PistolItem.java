@@ -23,7 +23,6 @@ import net.minecraftforge.network.PacketDistributor;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.example.client.renderer.item.PistolRender;
 import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -68,8 +67,7 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 				if (!worldIn.isClientSide) {
 					Arrow abstractarrowentity = createArrow(worldIn, stack, playerentity);
 					abstractarrowentity = customeArrow(abstractarrowentity);
-					abstractarrowentity.shootFromRotation(playerentity, playerentity.getXRot(), playerentity.getYRot(),
-							0.0F, 1.0F * 3.0F, 1.0F);
+					abstractarrowentity.shootFromRotation(playerentity, playerentity.getXRot(), playerentity.getYRot(), 0.0F, 1.0F * 3.0F, 1.0F);
 
 					abstractarrowentity.setBaseDamage(2.5);
 					abstractarrowentity.tickCount = 35;
@@ -80,8 +78,7 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 				}
 				if (!worldIn.isClientSide) {
 					final int id = GeckoLibUtil.guaranteeIDForStack(stack, (ServerLevel) worldIn);
-					final PacketDistributor.PacketTarget target = PacketDistributor.TRACKING_ENTITY_AND_SELF
-							.with(() -> playerentity);
+					final PacketDistributor.PacketTarget target = PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> playerentity);
 					GeckoLibNetwork.syncAnimation(target, this, id, ANIM_OPEN);
 				}
 			}
@@ -155,8 +152,6 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 
 	@Override
 	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-		tooltip.add(new TranslatableComponent(
-				"Ammo: " + (stack.getMaxDamage() - stack.getDamageValue() - 1) + " / " + (stack.getMaxDamage() - 1))
-						.withStyle(ChatFormatting.ITALIC));
+		tooltip.add(new TranslatableComponent("Ammo: " + (stack.getMaxDamage() - stack.getDamageValue() - 1) + " / " + (stack.getMaxDamage() - 1)).withStyle(ChatFormatting.ITALIC));
 	}
 }

@@ -13,8 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.example.GeckoLibMod;
 import software.bernie.example.registry.ItemRegistry;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -32,7 +30,8 @@ public class PotatoArmorItem extends GeoArmorItem {
 
 	// Predicate runs every frame
 	@SuppressWarnings("unused")
-	private PlayState predicate(AnimationController<PotatoArmorItem> controller, AnimationEvent<PotatoArmorItem> event) {
+	private PlayState predicate(AnimationController<PotatoArmorItem> controller,
+			AnimationEvent<PotatoArmorItem> event) {
 		// This is all the extradata this event carries. The livingentity is the entity
 		// that's wearing the armor. The itemstack and equipmentslottype are self
 		// explanatory.
@@ -64,9 +63,7 @@ public class PotatoArmorItem extends GeoArmorItem {
 
 			// Make sure the player is wearing all the armor. If they are, continue playing
 			// the animation, otherwise stop
-			boolean isWearingAll = armorList
-					.containsAll(Arrays.asList(ItemRegistry.POTATO_BOOTS.get(), ItemRegistry.POTATO_LEGGINGS.get(),
-							ItemRegistry.POTATO_CHEST.get(), ItemRegistry.POTATO_HEAD.get()));
+			boolean isWearingAll = armorList.containsAll(Arrays.asList(ItemRegistry.POTATO_BOOTS.get(), ItemRegistry.POTATO_LEGGINGS.get(), ItemRegistry.POTATO_CHEST.get(), ItemRegistry.POTATO_HEAD.get()));
 			return isWearingAll ? PlayState.CONTINUE : PlayState.STOP;
 		}
 		return PlayState.STOP;

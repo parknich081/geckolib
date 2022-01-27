@@ -1,7 +1,8 @@
 package software.bernie.geckolib3.geo.render.built;
 
-import net.minecraft.core.Direction;
 import com.mojang.math.Vector3f;
+
+import net.minecraft.core.Direction;
 
 public class GeoQuad {
 	public final GeoVertex[] vertices;
@@ -57,7 +58,6 @@ public class GeoQuad {
 
 	public GeoQuad(GeoVertex[] verticesIn, double[] uvCoords, double[] uvSize, float texWidth, float texHeight,
 			boolean mirrorIn, Direction directionIn) {
-		this(verticesIn, (float) uvCoords[0], (float) uvCoords[1], (float) uvSize[0], (float) uvSize[1], texWidth,
-				texHeight, mirrorIn, directionIn);
+		this(verticesIn, (float) uvCoords[0], (float) uvCoords[1], (float) uvSize[0], (float) uvSize[1], texWidth, texHeight, mirrorIn, directionIn);
 	}
 }

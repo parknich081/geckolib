@@ -1,13 +1,16 @@
 package software.bernie.geckolib3.geo.raw.tree;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.geo.exception.GeckoLibException;
 import software.bernie.geckolib3.geo.raw.pojo.Bone;
 import software.bernie.geckolib3.geo.raw.pojo.MinecraftGeometry;
 import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
 import software.bernie.geckolib3.geo.raw.pojo.RawGeoModel;
-
-import java.util.*;
 
 public class RawGeometryTree {
 	private final List<RawBoneGroup> topLevelBones;

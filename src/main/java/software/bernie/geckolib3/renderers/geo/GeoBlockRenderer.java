@@ -22,8 +22,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
-		implements IGeoRenderer<T>, BlockEntityRenderer<T> {
+public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated> implements IGeoRenderer<T>, BlockEntityRenderer<T> {
 
 	private final AnimatedGeoModel<T> modelProvider;
 
@@ -50,11 +49,8 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated>
 
 		RenderSystem.setShaderTexture(0, getTextureLocation(tile));
 		Color renderColor = getRenderColor(tile, partialTicks, stack, bufferIn, null, packedLightIn);
-		RenderType renderType = getRenderType(tile, partialTicks, stack, bufferIn, null, packedLightIn,
-				getTextureLocation(tile));
-		render(model, tile, partialTicks, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY,
-				(float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
-				(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		RenderType renderType = getRenderType(tile, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(tile));
+		render(model, tile, partialTicks, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		stack.popPose();
 	}
 

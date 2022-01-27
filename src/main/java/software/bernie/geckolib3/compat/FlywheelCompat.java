@@ -14,26 +14,26 @@ import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class FlywheelCompat {
 
-    private static boolean done = false;
+	private static boolean done = false;
 
-    public static void init(final WorldEvent.Load event) {
-        if (done) return;
-        done = true;
+	public static void init(final WorldEvent.Load event) {
+		if (done) return;
+		done = true;
 
-        FlwUtil.getBlockEntityRenderers().forEach((type, renderer) -> {
-            if (renderer instanceof GeoBlockRenderer<?> geo) {
+		FlwUtil.getBlockEntityRenderers().forEach((type, renderer) -> {
+			if (renderer instanceof GeoBlockRenderer<?> geo) {
 
-                AnimatedGeoModel<?> modelProvider = geo.getGeoModelProvider();
+				AnimatedGeoModel<?> modelProvider = geo.getGeoModelProvider();
 
-                registerInstanceFactoryGenericsHack(type, modelProvider);
-            }
-        });
-    }
+				registerInstanceFactoryGenericsHack(type, modelProvider);
+			}
+		});
+	}
 
-    private static <T extends BlockEntity & IAnimated> void registerInstanceFactoryGenericsHack(BlockEntityType<?> type, AnimatedGeoModel<?> modelProvider) {
-        InstancedRenderRegistry.configure(type)
-                .alwaysSkipRender()
-                .factory((manager, te) -> (BlockEntityInstance) (new GeoTileInstance<>(manager, (T) te, (AnimatedGeoModel<T>) modelProvider)))
-                .apply();
-    }
+	private static <T extends BlockEntity & IAnimated> void registerInstanceFactoryGenericsHack(BlockEntityType<?> type,
+			AnimatedGeoModel<?> modelProvider) {
+		InstancedRenderRegistry.configure(type).alwaysSkipRender()
+				.factory((manager, te) -> (BlockEntityInstance) (new GeoTileInstance<>(manager, (T) te, (AnimatedGeoModel<T>) modelProvider)))
+				.apply();
+	}
 }

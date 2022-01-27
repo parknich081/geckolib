@@ -1,11 +1,11 @@
 package software.bernie.geckolib3.core.easing;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class EasingManagerTest {
 	static class BounceTestArg {
@@ -26,10 +26,7 @@ public class EasingManagerTest {
 	}
 
 	static Stream<BounceTestArg> bounceTestProvider() {
-		return Stream.of(new BounceTestArg(0.5, 0, 0), new BounceTestArg(0.5, 0.25, 0.47265625),
-				new BounceTestArg(0.5, 0.5, 0.53125), new BounceTestArg(0.5, 0.705, 0.88500313),
-				new BounceTestArg(0.5, 0.729, 0.99059025), new BounceTestArg(0.5, 0.91, 0.99505),
-				new BounceTestArg(0.5, 1, 1));
+		return Stream.of(new BounceTestArg(0.5, 0, 0), new BounceTestArg(0.5, 0.25, 0.47265625), new BounceTestArg(0.5, 0.5, 0.53125), new BounceTestArg(0.5, 0.705, 0.88500313), new BounceTestArg(0.5, 0.729, 0.99059025), new BounceTestArg(0.5, 0.91, 0.99505), new BounceTestArg(0.5, 1, 1));
 	}
 
 	@ParameterizedTest

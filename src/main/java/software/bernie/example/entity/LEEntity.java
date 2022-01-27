@@ -14,31 +14,31 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 public class LEEntity extends PathfinderMob implements IAnimated, IAnimationTickable {
-    private final AnimationData data = new AnimationData();
+	private final AnimationData data = new AnimationData();
 
-    private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
-            controller.setAnimation(new AnimationBuilder().addAnimation("animation.geoLayerEntity.idle", true));
-            return PlayState.CONTINUE;
-    }
+	private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		controller.setAnimation(new AnimationBuilder().addAnimation("animation.geoLayerEntity.idle", true));
+		return PlayState.CONTINUE;
+	}
 
-    public LEEntity(EntityType<? extends PathfinderMob> type, Level worldIn) {
-        super(type, worldIn);
-        data.addAnimationController(new AnimationController<>(this, "controller", 5, this::predicate));
-    }
+	public LEEntity(EntityType<? extends PathfinderMob> type, Level worldIn) {
+		super(type, worldIn);
+		data.addAnimationController(new AnimationController<>(this, "controller", 5, this::predicate));
+	}
 
-    @Override
-    public AnimationData getAnimationData() {
-        return data;
-    }
+	@Override
+	public AnimationData getAnimationData() {
+		return data;
+	}
 
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        super.registerGoals();
-    }
+	@Override
+	protected void registerGoals() {
+		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
+		super.registerGoals();
+	}
 
-    @Override
-    public int tickTimer() {
-        return tickCount;
-    }
+	@Override
+	public int tickTimer() {
+		return tickCount;
+	}
 }

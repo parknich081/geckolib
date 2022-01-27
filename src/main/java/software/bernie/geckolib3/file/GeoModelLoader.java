@@ -1,7 +1,7 @@
 package software.bernie.geckolib3.file;
 
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.geo.exception.GeckoLibException;
 import software.bernie.geckolib3.geo.raw.pojo.Converter;
@@ -16,8 +16,7 @@ public class GeoModelLoader {
 		try {
 			// Deserialize from json into basic json objects, bones are still stored as a
 			// flat list
-			RawGeoModel rawModel = Converter
-					.fromJsonString(AnimationFileLoader.getResourceAsString(location, resourceManager));
+			RawGeoModel rawModel = Converter.fromJsonString(AnimationFileLoader.getResourceAsString(location, resourceManager));
 			if (rawModel.getFormatVersion() != FormatVersion.VERSION_1_12_0) {
 				throw new GeckoLibException(location, "Wrong geometry json version, expected 1.12.0");
 			}

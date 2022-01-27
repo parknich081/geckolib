@@ -89,18 +89,10 @@ public class BoneModel implements Model {
 			}
 
 			for (GeoVertex vertex : quad.vertices) {
-				Vector4f pos = new Vector4f(vertex.position.x(), vertex.position.y(), vertex.position.z(),
-						1.0F);
+				Vector4f pos = new Vector4f(vertex.position.x(), vertex.position.y(), vertex.position.z(), 1.0F);
 				pos.transform(matrix4f);
 
-				writer.putVertex(pos.x(),
-						pos.y(),
-						pos.z(),
-						normal.x(),
-						normal.y(),
-						normal.z(),
-						vertex.textureU,
-						vertex.textureV);
+				writer.putVertex(pos.x(), pos.y(), pos.z(), normal.x(), normal.y(), normal.z(), vertex.textureU, vertex.textureV);
 			}
 		}
 	}

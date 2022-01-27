@@ -1,8 +1,6 @@
 package software.bernie.example.entity;
 
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;

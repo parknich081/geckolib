@@ -11,10 +11,10 @@ import java.util.function.Function;
 
 import com.eliotlash.molang.MolangParser;
 
-import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.file.AnimationFile;
 import software.bernie.geckolib3.file.AnimationFileLoader;
@@ -85,26 +85,24 @@ public class GeckoLibCache implements PreparableReloadListener {
 				}, gameExecutor);
 	}
 
-	private CompletableFuture<Void> loadModels(ResourceManager resourceManager, Executor backgroundExecutor, Map<ResourceLocation, GeoModel> geoModels) {
-		return loadResources(backgroundExecutor, resourceManager, "geo",
-				resource -> modelLoader.loadModel(resourceManager, resource), geoModels::put);
+	private CompletableFuture<Void> loadModels(ResourceManager resourceManager, Executor backgroundExecutor,
+			Map<ResourceLocation, GeoModel> geoModels) {
+		return loadResources(backgroundExecutor, resourceManager, "geo", resource -> modelLoader.loadModel(resourceManager, resource), geoModels::put);
 	}
 
-	private CompletableFuture<Void> loadAnimations(ResourceManager resourceManager, Executor backgroundExecutor, Map<ResourceLocation, AnimationFile> animations) {
-		return loadResources(backgroundExecutor, resourceManager, "animations",
-				animation -> animationLoader.loadAllAnimations(getParser(), animation, resourceManager), animations::put);
+	private CompletableFuture<Void> loadAnimations(ResourceManager resourceManager, Executor backgroundExecutor,
+			Map<ResourceLocation, AnimationFile> animations) {
+		return loadResources(backgroundExecutor, resourceManager, "animations", animation -> animationLoader.loadAllAnimations(getParser(), animation, resourceManager), animations::put);
 	}
 
 	private static <T> CompletableFuture<Void> loadResources(Executor executor, ResourceManager resourceManager,
 			String type, Function<ResourceLocation, T> loader, BiConsumer<ResourceLocation, T> map) {
-		return CompletableFuture.supplyAsync(
-				() -> resourceManager.listResources(type, fileName -> fileName.endsWith(".json")), executor)
+		return CompletableFuture.supplyAsync(() -> resourceManager.listResources(type, fileName -> fileName.endsWith(".json")), executor)
 				.thenApplyAsync(resources -> {
 					Map<ResourceLocation, CompletableFuture<T>> tasks = new HashMap<>();
 
 					for (ResourceLocation resource : resources) {
-						CompletableFuture<T> existing = tasks.put(resource,
-								CompletableFuture.supplyAsync(() -> loader.apply(resource), executor));
+						CompletableFuture<T> existing = tasks.put(resource, CompletableFuture.supplyAsync(() -> loader.apply(resource), executor));
 
 						if (existing != null) {// Possibly if this matters, the last one will win
 							System.err.println("Duplicate resource for " + resource);

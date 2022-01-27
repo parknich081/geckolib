@@ -8,15 +8,13 @@ import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
 
 import com.eliotlash.molang.MolangParser;
-
-import net.minecraft.client.Minecraft;
-
 import com.jozufozu.flywheel.util.AnimationTickHolder;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.AnimationPage;
 import software.bernie.geckolib3.core.builder.Animation;
@@ -33,7 +31,8 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 
 	public boolean shouldCrashOnMissing = false;
 
-	protected AnimatedGeoModel() {}
+	protected AnimatedGeoModel() {
+	}
 
 	public abstract ResourceLocation getModelResource(T object);
 
@@ -47,8 +46,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 	 */
 	public abstract ResourceLocation getAnimationFileResource(T animatable);
 
-	public void setLivingAnimations(T entity, AnimationData data)
-	{
+	public void setLivingAnimations(T entity, AnimationData data) {
 		this.setLivingAnimations(entity, data, new AnimationEvent<>(entity, 0, 0, 0, false, Collections.emptyList()));
 	}
 
@@ -72,8 +70,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 
 		AnimationFile animation = GeckoLibCache.getInstance().getAnimation(animationLoc);
 		if (animation == null) {
-			throw new GeckoLibException(animationLoc,
-					"Could not find animation file. Please double check name.");
+			throw new GeckoLibException(animationLoc, "Could not find animation file. Please double check name.");
 		}
 		return animation.getAnimation(name);
 	}
@@ -82,14 +79,13 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 
 	public AnimatingModel getModel(T entity) {
 		ResourceLocation location = getModelResource(entity);
-		GeoModel masterModel = GeckoLibCache.getInstance()
-				.getModel(location);
+		GeoModel masterModel = GeckoLibCache.getInstance().getModel(location);
 
 		if (masterModel == null) {
-			throw new GeckoLibException(location,
-					"Could not find model. If you are getting this with a built mod, please just restart your game.");
+			throw new GeckoLibException(location, "Could not find model. If you are getting this with a built mod, please just restart your game.");
 		}
-		return safeModels.computeIfAbsent(entity, $ -> new HashMap<>()).computeIfAbsent(location, $ -> new AnimatingModel(masterModel));
+		return safeModels.computeIfAbsent(entity, $ -> new HashMap<>())
+				.computeIfAbsent(location, $ -> new AnimatingModel(masterModel));
 	}
 
 	public void setMolangQueries(MolangParser parser, T animatable, double renderTime) {
@@ -105,8 +101,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 			parser.setValue("query.is_on_ground", MolangUtils.booleanToFloat(entity.isOnGround()));
 			parser.setValue("query.is_in_water", MolangUtils.booleanToFloat(entity.isInWater()));
 			// Should probably check specifically whether it's in rain?
-			parser.setValue("query.is_in_water_or_rain",
-					MolangUtils.booleanToFloat(entity.isInWaterRainOrBubble()));
+			parser.setValue("query.is_in_water_or_rain", MolangUtils.booleanToFloat(entity.isInWaterRainOrBubble()));
 
 			if (animatable instanceof LivingEntity livingEntity) {
 				parser.setValue("query.health", livingEntity.getHealth());
@@ -119,8 +114,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 				float groundSpeed = Mth.sqrt((float) ((velocity.x * velocity.x) + (velocity.z * velocity.z)));
 				parser.setValue("query.ground_speed", groundSpeed);
 
-				float yawSpeed = livingEntity.getViewYRot((float) renderTime)
-						- livingEntity.getViewYRot((float) (renderTime - 0.1));
+				float yawSpeed = livingEntity.getViewYRot((float) renderTime) - livingEntity.getViewYRot((float) (renderTime - 0.1));
 				parser.setValue("query.yaw_speed", yawSpeed);
 			}
 		}

@@ -29,8 +29,7 @@ public class GeckoLibNetwork {
 			final Method findTarget = NetworkRegistry.class.getDeclaredMethod("findTarget", ResourceLocation.class);
 			findTarget.setAccessible(true);
 			return ((Optional<NetworkInstance>) findTarget.invoke(null, key)).map(SimpleChannel::new)
-					.orElseGet(() -> NetworkRegistry.newSimpleChannel(key, () -> PROTOCOL_VERSION,
-							PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals));
+					.orElseGet(() -> NetworkRegistry.newSimpleChannel(key, () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals));
 		} catch (Throwable t) {
 			throw new RuntimeException("Failed to fetch GeckoLib network channel", t);
 		}

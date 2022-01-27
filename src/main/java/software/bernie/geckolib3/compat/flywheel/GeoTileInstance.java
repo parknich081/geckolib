@@ -42,9 +42,7 @@ public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEnt
 		AnimatingModel model = modelProvider.getModel(tile);
 		RenderType state = states.apply(modelProvider.getTextureResource(tile));
 
-		stack.translate(getInstancePosition())
-				.translate(0.5, 0.01, 0.5)
-				.rotateToFace(getFacing());
+		stack.translate(getInstancePosition()).translate(0.5, 0.01, 0.5).rotateToFace(getFacing());
 
 		for (AnimatingBone bone : model.getAllBones()) {
 			topLevelBones.add(new GeoInstanceTree(materialManager, state, bone));

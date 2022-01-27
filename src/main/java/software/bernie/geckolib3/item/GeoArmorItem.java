@@ -30,8 +30,7 @@ public abstract class GeoArmorItem extends ArmorItem implements IAnimatableSingl
 			public <A extends HumanoidModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack,
 					EquipmentSlot armorSlot, A _default) {
 				return (A) GeoArmorRenderer.getRenderer(GeoArmorItem.this.getClass())
-						.setCurrentItem(entityLiving, itemStack, armorSlot)
-						.applyEntityStats(_default)
+						.setCurrentItem(entityLiving, itemStack, armorSlot).applyEntityStats(_default)
 						.applySlot(armorSlot);
 			}
 		});

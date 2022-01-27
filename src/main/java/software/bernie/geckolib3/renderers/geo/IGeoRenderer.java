@@ -1,39 +1,41 @@
 package software.bernie.geckolib3.renderers.geo;
 
+import java.awt.Color;
+
+import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.*;
-import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.geo.render.built.*;
+import software.bernie.geckolib3.geo.render.built.GeoCube;
+import software.bernie.geckolib3.geo.render.built.GeoQuad;
+import software.bernie.geckolib3.geo.render.built.GeoVertex;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.RenderUtils;
 
-import javax.annotation.Nullable;
-import java.awt.*;
-
 public interface IGeoRenderer<T> {
-	default void render(AnimatingModel model, T animatable, float partialTicks, RenderType type, PoseStack matrixStackIn,
-			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,
-			int packedOverlayIn, float red, float green, float blue, float alpha) {
-		renderEarly(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
-				packedOverlayIn, red, green, blue, alpha);
+	default void render(AnimatingModel model, T animatable, float partialTicks, RenderType type,
+			PoseStack matrixStackIn, @Nullable MultiBufferSource renderTypeBuffer,
+			@Nullable VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,
+			float blue, float alpha) {
+		renderEarly(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 
 		if (renderTypeBuffer != null) {
 			vertexBuilder = renderTypeBuffer.getBuffer(type);
 		}
-		renderLate(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
-				packedOverlayIn, red, green, blue, alpha);
+		renderLate(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		// Render all top level bones
 		for (AnimatingBone group : model.getTopLevelBones()) {
-			renderRecursively(group, matrixStackIn, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue,
-					alpha);
+			renderRecursively(group, matrixStackIn, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		}
 	}
 
@@ -89,21 +91,18 @@ public interface IGeoRenderer<T> {
 			}
 
 			for (GeoVertex vertex : quad.vertices) {
-				Vector4f vector4f = new Vector4f(vertex.position.x(), vertex.position.y(), vertex.position.z(),
-						1.0F);
+				Vector4f vector4f = new Vector4f(vertex.position.x(), vertex.position.y(), vertex.position.z(), 1.0F);
 				vector4f.transform(matrix4f);
-				bufferIn.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha,
-						vertex.textureU, vertex.textureV, packedOverlayIn, packedLightIn, normal.x(), normal.y(),
-						normal.z());
+				bufferIn.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.textureU, vertex.textureV, packedOverlayIn, packedLightIn, normal.x(), normal.y(), normal.z());
 			}
 		}
 	}
 
 	AnimatedGeoModel<T> getGeoModelProvider();
 
-	default void renderEarly(T animatable, PoseStack stackIn, float ticks,
-			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,
-			int packedOverlayIn, float red, float green, float blue, float partialTicks) {
+	default void renderEarly(T animatable, PoseStack stackIn, float ticks, @Nullable MultiBufferSource renderTypeBuffer,
+			@Nullable VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,
+			float blue, float partialTicks) {
 	}
 
 	default void renderLate(T animatable, PoseStack stackIn, float ticks, MultiBufferSource renderTypeBuffer,

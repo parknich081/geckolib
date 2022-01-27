@@ -1,11 +1,11 @@
 package software.bernie.geckolib3.geo.render.built;
 
-import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
-
 import java.util.List;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
+
+import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
 
 public class GeoModel {
 	public final ImmutableList<GeoBone> topLevelBones;

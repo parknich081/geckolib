@@ -44,9 +44,9 @@ public class GeoBone implements ImmutableBone {
 	/**
 	 * Deserializes a bone from a raw bone group.
 	 *
-	 * @param bone The raw bone group.
+	 * @param bone       The raw bone group.
 	 * @param properties The properties of the model.
-	 * @param parent This bone's parent, or null if this is the root bone.
+	 * @param parent     This bone's parent, or null if this is the root bone.
 	 * @implNote {@code parent.childBones} will be uninitialized.
 	 */
 	public GeoBone(RawBoneGroup bone, ModelProperties properties, @Nullable GeoBone parent) {

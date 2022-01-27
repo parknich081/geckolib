@@ -1,5 +1,7 @@
 package software.bernie.geckolib3.geo.raw.pojo;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,8 +12,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import java.io.IOException;
-
 @JsonDeserialize(using = LocatorValue.Deserializer.class)
 @JsonSerialize(using = LocatorValue.Serializer.class)
 public class LocatorValue {
@@ -20,8 +20,9 @@ public class LocatorValue {
 
 	static class Deserializer extends JsonDeserializer<LocatorValue> {
 		@Override
-		public LocatorValue deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-				throws IOException, JsonProcessingException {
+		public LocatorValue deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws
+				IOException,
+				JsonProcessingException {
 			LocatorValue value = new LocatorValue();
 			switch (jsonParser.getCurrentToken()) {
 			case START_ARRAY:
@@ -40,7 +41,8 @@ public class LocatorValue {
 	static class Serializer extends JsonSerializer<LocatorValue> {
 		@Override
 		public void serialize(LocatorValue obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-				throws IOException {
+				throws
+				IOException {
 			if (obj.locatorClassValue != null) {
 				jsonGenerator.writeObject(obj.locatorClassValue);
 				return;

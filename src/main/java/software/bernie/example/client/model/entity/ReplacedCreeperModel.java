@@ -3,7 +3,6 @@ package software.bernie.example.client.model.entity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Creeper;
 import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ReplacedCreeperModel extends AnimatedGeoModel<Creeper> {

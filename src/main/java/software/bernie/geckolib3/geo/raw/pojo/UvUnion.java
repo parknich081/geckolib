@@ -1,5 +1,7 @@
 package software.bernie.geckolib3.geo.raw.pojo;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,8 +12,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import java.io.IOException;
-
 @JsonDeserialize(using = UvUnion.Deserializer.class)
 @JsonSerialize(using = UvUnion.Serializer.class)
 public class UvUnion {
@@ -21,8 +21,9 @@ public class UvUnion {
 
 	static class Deserializer extends JsonDeserializer<UvUnion> {
 		@Override
-		public UvUnion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-				throws IOException, JsonProcessingException {
+		public UvUnion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws
+				IOException,
+				JsonProcessingException {
 			UvUnion value = new UvUnion();
 			switch (jsonParser.currentToken()) {
 			case VALUE_NULL:
@@ -44,8 +45,8 @@ public class UvUnion {
 
 	static class Serializer extends JsonSerializer<UvUnion> {
 		@Override
-		public void serialize(UvUnion obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-				throws IOException {
+		public void serialize(UvUnion obj, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws
+				IOException {
 			if (obj.boxUVCoords != null) {
 				jsonGenerator.writeObject(obj.boxUVCoords);
 				return;

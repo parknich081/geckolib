@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Specifies the UV's for the face that stretches along the x and z axes, and
  * faces the -y axis
- *
+ * <p>
  * Specifies the UV's for the face that stretches along the z and y axes, and
  * faces the x axis
- *
+ * <p>
  * Specifies the UV's for the face that stretches along the x and y axes, and
  * faces the -z axis.
- *
+ * <p>
  * Specifies the UV's for the face that stretches along the x and y axes, and
  * faces the z axis
- *
+ * <p>
  * Specifies the UV's for the face that stretches along the x and z axes, and
  * faces the y axis
- *
+ * <p>
  * Specifies the UV's for the face that stretches along the z and y axes, and
  * faces the -x axis
  */
