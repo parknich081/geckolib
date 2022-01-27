@@ -17,7 +17,7 @@ public class ReplacedCreeperModel extends AnimatedGeoModel<Creeper> {
 	}
 
 	@Override
-	public ResourceLocation getAnimationFileResource(Creeper animatable) {
+	public ResourceLocation getAnimationResource(Creeper animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/creeper.animation.json");
 	}
 }

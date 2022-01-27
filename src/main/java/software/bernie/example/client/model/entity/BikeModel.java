@@ -7,7 +7,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class BikeModel extends AnimatedGeoModel<BikeEntity> {
 	@Override
-	public ResourceLocation getAnimationFileResource(BikeEntity entity) {
+	public ResourceLocation getAnimationResource(BikeEntity entity) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/bike.animation.json");
 	}
 

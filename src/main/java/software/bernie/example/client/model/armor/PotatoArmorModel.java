@@ -17,7 +17,7 @@ public class PotatoArmorModel extends AnimatedGeoModel<PotatoArmorItem> {
 	}
 
 	@Override
-	public ResourceLocation getAnimationFileResource(PotatoArmorItem animatable) {
+	public ResourceLocation getAnimationResource(PotatoArmorItem animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/potato_armor.animation.json");
 	}
 }

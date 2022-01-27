@@ -44,7 +44,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 	 *
 	 * @return the animation file location
 	 */
-	public abstract ResourceLocation getAnimationFileResource(T animatable);
+	public abstract ResourceLocation getAnimationResource(T animatable);
 
 	public void setLivingAnimations(T entity, AnimationData data) {
 		this.setLivingAnimations(entity, data, new AnimationEvent<>(entity, 0, 0, 0, false, Collections.emptyList()));
@@ -66,7 +66,7 @@ public abstract class AnimatedGeoModel<T> implements AnimationPage<T> {
 
 	@Override
 	public Animation getAnimation(T animatable, String name) {
-		ResourceLocation animationLoc = this.getAnimationFileResource(animatable);
+		ResourceLocation animationLoc = this.getAnimationResource(animatable);
 
 		AnimationFile animation = GeckoLibCache.getInstance().getAnimation(animationLoc);
 		if (animation == null) {

@@ -17,7 +17,7 @@ public class PistolModel extends AnimatedGeoModel<PistolItem> {
 	}
 
 	@Override
-	public ResourceLocation getAnimationFileResource(PistolItem animatable) {
+	public ResourceLocation getAnimationResource(PistolItem animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/pistol.animation.json");
 	}
 }

@@ -18,7 +18,7 @@ public class LEModel extends AnimatedTickingGeoModel<LEEntity> {
 	}
 
 	@Override
-	public ResourceLocation getAnimationFileResource(LEEntity animatable) {
+	public ResourceLocation getAnimationResource(LEEntity animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/le.animations.json");
 	}
 

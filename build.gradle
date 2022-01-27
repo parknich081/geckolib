@@ -4,18 +4,20 @@ import groovy.json.JsonSlurper
 
 buildscript {
 	repositories {
+		maven { url = 'https://maven.parchmentmc.org' }
 		maven { url = "https://maven.minecraftforge.net/" }
 		maven { url = "https://plugins.gradle.org/m2/" }
-		jcenter()
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-		classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0"
-		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "${forgegradle_version}", changing: true
+		classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:${shadow_version}"
+		classpath "gradle.plugin.com.matthewprenger:CurseGradle:${cursegradle_version}"
+		classpath "org.parchmentmc:librarian:${librarian_version}"
 	}
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -39,7 +41,8 @@ configurations {
 }
 
 minecraft {
-	mappings channel: 'official', version: '1.18.1'
+	// Parchment is mojmap + method parameters + documentation
+	mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 	runs {
 		client {
 			workingDirectory project.file('runs/' + name)
@@ -122,7 +125,7 @@ repositories {
 }
 
 dependencies {
-	minecraft 'net.minecraftforge:forge:1.18.1-39.0.0'
+	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 	library 'com.eliotlash.molang:molang:18'
 	library 'com.eliotlash.mclib:mclib:18'
 	library(project(':geckolib-core')) {
@@ -139,7 +142,7 @@ dependencies {
 	shade group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
 	shade group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.0'
 
-	implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:1.18-0.6.0.49")
+	implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:${flywheel_version}")
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
