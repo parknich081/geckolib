@@ -17,10 +17,9 @@ import net.minecraft.util.math.Vec3f;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.util.Color;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-
-import java.awt.*;
 
 public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimatable> extends BlockEntityRenderer
 		implements IGeoRenderer<T> {
