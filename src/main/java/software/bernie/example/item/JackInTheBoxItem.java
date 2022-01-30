@@ -34,7 +34,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
 	private static final String CONTROLLER_NAME = "popupController";
 	private static final int ANIM_OPEN = 0;
-	public AnimationFactory<Integer> factory = new AnimationFactory<>(this::registerControllers);
+	public AnimationFactory<Integer> factory = new AnimationFactory<>(this::createAnimationData);
 
 	public JackInTheBoxItem(Properties properties) {
 		super(properties.tab(GeckoLibMod.geckolibItemGroup));
@@ -54,13 +54,15 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		});
 	}
 
-	private PlayState predicate(AnimationController<JackInTheBoxItem> controller,
+	private AnimationBuilder predicate(AnimationController<JackInTheBoxItem> controller,
 			AnimationEvent<JackInTheBoxItem> event) {
 		// Not setting an animation here as that's handled below
-		return PlayState.CONTINUE;
+		// TODO: item animation refactor
+		return null;
 	}
 
-	public void registerControllers(Integer stack, AnimationData data) {
+	public AnimationData createAnimationData(Integer stack) {
+		AnimationData animationData = new AnimationData();
 		AnimationController<JackInTheBoxItem> controller = new AnimationController<>(this, CONTROLLER_NAME, 20, this::predicate);
 
 		// Registering a sound listener just makes it so when any sound keyframe is hit
@@ -69,7 +71,8 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 		// same thing, just with registerParticleListener and
 		// registerCustomInstructionListener, respectively.
 		controller.registerSoundListener(this::soundListener);
-		data.addAnimationController(controller);
+		animationData.addAnimationController(controller);
+		return animationData;
 	}
 
 	private void soundListener(SoundKeyframeEvent<JackInTheBoxItem> event) {
@@ -114,9 +117,6 @@ public class JackInTheBoxItem extends Item implements IAnimatableSingleton<ItemS
 				if (player != null) {
 					player.displayClientMessage(new TextComponent("Opening the jack in the box!"), true);
 				}
-				// If you don't do this, the popup animation will only play once because the
-				// animation will be cached.
-				controller.markNeedsReload();
 				// Set the animation to open the JackInTheBoxItem which will start playing music
 				// and
 				// eventually do the actual animation. Also sets it to not loop

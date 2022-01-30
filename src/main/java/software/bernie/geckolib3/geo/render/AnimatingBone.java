@@ -39,7 +39,11 @@ public class AnimatingBone implements IBone {
 	public float rotationY;
 	public float rotationZ;
 
-	public AnimatingBone(GeoBone bone, AnimatingModel model, @Nullable AnimatingBone parent) {
+	public AnimatingBone(AnimatingModel model, GeoBone bone) {
+		this(model, bone, null);
+	}
+
+	private AnimatingBone(AnimatingModel model, GeoBone bone, @Nullable AnimatingBone parent) {
 		this.bone = bone;
 		this.parent = parent;
 		this.model = model;
@@ -59,7 +63,7 @@ public class AnimatingBone implements IBone {
 		this.isHidden = bone.isHidden;
 
 		for (GeoBone childBone : bone.childBones) {
-			this.childBones.add(new AnimatingBone(childBone, model, this));
+			this.childBones.add(new AnimatingBone(model, childBone, this));
 		}
 
 		this.dirtyTracker = new DirtyTracker(this, bone);

@@ -36,7 +36,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
 
-	public final AnimationFactory<Integer> factory = new AnimationFactory<>(this::registerControllers);
+	public final AnimationFactory<Integer> factory = new AnimationFactory<>(this::createAnimationData);
 	public String controllerName = "controller";
 	public static final int ANIM_OPEN = 0;
 
@@ -109,12 +109,15 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 		return arrow;
 	}
 
-	public PlayState predicate(AnimationController<PistolItem> controller, AnimationEvent<PistolItem> event) {
-		return PlayState.CONTINUE;
+	public AnimationBuilder predicate(AnimationController<PistolItem> controller, AnimationEvent<PistolItem> event) {
+		// TODO: item animation refactor
+		return null;
 	}
 
-	public void registerControllers(Integer stack, AnimationData data) {
+	public AnimationData createAnimationData(Integer stack) {
+		AnimationData data = new AnimationData();
 		data.addAnimationController(new AnimationController<>(this, controllerName, 1, this::predicate));
+		return data;
 	}
 
 	@Override
@@ -127,7 +130,6 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 		if (state == ANIM_OPEN) {
 			final AnimationController<?> controller = GeckoLibUtil.getControllerForID(this.factory, id, controllerName);
 			if (controller.getAnimationState() == AnimationState.Stopped) {
-				controller.markNeedsReload();
 				controller.setAnimation(new AnimationBuilder().addAnimation("firing", false));
 			}
 		}

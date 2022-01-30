@@ -9,6 +9,7 @@ import java.util.*;
 
 import com.eliotlash.mclib.math.IValue;
 import com.eliotlash.molang.MolangParser;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.*;
 
@@ -227,16 +228,28 @@ public class JsonAnimationUtils {
 	}
 
 	private static List<EventKeyFrame<List<String>>> parseCustomInstructionKeyframes(JsonObject animationJsonObject) {
-		List<EventKeyFrame<List<String>>> customInstructionKeyframes = new ArrayList<>();
+		ImmutableList.Builder<EventKeyFrame<List<String>>> customInstructionKeyframes = ImmutableList.builder();
 		for (Map.Entry<String, JsonElement> keyFrame : getCustomInstructionKeyFrames(animationJsonObject)) {
-			customInstructionKeyframes.add(new EventKeyFrame(Double.parseDouble(keyFrame.getKey()) * 20, keyFrame.getValue() instanceof JsonArray ? convertJsonArrayToList(keyFrame.getValue()
-					.getAsJsonArray()) : keyFrame.getValue().getAsString()));
+			List<String> data;
+			if (keyFrame.getValue() instanceof JsonArray) {
+				JsonArray jsonArray = keyFrame.getValue().getAsJsonArray();
+				ImmutableList.Builder<String> builder = ImmutableList.builder();
+
+				for (JsonElement element : jsonArray) {
+					builder.add(element.getAsString());
+				}
+
+				data = builder.build();
+			} else {
+				data = ImmutableList.of(keyFrame.getValue().getAsString());
+			}
+			customInstructionKeyframes.add(new EventKeyFrame<>(Double.parseDouble(keyFrame.getKey()) * 20, data));
 		}
-		return customInstructionKeyframes;
+		return customInstructionKeyframes.build();
 	}
 
 	private static List<ParticleEventKeyFrame> parseParticleKeyframes(JsonObject animationJsonObject) {
-		List<ParticleEventKeyFrame> particleKeyFrames = new ArrayList<>();
+		ImmutableList.Builder<ParticleEventKeyFrame> particleKeyFrames = ImmutableList.builder();
 		for (Map.Entry<String, JsonElement> keyFrame : getParticleEffectFrames(animationJsonObject)) {
 			JsonObject object = keyFrame.getValue().getAsJsonObject();
 			JsonElement effect = object.get("effect");
@@ -244,20 +257,20 @@ public class JsonAnimationUtils {
 			JsonElement pre_effect_script = object.get("pre_effect_script");
 			particleKeyFrames.add(new ParticleEventKeyFrame(Double.parseDouble(keyFrame.getKey()) * 20, effect == null ? "" : effect.getAsString(), locator == null ? "" : locator.getAsString(), pre_effect_script == null ? "" : pre_effect_script.getAsString()));
 		}
-		return particleKeyFrames;
+		return particleKeyFrames.build();
 	}
 
 	private static List<EventKeyFrame<String>> parseSoundKeyframes(JsonObject animationJsonObject) {
-		List<EventKeyFrame<String>> soundKeyFrames = new ArrayList<>();
+		ImmutableList.Builder<EventKeyFrame<String>> soundKeyFrames = ImmutableList.builder();
 		for (Map.Entry<String, JsonElement> keyFrame : getSoundEffectFrames(animationJsonObject)) {
 			soundKeyFrames.add(new EventKeyFrame<>(Double.parseDouble(keyFrame.getKey()) * 20, keyFrame.getValue()
 					.getAsJsonObject().get("effect").getAsString()));
 		}
-		return soundKeyFrames;
+		return soundKeyFrames.build();
 	}
 
 	private static List<BoneAnimation> parseBoneAnimations(MolangParser parser, JsonObject animationJsonObject) {
-		List<BoneAnimation> boneAnimations = new ArrayList<>();
+		ImmutableList.Builder<BoneAnimation> boneAnimations = ImmutableList.builder();
 		// The list of all bones being used in this animation, where String is the name
 		// of the bone/group, and the JsonElement is the
 		for (Map.Entry<String, JsonElement> bone : getBones(animationJsonObject)) {
@@ -293,7 +306,7 @@ public class JsonAnimationUtils {
 
 			boneAnimations.add(new BoneAnimation(boneName, rotationKeyFrames, positionKeyFrames, scaleKeyFrames));
 		}
-		return boneAnimations;
+		return boneAnimations.build();
 	}
 
 	private static double calculateLength(List<BoneAnimation> boneAnimations) {

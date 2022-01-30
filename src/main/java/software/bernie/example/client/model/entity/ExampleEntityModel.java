@@ -26,7 +26,7 @@ public class ExampleEntityModel extends AnimatedTickingGeoModel<GeoExampleEntity
 	}
 
 	@Override
-	public void codeAnimations(GeoExampleEntity entity, AnimationData data, AnimationEvent<?> customPredicate) {
+	public void codeAnimations(GeoExampleEntity entity, AnimationData data, AnimationEvent<GeoExampleEntity> customPredicate) {
 		IBone head = data.getBone("head");
 
 		EntityModelData extraData = customPredicate.getExtraDataOfType(EntityModelData.class).get(0);

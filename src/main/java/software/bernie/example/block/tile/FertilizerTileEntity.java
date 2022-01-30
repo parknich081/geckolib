@@ -14,17 +14,16 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class FertilizerTileEntity extends BlockEntity implements IAnimated {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationController<E> controller,
+	private <E extends BlockEntity & IAnimated> AnimationBuilder predicate(AnimationController<E> controller,
 			AnimationEvent<E> event) {
 		controller.transitionLengthTicks = 0;
 		if (event.getAnimatable().getLevel().isRaining()) {
-			controller.setAnimation(new AnimationBuilder().addAnimation("fertilizer.animation.deploy", true)
-					.addAnimation("fertilizer.animation.idle", true));
+			return new AnimationBuilder().addAnimation("fertilizer.animation.deploy", true)
+					.addAnimation("fertilizer.animation.idle", true);
 		} else {
-			controller.setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true)
-					.addAnimation("Botarium.anim.idle", true));
+			return new AnimationBuilder().addAnimation("Botarium.anim.deploy", true)
+					.addAnimation("Botarium.anim.idle", true);
 		}
-		return PlayState.CONTINUE;
 	}
 
 	public FertilizerTileEntity(BlockPos pos, BlockState state) {

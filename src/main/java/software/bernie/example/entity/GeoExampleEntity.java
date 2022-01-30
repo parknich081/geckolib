@@ -8,6 +8,7 @@ import net.minecraft.world.level.Level;
 import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.IAnimationTickable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -16,15 +17,14 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class GeoExampleEntity extends PathfinderMob implements IAnimated, IAnimationTickable {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
-		controller.setAnimation(new AnimationBuilder().addAnimation("animation.bat.fly", true));
-		return PlayState.CONTINUE;
+	private <E extends IAnimated> AnimationBuilder predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		return new AnimationBuilder().addAnimation("animation.bat.fly", true);
 	}
 
-	public GeoExampleEntity(EntityType<? extends PathfinderMob> type, Level worldIn) {
+	public GeoExampleEntity(EntityType<? extends GeoExampleEntity> type, Level worldIn) {
 		super(type, worldIn);
 		this.noCulling = true;
-		data.addAnimationController(new AnimationController<GeoExampleEntity>(this, "controller", 0, this::predicate));
+		data.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
 	}
 
 	@Override

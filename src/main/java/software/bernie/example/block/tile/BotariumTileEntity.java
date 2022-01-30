@@ -12,22 +12,21 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 public class BotariumTileEntity extends BlockEntity implements IAnimated {
-	private final AnimationData factory = new AnimationData();
+	private final AnimationData data = new AnimationData();
 
-	private <E extends BlockEntity & IAnimated> PlayState predicate(AnimationController<E> controller,
+	private <E extends BlockEntity & IAnimated> AnimationBuilder predicate(AnimationController<E> controller,
 			AnimationEvent<E> event) {
 		controller.transitionLengthTicks = 0;
-		controller.setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));
-		return PlayState.CONTINUE;
+		return new AnimationBuilder().addAnimation("Botarium.anim.deploy", true);
 	}
 
 	public BotariumTileEntity(BlockPos pos, BlockState state) {
 		super(TileRegistry.BOTARIUM_TILE.get(), pos, state);
-		factory.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
+		data.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
 	}
 
 	@Override
 	public AnimationData getAnimationData() {
-		return factory;
+		return data;
 	}
 }

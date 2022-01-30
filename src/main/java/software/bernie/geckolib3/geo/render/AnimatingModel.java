@@ -20,7 +20,7 @@ public class AnimatingModel implements BoneTree<AnimatingBone> {
 		this.model = model;
 
 		for (GeoBone topLevelBone : model.topLevelBones) {
-			topLevelBones.add(new AnimatingBone(topLevelBone, this, null));
+			topLevelBones.add(new AnimatingBone(this, topLevelBone));
 		}
 
 		for (AnimatingBone bone : topLevelBones) {

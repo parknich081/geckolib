@@ -10,19 +10,20 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 public class ReplacedCreeperEntity implements IAnimatableSingleton<Creeper> {
-	private final AnimationFactory<Creeper> factory = new AnimationFactory<>(this::registerControllers);
+	private final AnimationFactory<Creeper> factory = new AnimationFactory<>(this::createAnimationData);
 
-	public void registerControllers(Creeper creeper, AnimationData data) {
+	public AnimationData createAnimationData(Creeper creeper) {
+		AnimationData data = new AnimationData();
 		data.addAnimationController(new AnimationController<>(creeper, "controller", 20, this::predicate));
+		return data;
 	}
 
-	private PlayState predicate(AnimationController<Creeper> controller, AnimationEvent<Creeper> event) {
+	private AnimationBuilder predicate(AnimationController<Creeper> controller, AnimationEvent<Creeper> event) {
 		if (!(event.getLimbSwingAmount() > -0.15F && event.getLimbSwingAmount() < 0.15F)) {
-			controller.setAnimation(new AnimationBuilder().addAnimation("creeper_walk", true));
+			return new AnimationBuilder().addAnimation("creeper_walk", true);
 		} else {
-			controller.setAnimation(new AnimationBuilder().addAnimation("creeper_idle", true));
+			return new AnimationBuilder().addAnimation("creeper_idle", true);
 		}
-		return PlayState.CONTINUE;
 	}
 
 	@Override

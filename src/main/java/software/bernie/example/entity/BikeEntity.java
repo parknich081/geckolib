@@ -25,9 +25,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class BikeEntity extends Animal implements IAnimated {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
-		controller.setAnimation(new AnimationBuilder().addAnimation("animation.bike.idle", true));
-		return PlayState.CONTINUE;
+	private <E extends IAnimated> AnimationBuilder predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		return new AnimationBuilder().addAnimation("animation.bike.idle", true);
 	}
 
 	public BikeEntity(EntityType<? extends Animal> type, Level worldIn) {

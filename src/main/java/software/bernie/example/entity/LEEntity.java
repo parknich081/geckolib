@@ -16,9 +16,8 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 public class LEEntity extends PathfinderMob implements IAnimated, IAnimationTickable {
 	private final AnimationData data = new AnimationData();
 
-	private <E extends IAnimated> PlayState predicate(AnimationController<E> controller, AnimationEvent<E> event) {
-		controller.setAnimation(new AnimationBuilder().addAnimation("animation.geoLayerEntity.idle", true));
-		return PlayState.CONTINUE;
+	private <E extends IAnimated> AnimationBuilder predicate(AnimationController<E> controller, AnimationEvent<E> event) {
+		return new AnimationBuilder().addAnimation("animation.geoLayerEntity.idle", true);
 	}
 
 	public LEEntity(EntityType<? extends PathfinderMob> type, Level worldIn) {

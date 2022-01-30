@@ -13,7 +13,7 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 	}
 
 	@Override
-	public void setLivingAnimations(T entity, AnimationData manager, @Nullable AnimationEvent<T> customPredicate) {
+	public void setLivingAnimations(T entity, AnimationData manager, AnimationEvent<T> customPredicate) {
 		super.setLivingAnimations(entity, manager, customPredicate);
 
 		if (!Minecraft.getInstance().isPaused() || manager.shouldPlayWhilePaused) {
@@ -21,7 +21,7 @@ public abstract class AnimatedTickingGeoModel<T extends IAnimated & IAnimationTi
 		}
 	}
 
-	public void codeAnimations(T entity, AnimationData data, AnimationEvent<?> customPredicate) {
+	public void codeAnimations(T entity, AnimationData data, AnimationEvent<T> customPredicate) {
 
 	}
 }
