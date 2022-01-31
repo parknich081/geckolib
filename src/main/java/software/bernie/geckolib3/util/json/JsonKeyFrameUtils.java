@@ -5,22 +5,23 @@
 
 package software.bernie.geckolib3.util.json;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.eliotlash.mclib.math.Constant;
 import com.eliotlash.mclib.math.IValue;
 import com.eliotlash.molang.MolangException;
 import com.eliotlash.molang.MolangParser;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.core.ConstantValue;
 import software.bernie.geckolib3.core.easing.EasingType;
 import software.bernie.geckolib3.core.keyframe.KeyFrame;
+import software.bernie.geckolib3.core.keyframe.Timeline;
 import software.bernie.geckolib3.core.keyframe.VectorTimeline;
 import software.bernie.geckolib3.util.AnimationUtils;
 
@@ -36,9 +37,9 @@ public class JsonKeyFrameUtils {
 		IValue previousYValue = null;
 		IValue previousZValue = null;
 
-		List<KeyFrame> xKeyFrames = new ArrayList<>();
-		List<KeyFrame> yKeyFrames = new ArrayList<>();
-		List<KeyFrame> zKeyFrames = new ArrayList<>();
+		ImmutableList.Builder<KeyFrame> xKeyFrames = ImmutableList.builder();
+		ImmutableList.Builder<KeyFrame> yKeyFrames = ImmutableList.builder();
+		ImmutableList.Builder<KeyFrame> zKeyFrames = ImmutableList.builder();
 
 		for (int i = 0; i < element.size(); i++) {
 			Map.Entry<String, JsonElement> keyframe = element.get(i);
@@ -47,16 +48,17 @@ public class JsonKeyFrameUtils {
 
 			Double previousKeyFrameLocation = previousKeyFrame == null ? 0 : Double.parseDouble(previousKeyFrame.getKey());
 			Double currentKeyFrameLocation = NumberUtils.isCreatable(keyframe.getKey()) ? Double.parseDouble(keyframe.getKey()) : 0;
-			double animationTimeDifference = currentKeyFrameLocation - previousKeyFrameLocation;
+			double length = AnimationUtils.convertSecondsToTicks(currentKeyFrameLocation - previousKeyFrameLocation);
 
 			JsonArray vectorJsonArray = getKeyFrameVector(keyframe.getValue());
-			IValue xValue = parseExpression(parser, vectorJsonArray.get(0));
-			IValue yValue = parseExpression(parser, vectorJsonArray.get(1));
-			IValue zValue = parseExpression(parser, vectorJsonArray.get(2));
 
-			IValue currentXValue = isRotation && xValue instanceof ConstantValue ? ConstantValue.fromDouble(Math.toRadians(-xValue.get())) : xValue;
-			IValue currentYValue = isRotation && yValue instanceof ConstantValue ? ConstantValue.fromDouble(Math.toRadians(-yValue.get())) : yValue;
-			IValue currentZValue = isRotation && zValue instanceof ConstantValue ? ConstantValue.fromDouble(Math.toRadians(zValue.get())) : zValue;
+			// For rotation:
+			// Dynamic X and Y values get negated.
+			// Constant values get converted to radians.
+			IValue currentXValue = parseExpression(parser, vectorJsonArray.get(0), true, isRotation);
+			IValue currentYValue = parseExpression(parser, vectorJsonArray.get(1), true, isRotation);
+			IValue currentZValue = parseExpression(parser, vectorJsonArray.get(2), false, isRotation);
+
 			KeyFrame xKeyFrame;
 			KeyFrame yKeyFrame;
 			KeyFrame zKeyFrame;
@@ -65,19 +67,20 @@ public class JsonKeyFrameUtils {
 				EasingType easingType = getEasingType(keyframe.getValue());
 				if (hasEasingArgs(keyframe.getValue())) {
 					double[] easingArgs = getEasingArgs(keyframe.getValue());
-					xKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentXValue : previousXValue, currentXValue, easingType, easingArgs);
-					yKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentYValue : previousYValue, currentYValue, easingType, easingArgs);
-					zKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentZValue : previousZValue, currentZValue, easingType, easingArgs);
+					Double arg = easingArgs.length > 0 ? easingArgs[0] : null;
+					xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType, arg);
+					yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType, arg);
+					zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType, arg);
 				} else {
-					xKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentXValue : previousXValue, currentXValue, easingType);
-					yKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentYValue : previousYValue, currentYValue, easingType);
-					zKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentZValue : previousZValue, currentZValue, easingType);
+					xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType);
+					yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType);
+					zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType);
 
 				}
 			} else {
-				xKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentXValue : previousXValue, currentXValue);
-				yKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentYValue : previousYValue, currentYValue);
-				zKeyFrame = new KeyFrame(AnimationUtils.convertSecondsToTicks(animationTimeDifference), i == 0 ? currentZValue : previousZValue, currentZValue);
+				xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue);
+				yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue);
+				zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue);
 			}
 
 			previousXValue = currentXValue;
@@ -89,7 +92,7 @@ public class JsonKeyFrameUtils {
 			zKeyFrames.add(zKeyFrame);
 		}
 
-		return new VectorTimeline(xKeyFrames, yKeyFrames, zKeyFrames);
+		return new VectorTimeline(new Timeline(xKeyFrames.build()), new Timeline(yKeyFrames.build()), new Timeline(zKeyFrames.build()));
 	}
 
 	private static JsonArray getKeyFrameVector(JsonElement element) {
@@ -112,8 +115,7 @@ public class JsonKeyFrameUtils {
 		final String easingString = element.getAsJsonObject().get("easing").getAsString();
 		try {
 			final String uppercaseEasingString = Character.toUpperCase(easingString.charAt(0)) + easingString.substring(1);
-			EasingType easing = EasingType.valueOf(uppercaseEasingString);
-			return easing;
+			return EasingType.valueOf(uppercaseEasingString);
 		} catch (Exception e) {
 			GeckoLib.LOGGER.fatal("Unknown easing type: {}", easingString);
 			throw new RuntimeException(e);
@@ -161,13 +163,27 @@ public class JsonKeyFrameUtils {
 		return convertJson(element, true, parser);
 	}
 
-	public static IValue parseExpression(MolangParser parser, JsonElement element) throws
+	public static IValue parseExpression(MolangParser parser, JsonElement element, boolean negateExpression, boolean isRotation) throws
 			MolangException {
 		if (element.getAsJsonPrimitive().isString()) {
-			return parser.parseJson(element);
+			if (negateExpression && isRotation) {
+				return new ScaleValue(-1, parser.parseJson(element));
+			} else {
+				return parser.parseJson(element);
+			}
 		} else {
-			return ConstantValue.fromDouble(element.getAsDouble());
+			if (isRotation) {
+				return new Constant(Math.toRadians(element.getAsDouble()));
+			} else {
+				return new Constant(element.getAsDouble());
+			}
 		}
 	}
 
+	private record ScaleValue(double scale, IValue value) implements IValue {
+		@Override
+		public double get() {
+			return scale * value.get();
+		}
+	}
 }
