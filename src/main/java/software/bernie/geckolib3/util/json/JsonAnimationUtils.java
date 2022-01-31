@@ -7,7 +7,6 @@ package software.bernie.geckolib3.util.json;
 
 import java.util.*;
 
-import com.eliotlash.mclib.math.IValue;
 import com.eliotlash.molang.MolangParser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -18,7 +17,7 @@ import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.keyframe.BoneAnimation;
 import software.bernie.geckolib3.core.keyframe.EventKeyFrame;
 import software.bernie.geckolib3.core.keyframe.ParticleEventKeyFrame;
-import software.bernie.geckolib3.core.keyframe.VectorKeyFrameList;
+import software.bernie.geckolib3.core.keyframe.VectorTimeline;
 import software.bernie.geckolib3.util.AnimationUtils;
 
 /**
@@ -276,16 +275,16 @@ public class JsonAnimationUtils {
 		for (Map.Entry<String, JsonElement> bone : getBones(animationJsonObject)) {
 			String boneName = bone.getKey();
 
-			VectorKeyFrameList<IValue> scaleKeyFrames;
-			VectorKeyFrameList<IValue> positionKeyFrames;
-			VectorKeyFrameList<IValue> rotationKeyFrames;
+			VectorTimeline scaleKeyFrames;
+			VectorTimeline positionKeyFrames;
+			VectorTimeline rotationKeyFrames;
 			JsonObject boneJsonObj = bone.getValue().getAsJsonObject();
 			try {
 				Set<Map.Entry<String, JsonElement>> scaleKeyFramesJson = getScaleKeyFrames(boneJsonObj);
 				scaleKeyFrames = JsonKeyFrameUtils.convertJsonToKeyFrames(new ArrayList<>(scaleKeyFramesJson), parser);
 			} catch (Exception e) {
 				// No scale key frames found
-				scaleKeyFrames = new VectorKeyFrameList<>();
+				scaleKeyFrames = new VectorTimeline();
 			}
 
 			try {
@@ -293,7 +292,7 @@ public class JsonAnimationUtils {
 				positionKeyFrames = JsonKeyFrameUtils.convertJsonToKeyFrames(new ArrayList<>(positionKeyFramesJson), parser);
 			} catch (Exception e) {
 				// No position key frames found
-				positionKeyFrames = new VectorKeyFrameList<>();
+				positionKeyFrames = new VectorTimeline();
 			}
 
 			try {
@@ -301,7 +300,7 @@ public class JsonAnimationUtils {
 				rotationKeyFrames = JsonKeyFrameUtils.convertJsonToRotationKeyFrames(new ArrayList<>(rotationKeyFramesJson), parser);
 			} catch (Exception e) {
 				// No rotation key frames found
-				rotationKeyFrames = new VectorKeyFrameList<>();
+				rotationKeyFrames = new VectorTimeline();
 			}
 
 			boneAnimations.add(new BoneAnimation(boneName, rotationKeyFrames, positionKeyFrames, scaleKeyFrames));
@@ -318,10 +317,6 @@ public class JsonAnimationUtils {
 			longestLength = maxAll(longestLength, xKeyframeTime, yKeyframeTime, zKeyframeTime);
 		}
 		return longestLength == 0 ? Double.MAX_VALUE : longestLength;
-	}
-
-	static List<IValue> convertJsonArrayToList(JsonArray array) {
-		return new Gson().fromJson(array, ArrayList.class);
 	}
 
 	public static double maxAll(double... values) {
