@@ -1,3 +1,4 @@
 [submodule "core"]
 	path = core
-	url = https://github.com/Jozufozu/geckolib-core.git
+	url = https://github.com/bernie-g/geckolib-core.git
+	branch = jozu/next
