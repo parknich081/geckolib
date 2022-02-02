@@ -10,8 +10,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.eliotlash.mclib.math.Constant;
-import com.eliotlash.mclib.math.IValue;
+import com.eliotlash.molang.math.Constant;
+import com.eliotlash.molang.math.IValue;
 import com.eliotlash.molang.MolangException;
 import com.eliotlash.molang.MolangParser;
 import com.google.common.collect.ImmutableList;
