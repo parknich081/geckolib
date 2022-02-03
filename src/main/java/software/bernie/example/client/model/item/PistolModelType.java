@@ -2,8 +2,6 @@ package software.bernie.example.client.model.item;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.example.ExampleModelTypes;
-import software.bernie.example.item.PistolItem;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -30,7 +28,7 @@ public class PistolModelType extends GeoModelType<ItemStack> {
 	@Override
 	public Animator<ItemStack> createAnimator(ItemStack entity) {
 		Animator<ItemStack> data = new Animator<>(entity, this);
-		data.addAnimationController(new AnimationController<>(entity, PistolItem.controllerName, 1, this::predicate));
+		data.addAnimationController(new AnimationController<>(entity, 1, this::predicate));
 		return data;
 	}
 

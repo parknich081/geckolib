@@ -1,7 +1,6 @@
 package software.bernie.example.client.model.entity;
 
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.entity.ExampleEntityAnimator;
 import software.bernie.example.entity.GeoExampleEntity;
 import software.bernie.geckolib3.GeckoLib;
@@ -30,7 +29,7 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 	@Override
 	protected Animator<GeoExampleEntity> createAnimator(GeoExampleEntity geoExampleEntity) {
 		ExampleEntityAnimator data = new ExampleEntityAnimator(geoExampleEntity, this);
-		data.addAnimationController(new AnimationController<>(geoExampleEntity, "controller", 0, this::predicate));
+		data.addAnimationController(new AnimationController<>(geoExampleEntity, 0, this::predicate));
 		return data;
 	}
 

@@ -5,7 +5,6 @@
 package software.bernie.example.client.model.tile;
 
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.block.tile.FertilizerTileEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -45,7 +44,7 @@ public class FertilizerModelType extends GeoModelType<FertilizerTileEntity> {
 	@Override
 	protected Animator<FertilizerTileEntity> createAnimator(FertilizerTileEntity fertilizerTileEntity) {
 		Animator<FertilizerTileEntity> data = new Animator<>(fertilizerTileEntity, this);
-		data.addAnimationController(new AnimationController<>(fertilizerTileEntity, "controller", 0, this::predicate));
+		data.addAnimationController(new AnimationController<>(fertilizerTileEntity, 0, this::predicate));
 		return data;
 	}
 

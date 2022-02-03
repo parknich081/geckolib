@@ -7,8 +7,6 @@ import java.util.Objects;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.world.storage.GeckoLibIdTracker;
 
 public class GeckoLibUtil {
@@ -71,15 +69,5 @@ public class GeckoLibUtil {
 	 */
 	public static boolean stackHasIDTag(ItemStack stack) {
 		return stack.hasTag() && stack.getTag().contains(GECKO_LIB_ID_NBT, Tag.TAG_INT);
-	}
-
-	public static AnimationController<?> getControllerForStack(AnimationFactory<ItemStack> factory, ItemStack stack,
-			String controllerName) {
-		return getControllerForID(factory, stack, controllerName);
-	}
-
-	public static <A> AnimationController<A> getControllerForID(AnimationFactory<A> factory, A id,
-			String controllerName) {
-		return factory.getOrCreateAnimator(id).getAnimationController(controllerName);
 	}
 }

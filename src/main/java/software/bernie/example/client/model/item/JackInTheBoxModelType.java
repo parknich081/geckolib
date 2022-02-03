@@ -4,8 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.example.ExampleModelTypes;
-import software.bernie.example.item.JackInTheBoxItem;
 import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -34,7 +32,7 @@ public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
 	@Override
 	protected Animator<ItemStack> createAnimator(ItemStack stack) {
 		Animator<ItemStack> animator = new Animator<>(stack, this);
-		AnimationController<ItemStack> controller = new AnimationController<>(stack, JackInTheBoxItem.CONTROLLER_NAME, 20, this::predicate);
+		AnimationController<ItemStack> controller = new AnimationController<>(stack, 20, this::predicate);
 
 		// Registering a sound listener just makes it so when any sound keyframe is hit
 		// the method will be called.

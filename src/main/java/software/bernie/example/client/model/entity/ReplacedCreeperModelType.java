@@ -2,7 +2,6 @@ package software.bernie.example.client.model.entity;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Creeper;
-import software.bernie.example.ExampleModelTypes;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -29,7 +28,7 @@ public class ReplacedCreeperModelType extends GeoModelType<Creeper> {
 	@Override
 	public Animator<Creeper> createAnimator(Creeper creeper) {
 		Animator<Creeper> data = new Animator<>(creeper, this);
-		data.addAnimationController(new AnimationController<>(creeper, "controller", 20, this::predicate));
+		data.addAnimationController(new AnimationController<>(creeper, 20, this::predicate));
 		return data;
 	}
 

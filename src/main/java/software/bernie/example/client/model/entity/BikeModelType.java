@@ -1,7 +1,6 @@
 package software.bernie.example.client.model.entity;
 
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.entity.BikeEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -29,7 +28,7 @@ public class BikeModelType extends GeoModelType<BikeEntity> {
 	@Override
 	protected Animator<BikeEntity> createAnimator(BikeEntity bikeEntity) {
 		Animator<BikeEntity> data = new Animator<>(bikeEntity, this);
-		data.addAnimationController(new AnimationController<>(bikeEntity, "controller", 0, this::predicate));
+		data.addAnimationController(new AnimationController<>(bikeEntity, 0, this::predicate));
 		return data;
 	}
 

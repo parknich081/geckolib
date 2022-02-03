@@ -29,7 +29,7 @@ public class LEModelType extends GeoModelType<LEEntity> {
 	@Override
 	protected Animator<LEEntity> createAnimator(LEEntity entity) {
 		Animator<LEEntity> data = new Animator<>(entity, this);
-		data.addAnimationController(new AnimationController<>(entity, "controller", 5, this::predicate));
+		data.addAnimationController(new AnimationController<>(entity, 5, this::predicate));
 		return data;
 	}
 

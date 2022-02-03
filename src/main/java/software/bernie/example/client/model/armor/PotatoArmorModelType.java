@@ -2,8 +2,6 @@ package software.bernie.example.client.model.armor;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.example.ExampleModelTypes;
-import software.bernie.example.item.PotatoArmorItem;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -30,7 +28,7 @@ public class PotatoArmorModelType extends GeoModelType<ItemStack> {
 	@Override
 	protected Animator<ItemStack> createAnimator(ItemStack stack) {
 		Animator<ItemStack> data = new Animator<>(stack, this);
-		data.addAnimationController(new AnimationController<>(stack, "controller", 20, this::predicate));
+		data.addAnimationController(new AnimationController<>(stack, 20, this::predicate));
 		return data;
 	}
 
