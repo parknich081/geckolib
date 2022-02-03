@@ -14,12 +14,13 @@ import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import software.bernie.geckolib3.core.processor.BoneTree;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoQuad;
 import software.bernie.geckolib3.geo.render.built.GeoVertex;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.util.RenderUtils;
 
 public interface IGeoRenderer<T> {
@@ -98,7 +99,7 @@ public interface IGeoRenderer<T> {
 		}
 	}
 
-	AnimatedGeoModel<T> getGeoModelProvider();
+	GeoModelType<T> getModelType();
 
 	default void renderEarly(T animatable, PoseStack stackIn, float ticks, @Nullable MultiBufferSource renderTypeBuffer,
 			@Nullable VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,

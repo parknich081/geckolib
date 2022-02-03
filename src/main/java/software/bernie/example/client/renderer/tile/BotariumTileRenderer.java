@@ -7,13 +7,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.block.tile.BotariumTileEntity;
-import software.bernie.example.client.model.tile.BotariumModel;
+import software.bernie.example.client.model.tile.BotariumModelType;
 import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class BotariumTileRenderer extends GeoBlockRenderer<BotariumTileEntity> {
 	public BotariumTileRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn) {
-		super(rendererDispatcherIn, new BotariumModel());
+		super(rendererDispatcherIn, ExampleModelTypes.BOTARIUM);
 	}
 
 	@Override

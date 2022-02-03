@@ -2,6 +2,7 @@ package software.bernie.geckolib3.renderers.geo;
 
 import java.awt.Color;
 
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -17,18 +18,19 @@ import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated> implements IGeoRenderer<T>, BlockEntityRenderer<T> {
+public abstract class GeoBlockRenderer<T extends BlockEntity> implements IGeoRenderer<T>, BlockEntityRenderer<T> {
 
-	private final AnimatedGeoModel<T> modelProvider;
+	private final GeoModelType<T> modelType;
 
 	public GeoBlockRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn,
-			AnimatedGeoModel<T> modelProvider) {
-		this.modelProvider = modelProvider;
+			GeoModelType<T> modelType) {
+		this.modelType = modelType;
 	}
 
 	@Override
@@ -38,9 +40,10 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated> implem
 	}
 
 	public void render(T tile, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
-		AnimatingModel model = modelProvider.getModel(tile);
-		AnimationData data = tile.getAnimationData();
-		modelProvider.setLivingAnimations(tile, data);
+		AnimatingModel model = modelType.getOrCreateBoneTree(tile);
+		Animator<T> data = modelType.getOrCreateAnimator(tile);
+
+		data.tickAnimation(new AnimationEvent<>(tile), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 		stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0, 0.5);
@@ -55,8 +58,8 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated> implem
 	}
 
 	@Override
-	public AnimatedGeoModel<T> getGeoModelProvider() {
-		return this.modelProvider;
+	public GeoModelType<T> getModelType() {
+		return this.modelType;
 	}
 
 	protected void rotateBlock(Direction facing, PoseStack stack) {
@@ -94,6 +97,6 @@ public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimated> implem
 	}
 
 	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureResource(instance);
+		return this.modelType.getTextureResource(instance);
 	}
 }

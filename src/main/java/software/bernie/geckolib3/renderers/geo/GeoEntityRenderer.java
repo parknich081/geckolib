@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -28,16 +29,16 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> extends EntityRenderer<T> implements IGeoRenderer<T> {
+public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRenderer<T> implements IGeoRenderer<T> {
 
-	private final AnimatedGeoModel<T> modelProvider;
+	private final GeoModelType<T> modelProvider;
 	protected final List<GeoLayerRenderer<T>> layerRenderers = Lists.newArrayList();
 
 	public ItemStack mainHand;
@@ -49,7 +50,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 	public MultiBufferSource rtb;
 	public ResourceLocation whTexture;
 
-	public GeoEntityRenderer(EntityRendererProvider.Context renderManager, AnimatedGeoModel<T> modelProvider) {
+	public GeoEntityRenderer(EntityRendererProvider.Context renderManager, GeoModelType<T> modelProvider) {
 		super(renderManager);
 		this.modelProvider = modelProvider;
 	}
@@ -116,12 +117,13 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 		entityModelData.headPitch = -headPitch;
 		entityModelData.netHeadYaw = -netHeadYaw;
 
-		AnimationEvent<T> predicate = new AnimationEvent<T>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-		AnimatingModel model = modelProvider.getModel(entity);
-		AnimationData data = entity.getAnimationData();
-		modelProvider.setLivingAnimations(entity, data, predicate);
+		AnimationEvent<T> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
+		AnimatingModel model = modelProvider.getOrCreateBoneTree(entity);
+		Animator<T> data = modelProvider.getOrCreateAnimator(entity);
 
-		stack.translate(0, 0.01f, 0);
+        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+
+        stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(entity));
@@ -156,7 +158,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimated> exte
 	}
 
 	@Override
-	public AnimatedGeoModel<T> getGeoModelProvider() {
+	public GeoModelType<T> getModelType() {
 		return this.modelProvider;
 	}
 

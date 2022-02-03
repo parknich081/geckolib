@@ -20,24 +20,19 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.network.PacketDistributor;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.GeckoLibMod;
-import software.bernie.example.client.renderer.item.PistolRender;
 import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
-import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.network.GeckoLibNetwork;
 import software.bernie.geckolib3.network.ISyncable;
+import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>, ISyncable {
+public class PistolItem extends Item implements ISyncable {
 
-	public final AnimationFactory<Integer> factory = new AnimationFactory<>(this::createAnimationData);
-	public String controllerName = "controller";
+	public static final String controllerName = "controller";
 	public static final int ANIM_OPEN = 0;
 
 	public PistolItem() {
@@ -49,7 +44,7 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 	public void initializeClient(Consumer<IItemRenderProperties> consumer) {
 		super.initializeClient(consumer);
 		consumer.accept(new IItemRenderProperties() {
-			private final BlockEntityWithoutLevelRenderer renderer = new PistolRender();
+			private final BlockEntityWithoutLevelRenderer renderer = new GeoItemRenderer<>(ExampleModelTypes.PISTOL);
 
 			@Override
 			public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
@@ -60,14 +55,13 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 
 	@Override
 	public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
-		if (entityLiving instanceof Player) {
-			Player playerentity = (Player) entityLiving;
+		if (entityLiving instanceof Player player) {
 			if (stack.getDamageValue() < (stack.getMaxDamage() - 1)) {
-				playerentity.getCooldowns().addCooldown(this, 5);
+				player.getCooldowns().addCooldown(this, 5);
 				if (!worldIn.isClientSide) {
-					Arrow abstractarrowentity = createArrow(worldIn, stack, playerentity);
+					Arrow abstractarrowentity = createArrow(worldIn, stack, player);
 					abstractarrowentity = customeArrow(abstractarrowentity);
-					abstractarrowentity.shootFromRotation(playerentity, playerentity.getXRot(), playerentity.getYRot(), 0.0F, 1.0F * 3.0F, 1.0F);
+					abstractarrowentity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.0F * 3.0F, 1.0F);
 
 					abstractarrowentity.setBaseDamage(2.5);
 					abstractarrowentity.tickCount = 35;
@@ -78,7 +72,7 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 				}
 				if (!worldIn.isClientSide) {
 					final int id = GeckoLibUtil.guaranteeIDForStack(stack, (ServerLevel) worldIn);
-					final PacketDistributor.PacketTarget target = PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> playerentity);
+					final PacketDistributor.PacketTarget target = PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player);
 					GeckoLibNetwork.syncAnimation(target, this, id, ANIM_OPEN);
 				}
 			}
@@ -109,30 +103,14 @@ public class PistolItem extends Item implements IAnimatableSingleton<ItemStack>,
 		return arrow;
 	}
 
-	public AnimationBuilder predicate(AnimationController<PistolItem> controller, AnimationEvent<PistolItem> event) {
-		// TODO: item animation refactor
-		return null;
-	}
-
-	public AnimationData createAnimationData(Integer stack) {
-		AnimationData data = new AnimationData();
-		data.addAnimationController(new AnimationController<>(this, controllerName, 1, this::predicate));
-		return data;
-	}
-
-	@Override
-	public AnimationData getAnimationData(ItemStack key) {
-		return factory.getOrCreateAnimationData(GeckoLibUtil.getIDFromStack(key));
-	}
-
 	@Override
 	public void onAnimationSync(int id, int state) {
-		if (state == ANIM_OPEN) {
-			final AnimationController<?> controller = GeckoLibUtil.getControllerForID(this.factory, id, controllerName);
-			if (controller.getAnimationState() == AnimationState.Stopped) {
-				controller.setAnimation(new AnimationBuilder().addAnimation("firing", false));
-			}
-		}
+//		if (state == ANIM_OPEN) {
+//			final AnimationController<?> controller = GeckoLibUtil.getControllerForID(this.factory, id, controllerName);
+//			if (controller.getAnimationState() == AnimationState.Stopped) {
+//				controller.setAnimation(new AnimationBuilder().addAnimation("firing", false));
+//			}
+//		}
 	}
 
 	@Override

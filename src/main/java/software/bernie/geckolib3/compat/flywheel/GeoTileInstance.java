@@ -7,6 +7,7 @@ import java.util.function.Function;
 import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.api.instance.DynamicInstance;
 import com.jozufozu.flywheel.backend.instancing.blockentity.BlockEntityInstance;
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.jozufozu.flywheel.util.transform.MatrixTransformStack;
 
 import net.minecraft.Util;
@@ -18,28 +19,26 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEntityInstance<T> implements DynamicInstance {
+public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<T> implements DynamicInstance {
 
 	private static final Function<ResourceLocation, RenderType> states = Util.memoize(RenderType::entityCutout);
 
-	private final AnimatedGeoModel<T> modelProvider;
-
 	private final List<GeoInstanceTree> topLevelBones = new ArrayList<>();
 	private final MatrixTransformStack stack;
-	private final AnimationData data;
+	private final Animator<T> animator;
 
-	public GeoTileInstance(MaterialManager materialManager, T tile, AnimatedGeoModel<T> modelProvider) {
+	public GeoTileInstance(MaterialManager materialManager, T tile, GeoModelType<T> modelProvider) {
 		super(materialManager, tile);
-		this.modelProvider = modelProvider;
 		stack = new MatrixTransformStack();
 
-		AnimatingModel model = modelProvider.getModel(tile);
+		AnimatingModel model = modelProvider.getOrCreateBoneTree(tile);
 		RenderType state = states.apply(modelProvider.getTextureResource(tile));
 
 		stack.translate(getInstancePosition()).translate(0.5, 0.01, 0.5).rotateToFace(getFacing());
@@ -48,13 +47,13 @@ public class GeoTileInstance<T extends BlockEntity & IAnimated> extends BlockEnt
 			topLevelBones.add(new GeoInstanceTree(materialManager, state, bone));
 		}
 
-		data = blockEntity.getAnimationData();
-		data.setBoneTree(model);
+		animator = modelProvider.getOrCreateAnimator(tile);
 	}
 
 	@Override
 	public void beginFrame() {
-		modelProvider.setLivingAnimations(blockEntity, data);
+
+		animator.tickAnimation(new AnimationEvent<>(blockEntity), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 
 		for (GeoInstanceTree bone : topLevelBones) {
 			bone.recursiveCheckNeedsUpdate();

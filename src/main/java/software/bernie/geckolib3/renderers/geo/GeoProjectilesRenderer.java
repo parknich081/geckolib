@@ -3,6 +3,7 @@ package software.bernie.geckolib3.renderers.geo;
 import java.awt.Color;
 import java.util.Collections;
 
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -15,18 +16,18 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import software.bernie.geckolib3.core.IAnimated;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends EntityRenderer<T> implements IGeoRenderer<T> {
+public class GeoProjectilesRenderer<T extends Entity> extends EntityRenderer<T> implements IGeoRenderer<T> {
 
-	private final AnimatedGeoModel<T> modelProvider;
+	private final GeoModelType<T> modelProvider;
 
-	public GeoProjectilesRenderer(EntityRendererProvider.Context renderManager, AnimatedGeoModel<T> modelProvider) {
+	public GeoProjectilesRenderer(EntityRendererProvider.Context renderManager, GeoModelType<T> modelProvider) {
 		super(renderManager);
 		this.modelProvider = modelProvider;
 	}
@@ -34,7 +35,7 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 	@Override
 	public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		AnimatingModel model = modelProvider.getModel(entityIn);
+		AnimatingModel model = modelProvider.getOrCreateBoneTree(entityIn);
 		matrixStackIn.pushPose();
 		matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
 		matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
@@ -48,10 +49,10 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 		EntityModelData entityModelData = new EntityModelData();
 		AnimationEvent<T> predicate = new AnimationEvent<T>(entityIn, limbSwing, lastLimbDistance, partialTicks, !(lastLimbDistance > -0.15F && lastLimbDistance < 0.15F), Collections.singletonList(entityModelData));
 
-		AnimationData data = entityIn.getAnimationData();
+		Animator<T> data = modelProvider.getOrCreateAnimator(entityIn);
 
-		modelProvider.setLivingAnimations(entityIn, data, predicate);
-		matrixStackIn.popPose();
+        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+        matrixStackIn.popPose();
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 
@@ -60,7 +61,7 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimated> extends Entity
 	}
 
 	@Override
-	public AnimatedGeoModel<T> getGeoModelProvider() {
+	public GeoModelType<T> getModelType() {
 		return this.modelProvider;
 	}
 

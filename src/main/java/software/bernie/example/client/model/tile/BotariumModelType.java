@@ -5,11 +5,16 @@
 package software.bernie.example.client.model.tile;
 
 import net.minecraft.resources.ResourceLocation;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.block.tile.BotariumTileEntity;
 import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.model.GeoModelType;
 
-public class BotariumModel extends AnimatedGeoModel<BotariumTileEntity> {
+public class BotariumModelType extends GeoModelType<BotariumTileEntity> {
 	@Override
 	public ResourceLocation getAnimationResource(BotariumTileEntity animatable) {
 		return new ResourceLocation(GeckoLib.ModID, "animations/botarium.animation.json");
@@ -24,4 +29,18 @@ public class BotariumModel extends AnimatedGeoModel<BotariumTileEntity> {
 	public ResourceLocation getTextureResource(BotariumTileEntity entity) {
 		return new ResourceLocation(GeckoLib.ModID, "textures/block/botarium.png");
 	}
+
+	@Override
+	protected Animator<BotariumTileEntity> createAnimator(BotariumTileEntity botariumTileEntity) {
+		Animator<BotariumTileEntity> data = new Animator<>(botariumTileEntity, this);
+		data.addAnimationController(new AnimationController<>(botariumTileEntity, "controller", 0, this::predicate));
+		return data;
+	}
+
+	private AnimationBuilder predicate(AnimationController<BotariumTileEntity> controller,
+			AnimationEvent<BotariumTileEntity> event) {
+		controller.transitionLengthTicks = 0;
+		return new AnimationBuilder().addAnimation("Botarium.anim.deploy", true);
+	}
+
 }

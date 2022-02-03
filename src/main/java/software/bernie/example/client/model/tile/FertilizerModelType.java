@@ -5,11 +5,16 @@
 package software.bernie.example.client.model.tile;
 
 import net.minecraft.resources.ResourceLocation;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.block.tile.FertilizerTileEntity;
 import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.model.GeoModelType;
 
-public class FertilizerModel extends AnimatedGeoModel<FertilizerTileEntity> {
+public class FertilizerModelType extends GeoModelType<FertilizerTileEntity> {
 	@Override
 	public ResourceLocation getAnimationResource(FertilizerTileEntity animatable) {
 		if (animatable.getLevel().isRaining()) {
@@ -34,6 +39,25 @@ public class FertilizerModel extends AnimatedGeoModel<FertilizerTileEntity> {
 			return new ResourceLocation(GeckoLib.ModID + ":textures/block/fertilizer.png");
 		} else {
 			return new ResourceLocation(GeckoLib.ModID + ":textures/block/botarium.png");
+		}
+	}
+
+	@Override
+	protected Animator<FertilizerTileEntity> createAnimator(FertilizerTileEntity fertilizerTileEntity) {
+		Animator<FertilizerTileEntity> data = new Animator<>(fertilizerTileEntity, this);
+		data.addAnimationController(new AnimationController<>(fertilizerTileEntity, "controller", 0, this::predicate));
+		return data;
+	}
+
+	private AnimationBuilder predicate(AnimationController<FertilizerTileEntity> controller,
+			AnimationEvent<FertilizerTileEntity> event) {
+		controller.transitionLengthTicks = 0;
+		if (event.getAnimatable().getLevel().isRaining()) {
+			return new AnimationBuilder().addAnimation("fertilizer.animation.deploy", true)
+					.addAnimation("fertilizer.animation.idle", true);
+		} else {
+			return new AnimationBuilder().addAnimation("Botarium.anim.deploy", true)
+					.addAnimation("Botarium.anim.idle", true);
 		}
 	}
 }

@@ -1,14 +1,14 @@
 package software.bernie.example.client.renderer.armor;
 
 import net.minecraft.world.item.ItemStack;
-import software.bernie.example.client.model.armor.PotatoArmorModel;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.item.PotatoArmorItem;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
 
 public class PotatoArmorRenderer extends GeoArmorRenderer<PotatoArmorItem> {
 	public PotatoArmorRenderer() {
-		super(new PotatoArmorModel());
+		super(ExampleModelTypes.POTATO_ARMOR);
 
 		// These values are what each bone name is in blockbench. So if your head bone
 		// is named "bone545", make sure to do this.headBone = "bone545";
@@ -22,10 +22,5 @@ public class PotatoArmorRenderer extends GeoArmorRenderer<PotatoArmorItem> {
 		this.leftLegBone = "leftLeg";
 		this.rightBootBone = "rightBoot";
 		this.leftBootBone = "leftBoot";
-	}
-
-	@Override
-	protected AnimationData getAnimationData(ItemStack stack) {
-		return currentArmorItem.getAnimationData(stack);
 	}
 }

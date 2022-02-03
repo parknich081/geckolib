@@ -5,13 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Creeper;
-import software.bernie.example.client.model.entity.ReplacedCreeperModel;
-import software.bernie.example.entity.ReplacedCreeperEntity;
+import software.bernie.example.ExampleModelTypes;
 import software.bernie.geckolib3.renderers.geo.GeoReplacedEntityRenderer;
 
 public class ReplacedCreeperRenderer extends GeoReplacedEntityRenderer<Creeper> {
 	public ReplacedCreeperRenderer(EntityRendererProvider.Context renderManager) {
-		super(renderManager, new ReplacedCreeperModel(), new ReplacedCreeperEntity());
+		super(renderManager, ExampleModelTypes.REPLACED_CREEPER);
 	}
 
 	@Override

@@ -15,24 +15,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.core.IAnimated;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
 
-public class BikeEntity extends Animal implements IAnimated {
-	private final AnimationData data = new AnimationData();
-
-	private <E extends IAnimated> AnimationBuilder predicate(AnimationController<E> controller, AnimationEvent<E> event) {
-		return new AnimationBuilder().addAnimation("animation.bike.idle", true);
-	}
+public class BikeEntity extends Animal {
 
 	public BikeEntity(EntityType<? extends Animal> type, Level worldIn) {
 		super(type, worldIn);
 		this.noCulling = true;
-		data.addAnimationController(new AnimationController<>(this, "controller", 0, this::predicate));
 	}
 
 	@Override
@@ -86,8 +74,4 @@ public class BikeEntity extends Animal implements IAnimated {
 		return null;
 	}
 
-	@Override
-	public AnimationData getAnimationData() {
-		return data;
-	}
 }

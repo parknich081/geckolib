@@ -31,7 +31,7 @@ public class GeoExampleLayer<T extends LivingEntity> extends GeoLayerRenderer<T>
 		matrixStackIn.scale(1.0f, 1.0f, 1.0f);
 		matrixStackIn.translate(0.0d, 0.0d, 0.0d);
 		this.getRenderer()
-				.render(getEntityModel().getModel(entityLivingBaseIn), entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn, bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
+				.render(getEntityModel().getOrCreateBoneTree(entityLivingBaseIn), entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn, bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
 		matrixStackIn.popPose();
 	}
 }

@@ -12,10 +12,9 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IItemRenderProperties;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
 
-public abstract class GeoArmorItem extends ArmorItem implements IAnimatableSingleton<ItemStack> {
+public abstract class GeoArmorItem extends ArmorItem {
 	public GeoArmorItem(ArmorMaterial materialIn, EquipmentSlot slot, Properties builder) {
 		super(materialIn, slot, builder);
 	}
@@ -40,6 +39,6 @@ public abstract class GeoArmorItem extends ArmorItem implements IAnimatableSingl
 	public final String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
 		Class<? extends GeoArmorItem> clazz = this.getClass();
 		GeoArmorRenderer<? super GeoArmorItem> renderer = GeoArmorRenderer.getRenderer(clazz);
-		return renderer.getTextureLocation((GeoArmorItem) stack.getItem()).toString();
+		return renderer.getTextureLocation(stack).toString();
 	}
 }

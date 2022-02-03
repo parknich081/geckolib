@@ -3,6 +3,7 @@ package software.bernie.geckolib3.renderers.geo;
 import java.awt.Color;
 import java.util.Collections;
 
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,34 +19,34 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<ItemStack>> extends BlockEntityWithoutLevelRenderer implements IGeoRenderer<T> {
+public class GeoItemRenderer<T extends Item> extends BlockEntityWithoutLevelRenderer implements IGeoRenderer<ItemStack> {
 
-	protected AnimatedGeoModel<T> modelProvider;
+	protected GeoModelType<ItemStack> modelProvider;
 	protected ItemStack currentItemStack;
 
-	public GeoItemRenderer(AnimatedGeoModel<T> modelProvider) {
+	public GeoItemRenderer(GeoModelType<ItemStack> modelProvider) {
 		this(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance()
 				.getEntityModels(), modelProvider);
 	}
 
 	public GeoItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet,
-			AnimatedGeoModel<T> modelProvider) {
+			GeoModelType<ItemStack> modelProvider) {
 		super(dispatcher, modelSet);
 		this.modelProvider = modelProvider;
 	}
 
-	public void setModel(AnimatedGeoModel<T> model) {
+	public void setModel(GeoModelType<ItemStack> model) {
 		this.modelProvider = model;
 	}
 
 	@Override
-	public AnimatedGeoModel<T> getGeoModelProvider() {
+	public GeoModelType<ItemStack> getModelType() {
 		return modelProvider;
 	}
 
@@ -58,36 +59,36 @@ public abstract class GeoItemRenderer<T extends Item & IAnimatableSingleton<Item
 			MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers()
 					.bufferSource();
 			Lighting.setupForFlatItems();
-			this.render((T) itemStack.getItem(), matrixStack, bufferIn, combinedLightIn, itemStack);
+			this.render(matrixStack, bufferIn, combinedLightIn, itemStack);
 			irendertypebuffer$impl.endBatch();
 			RenderSystem.enableDepthTest();
 			Lighting.setupFor3DItems();
 			matrixStack.popPose();
 		} else {
-			this.render((T) itemStack.getItem(), matrixStack, bufferIn, combinedLightIn, itemStack);
+			this.render(matrixStack, bufferIn, combinedLightIn, itemStack);
 		}
 	}
 
-	public void render(T animatable, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn,
-			ItemStack itemStack) {
+	public void render(PoseStack stack, MultiBufferSource bufferIn, int packedLightIn, ItemStack itemStack) {
 		this.currentItemStack = itemStack;
-		AnimatingModel model = modelProvider.getModel(animatable);
-		AnimationEvent<T> itemEvent = new AnimationEvent<>(animatable, 0, 0, Minecraft.getInstance()
-				.getFrameTime(), false, Collections.singletonList(itemStack));
-		AnimationData data = animatable.getAnimationData(itemStack);
-		modelProvider.setLivingAnimations(animatable, data, itemEvent);
-		stack.pushPose();
+		AnimationEvent<ItemStack> itemEvent = new AnimationEvent<>(itemStack, 0, 0, Minecraft.getInstance()
+				.getFrameTime(), false, Collections.emptyList());
+		Animator<ItemStack> data = modelProvider.getOrCreateAnimator(itemStack);
+		AnimatingModel model = modelProvider.getOrCreateBoneTree(itemStack);
+
+        data.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+        stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0.5, 0.5);
 
-		RenderSystem.setShaderTexture(0, getTextureLocation(animatable));
-		Color renderColor = getRenderColor(animatable, 0, stack, bufferIn, null, packedLightIn);
-		RenderType renderType = getRenderType(animatable, 0, stack, bufferIn, null, packedLightIn, getTextureLocation(animatable));
-		render(model, animatable, 0, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		RenderSystem.setShaderTexture(0, getTextureLocation(itemStack));
+		Color renderColor = getRenderColor(itemStack, 0, stack, bufferIn, null, packedLightIn);
+		RenderType renderType = getRenderType(itemStack, 0, stack, bufferIn, null, packedLightIn, getTextureLocation(itemStack));
+		render(model, itemStack, 0, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		stack.popPose();
 	}
 
-	public ResourceLocation getTextureLocation(T instance) {
+	public ResourceLocation getTextureLocation(ItemStack instance) {
 		return this.modelProvider.getTextureResource(instance);
 	}
 

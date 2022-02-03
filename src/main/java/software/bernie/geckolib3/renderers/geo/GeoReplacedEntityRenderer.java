@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import com.google.common.collect.Lists;
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -29,26 +30,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.IAnimatableSingleton;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 
 public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends EntityRenderer<E> implements IGeoRenderer<E> {
-	private final AnimatedGeoModel<E> modelProvider;
-	private final IAnimatableSingleton<E> animatable;
+	private final GeoModelType<E> modelProvider;
 	protected final List<GeoLayerRenderer<E>> layerRenderers = Lists.newArrayList();
 	private static final Map<Class<?>, GeoReplacedEntityRenderer<?>> renderers = new ConcurrentHashMap<>();
 
-	public GeoReplacedEntityRenderer(EntityRendererProvider.Context renderManager, AnimatedGeoModel<E> modelProvider,
-			IAnimatableSingleton<E> animatable) {
+	public GeoReplacedEntityRenderer(EntityRendererProvider.Context renderManager, GeoModelType<E> modelProvider) {
 		super(renderManager);
 		this.modelProvider = modelProvider;
-		this.animatable = animatable;
-		if (!renderers.containsKey(animatable.getClass())) {
-			renderers.put(animatable.getClass(), this);
+		if (!renderers.containsKey(modelProvider.getClass())) {
+			renderers.put(modelProvider.getClass(), this);
 		}
 	}
 
@@ -57,14 +55,8 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 	}
 
 	@Override
-	public void render(E entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+	public void render(E entity, float entityYaw, float partialTicks, PoseStack stack,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		this.render(entityIn, this.animatable, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-	}
-
-	@SuppressWarnings("resource")
-	public void render(E entity, IAnimatableSingleton<E> animatable, float entityYaw, float partialTicks,
-			PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
 
 		stack.pushPose();
 		boolean shouldSit = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle()
@@ -125,13 +117,14 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		entityModelData.headPitch = -f6;
 		entityModelData.netHeadYaw = -f2;
 
-		AnimatingModel model = modelProvider.getModel(entity);
 		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 
-		AnimationData data = animatable.getAnimationData(entity);
-		modelProvider.setLivingAnimations(entity, data, predicate);
+		AnimatingModel model = modelProvider.getOrCreateBoneTree(entity);
+		Animator<E> data = modelProvider.getOrCreateAnimator(entity);
 
-		stack.translate(0, 0.01f, 0);
+        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+
+        stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(entity));
@@ -164,7 +157,7 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 	}
 
 	@Override
-	public AnimatedGeoModel<E> getGeoModelProvider() {
+	public GeoModelType<E> getModelType() {
 		return this.modelProvider;
 	}
 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.jozufozu.flywheel.util.AnimationTickHolder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,13 +24,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.Animator;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.GeoModelType;
+import software.bernie.geckolib3.resource.GeckoLibCache;
 import software.bernie.geckolib3.util.GeoUtils;
 
-public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidModel implements IGeoRenderer<T> {
+public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidModel implements IGeoRenderer<ItemStack> {
 	private static final Map<Class<? extends ArmorItem>, GeoArmorRenderer<?>> renderers = new ConcurrentHashMap<>();
 
 	protected T currentArmorItem;
@@ -61,14 +63,12 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 		return (GeoArmorRenderer<? super A>) renderer;
 	}
 
-	private final AnimatedGeoModel<T> modelProvider;
+	private final GeoModelType<ItemStack> modelType;
 
-	public GeoArmorRenderer(AnimatedGeoModel<T> modelProvider) {
+	public GeoArmorRenderer(GeoModelType<ItemStack> modelType) {
 		super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
-		this.modelProvider = modelProvider;
+		this.modelType = modelType;
 	}
-
-	protected abstract AnimationData getAnimationData(ItemStack stack);
 
 	@Override
 	public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn,
@@ -79,17 +79,18 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	public void render(float partialTicks, PoseStack stack, VertexConsumer bufferIn, int packedLightIn) {
 		stack.translate(0.0D, 24 / 16F, 0.0D);
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		AnimatingModel model = modelProvider.getModel(currentArmorItem);
+		AnimatingModel model = modelType.getOrCreateBoneTree(itemStack);
 
-		AnimationEvent<T> itemEvent = new AnimationEvent<>(this.currentArmorItem, 0, 0, 0, false, Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
-		AnimationData data = getAnimationData(itemStack);
-		modelProvider.setLivingAnimations(currentArmorItem, data, itemEvent);
+		AnimationEvent<ItemStack> itemEvent = new AnimationEvent<>(itemStack, 0, 0, 0, false, Arrays.asList(this.entityLiving, this.armorSlot));
+		Animator<ItemStack> data = modelType.getOrCreateAnimator(itemStack);
+
+		data.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 		this.fitToBiped();
 		stack.pushPose();
-		RenderSystem.setShaderTexture(0, getTextureLocation(currentArmorItem));
-		Color renderColor = getRenderColor(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn);
-		RenderType renderType = getRenderType(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn, getTextureLocation(currentArmorItem));
-		render(model, currentArmorItem, partialTicks, renderType, stack, null, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		RenderSystem.setShaderTexture(0, getTextureLocation(itemStack));
+		Color renderColor = getRenderColor(itemStack, partialTicks, stack, null, bufferIn, packedLightIn);
+		RenderType renderType = getRenderType(itemStack, partialTicks, stack, null, bufferIn, packedLightIn, getTextureLocation(itemStack));
+		render(model, itemStack, partialTicks, renderType, stack, null, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		if (ModList.get().isLoaded("patchouli")) {
 			PatchouliCompat.patchouliLoaded(stack);
 		}
@@ -100,7 +101,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 	protected void fitToBiped() {
 		if (!(this.entityLiving instanceof ArmorStand)) {
-			AnimationData data = getAnimationData(itemStack);
+			Animator<?> data = modelType.getOrCreateAnimator(itemStack);
 			if (this.headBone != null) {
 				IBone headBone = data.getBone(this.headBone);
 				GeoUtils.copyRotations(this.head, headBone);
@@ -166,12 +167,12 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	}
 
 	@Override
-	public AnimatedGeoModel<T> getGeoModelProvider() {
-		return this.modelProvider;
+	public GeoModelType<ItemStack> getModelType() {
+		return this.modelType;
 	}
 
-	public ResourceLocation getTextureLocation(T instance) {
-		return this.modelProvider.getTextureResource(instance);
+	public ResourceLocation getTextureLocation(ItemStack instance) {
+		return this.modelType.getTextureResource(instance);
 	}
 
 	/**
@@ -196,9 +197,6 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 	@SuppressWarnings("incomplete-switch")
 	public GeoArmorRenderer<T> applySlot(EquipmentSlot slot) {
-		AnimatingModel model = modelProvider.getModel(currentArmorItem);
-		getAnimationData(itemStack).setBoneTree(model);
-
 		IBone headBone = this.getAndHideBone(this.headBone);
 		IBone bodyBone = this.getAndHideBone(this.bodyBone);
 		IBone rightArmBone = this.getAndHideBone(this.rightArmBone);
@@ -231,7 +229,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 	protected IBone getAndHideBone(String boneName) {
 		if (boneName != null) {
-			final IBone bone = getAnimationData(itemStack).getBone(boneName);
+			final IBone bone = modelType.getOrCreateAnimator(itemStack).getBone(boneName);
 			if (bone != null) bone.setHidden(true);
 			return bone;
 		}
