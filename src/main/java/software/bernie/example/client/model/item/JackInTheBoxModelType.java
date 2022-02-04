@@ -7,10 +7,10 @@ import net.minecraft.world.item.ItemStack;
 import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.engine.AnimationChannel;
 import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
@@ -31,20 +31,15 @@ public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
 
 	@Override
 	protected Animator<ItemStack> createAnimator(ItemStack stack) {
-		Animator<ItemStack> animator = new Animator<>(stack, this);
-		AnimationController<ItemStack> controller = new AnimationController<>(stack, 20, this::predicate);
-
-		// Registering a sound listener just makes it so when any sound keyframe is hit
-		// the method will be called.
-		// To register a particle listener or custom event listener you do the exact
-		// same thing, just with registerParticleListener and
-		// registerCustomInstructionListener, respectively.
-		controller.registerSoundListener(this::soundListener);
-		animator.addAnimationController(controller);
-		return animator;
+		return new Animator<>(stack, this)
+				.createChannel()
+				.setTransitionLengthTicks(20)
+				.setPredicate(this::predicate)
+				.setSoundListener(this::soundListener)
+				.build();
 	}
 
-	private AnimationBuilder predicate(AnimationController<ItemStack> controller, AnimationEvent<ItemStack> event) {
+	private AnimationBuilder predicate(AnimationChannel<ItemStack> controller, AnimationEvent<ItemStack> event) {
 		// Not setting an animation here as that's handled below
 		// TODO: item animation refactor
 		return null;

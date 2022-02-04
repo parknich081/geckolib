@@ -5,9 +5,9 @@ import software.bernie.example.entity.ExampleEntityAnimator;
 import software.bernie.example.entity.GeoExampleEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.engine.AnimationChannel;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
@@ -28,13 +28,14 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 
 	@Override
 	protected Animator<GeoExampleEntity> createAnimator(GeoExampleEntity geoExampleEntity) {
-		ExampleEntityAnimator data = new ExampleEntityAnimator(geoExampleEntity, this);
-		data.addAnimationController(new AnimationController<>(geoExampleEntity, 0, this::predicate));
-		return data;
+		return new ExampleEntityAnimator(geoExampleEntity, this)
+				.createChannel()
+				.setPredicate(this::predicate)
+				.build();
 	}
 
 	private AnimationBuilder predicate(
-			AnimationController<GeoExampleEntity> controller, AnimationEvent<GeoExampleEntity> event) {
+			AnimationChannel<GeoExampleEntity> controller, AnimationEvent<GeoExampleEntity> event) {
 		return new AnimationBuilder().addAnimation("animation.bat.fly", true);
 	}
 

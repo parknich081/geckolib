@@ -7,7 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.math.Vector3f;
 
-import software.bernie.geckolib3.core.processor.ImmutableBone;
+import software.bernie.geckolib3.core.bone.ImmutableBone;
 import software.bernie.geckolib3.geo.raw.pojo.Bone;
 import software.bernie.geckolib3.geo.raw.pojo.Cube;
 import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;

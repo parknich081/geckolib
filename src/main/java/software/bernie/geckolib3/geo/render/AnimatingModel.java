@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.google.common.collect.ImmutableList;
 
-import software.bernie.geckolib3.core.processor.BoneTree;
+import software.bernie.geckolib3.core.bone.BoneTree;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 

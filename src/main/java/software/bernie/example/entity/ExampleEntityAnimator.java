@@ -2,11 +2,10 @@ package software.bernie.example.entity;
 
 import com.eliotlash.molang.MolangParser;
 
-import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.client.model.entity.ExampleEntityModelType;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
-import software.bernie.geckolib3.core.processor.IBone;
+import software.bernie.geckolib3.core.engine.Animator;
+import software.bernie.geckolib3.core.bone.IBone;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class ExampleEntityAnimator extends Animator<GeoExampleEntity> {

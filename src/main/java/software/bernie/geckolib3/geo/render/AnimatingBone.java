@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import software.bernie.geckolib3.core.processor.DirtyTracker;
-import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.core.processor.ImmutableBone;
+import software.bernie.geckolib3.core.bone.DirtyTracker;
+import software.bernie.geckolib3.core.bone.IBone;
+import software.bernie.geckolib3.core.bone.ImmutableBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 
 public class AnimatingBone implements IBone {

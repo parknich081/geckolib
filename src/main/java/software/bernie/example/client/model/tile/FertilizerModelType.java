@@ -8,9 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.example.block.tile.FertilizerTileEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.engine.AnimationChannel;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class FertilizerModelType extends GeoModelType<FertilizerTileEntity> {
@@ -43,12 +43,13 @@ public class FertilizerModelType extends GeoModelType<FertilizerTileEntity> {
 
 	@Override
 	protected Animator<FertilizerTileEntity> createAnimator(FertilizerTileEntity fertilizerTileEntity) {
-		Animator<FertilizerTileEntity> data = new Animator<>(fertilizerTileEntity, this);
-		data.addAnimationController(new AnimationController<>(fertilizerTileEntity, 0, this::predicate));
-		return data;
+		return new Animator<>(fertilizerTileEntity, this)
+				.createChannel()
+				.setPredicate(this::predicate)
+				.build();
 	}
 
-	private AnimationBuilder predicate(AnimationController<FertilizerTileEntity> controller,
+	private AnimationBuilder predicate(AnimationChannel<FertilizerTileEntity> controller,
 			AnimationEvent<FertilizerTileEntity> event) {
 		controller.transitionLengthTicks = 0;
 		if (event.getAnimatable().getLevel().isRaining()) {

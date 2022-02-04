@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 
-import software.bernie.geckolib3.core.processor.ImmutableBone;
+import software.bernie.geckolib3.core.bone.ImmutableBone;
 import software.bernie.geckolib3.geo.render.built.GeoCube;
 
 public class RenderUtils {

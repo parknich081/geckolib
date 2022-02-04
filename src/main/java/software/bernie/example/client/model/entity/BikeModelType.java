@@ -4,9 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.example.entity.BikeEntity;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.engine.AnimationChannel;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class BikeModelType extends GeoModelType<BikeEntity> {
@@ -27,12 +27,13 @@ public class BikeModelType extends GeoModelType<BikeEntity> {
 
 	@Override
 	protected Animator<BikeEntity> createAnimator(BikeEntity bikeEntity) {
-		Animator<BikeEntity> data = new Animator<>(bikeEntity, this);
-		data.addAnimationController(new AnimationController<>(bikeEntity, 0, this::predicate));
-		return data;
+		return new Animator<>(bikeEntity, this)
+				.createChannel()
+				.setPredicate(this::predicate)
+				.build();
 	}
 
-	private AnimationBuilder predicate(AnimationController<BikeEntity> controller, AnimationEvent<BikeEntity> event) {
+	private AnimationBuilder predicate(AnimationChannel<BikeEntity> controller, AnimationEvent<BikeEntity> event) {
 		return new AnimationBuilder().addAnimation("animation.bike.idle", true);
 	}
 }

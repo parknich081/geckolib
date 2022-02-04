@@ -4,9 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.engine.AnimationChannel;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.Animator;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class PotatoArmorModelType extends GeoModelType<ItemStack> {
@@ -27,13 +27,15 @@ public class PotatoArmorModelType extends GeoModelType<ItemStack> {
 
 	@Override
 	protected Animator<ItemStack> createAnimator(ItemStack stack) {
-		Animator<ItemStack> data = new Animator<>(stack, this);
-		data.addAnimationController(new AnimationController<>(stack, 20, this::predicate));
-		return data;
+		return new Animator<>(stack, this)
+				.createChannel()
+				.setTransitionLengthTicks(20)
+				.setPredicate(this::predicate)
+				.build();
 	}
 
 	// Predicate runs every frame
-	private AnimationBuilder predicate(AnimationController<ItemStack> controller, AnimationEvent<ItemStack> event) {
+	private AnimationBuilder predicate(AnimationChannel<ItemStack> controller, AnimationEvent<ItemStack> event) {
 		// TODO: item animation refactor
 		return null;
 		//		// This is all the extradata this event carries. The livingentity is the entity

@@ -1,7 +1,7 @@
 package software.bernie.geckolib3.util;
 
 import net.minecraft.client.model.geom.ModelPart;
-import software.bernie.geckolib3.core.processor.IBone;
+import software.bernie.geckolib3.core.bone.IBone;
 
 public class GeoUtils {
 	public static void copyRotations(ModelPart from, IBone to) {
