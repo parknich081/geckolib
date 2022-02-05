@@ -127,8 +127,8 @@ public class GeoInstanceTree {
 		RenderUtils.translate(bone, stack);
 		RenderUtils.moveToPivot(bone, stack);
 		RenderUtils.rotate(bone, stack);
-		RenderUtils.scale(bone, stack);
 		RenderUtils.moveBackFromPivot(bone, stack);
+		RenderUtils.scale(bone, stack);
 
 		if (thisChanged) {
 			if (boneInstance != null) boneInstance.setTransform(stack);
@@ -171,5 +171,10 @@ public class GeoInstanceTree {
 		for (GeoInstanceTree child : children) {
 			child.updateLight(blockLight, skyLight);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return bone.getName() + (bone.parent == null ? "" : " :- " + bone.parent.getName());
 	}
 }

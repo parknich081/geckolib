@@ -14,6 +14,7 @@ import com.eliotlash.molang.math.Constant;
 import com.eliotlash.molang.math.IValue;
 import com.eliotlash.molang.MolangException;
 import com.eliotlash.molang.MolangParser;
+import com.eliotlash.molang.math.Negative;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -167,7 +168,7 @@ public class JsonKeyFrameUtils {
 			MolangException {
 		if (element.getAsJsonPrimitive().isString()) {
 			if (negateExpression && isRotation) {
-				return new ScaleValue(-1, parser.parseJson(element));
+				return new Negative(parser.parseJson(element));
 			} else {
 				return parser.parseJson(element);
 			}
@@ -177,13 +178,6 @@ public class JsonKeyFrameUtils {
 			} else {
 				return new Constant(element.getAsDouble());
 			}
-		}
-	}
-
-	private record ScaleValue(double scale, IValue value) implements IValue {
-		@Override
-		public double get() {
-			return scale * value.get();
 		}
 	}
 }

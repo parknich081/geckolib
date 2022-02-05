@@ -58,7 +58,7 @@ public class BoneModel implements Model {
 		return vertexCount;
 	}
 
-	public void bufferCube(PosTexNormalWriterUnsafe writer, GeoCube cube) {
+	public static void bufferCube(PosTexNormalWriterUnsafe writer, GeoCube cube) {
 
 		PoseStack stack = new PoseStack();
 

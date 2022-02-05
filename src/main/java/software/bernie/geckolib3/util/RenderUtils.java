@@ -19,11 +19,11 @@ public class RenderUtils {
 	}
 
 	public static void moveToPivot(ImmutableBone bone, PoseStack stack) {
-		stack.translate(bone.getRotationX() / 16, bone.getRotationY() / 16, bone.getRotationZ() / 16);
+		stack.translate(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPivotZ() / 16);
 	}
 
 	public static void moveBackFromPivot(ImmutableBone bone, PoseStack stack) {
-		stack.translate(-bone.getRotationX() / 16, -bone.getRotationY() / 16, -bone.getRotationZ() / 16);
+		stack.translate(-bone.getPivotX() / 16, -bone.getPivotY() / 16, -bone.getPivotZ() / 16);
 	}
 
 	public static void scale(ImmutableBone bone, PoseStack stack) {
