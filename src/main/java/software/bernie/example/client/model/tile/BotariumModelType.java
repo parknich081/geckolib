@@ -31,7 +31,7 @@ public class BotariumModelType extends GeoModelType<BotariumTileEntity> {
 
 	@Override
 	protected Animator<BotariumTileEntity> createAnimator(BotariumTileEntity botariumTileEntity) {
-		return new Animator<>(botariumTileEntity, this)
+		return new Animator<>(botariumTileEntity, createModelFor(botariumTileEntity), this)
 				.createChannel()
 				.setPredicate(this::predicate)
 				.build();

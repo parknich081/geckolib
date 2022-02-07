@@ -6,7 +6,9 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import software.bernie.geckolib3.core.bone.DirtyTracker;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+
 import software.bernie.geckolib3.core.bone.IBone;
 import software.bernie.geckolib3.core.bone.ImmutableBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
@@ -16,8 +18,6 @@ public class AnimatingBone implements IBone {
 	public final GeoBone bone;
 	public final AnimatingBone parent;
 	public final AnimatingModel model;
-
-	public final DirtyTracker dirtyTracker;
 
 	public final List<AnimatingBone> childBones = new ArrayList<>();
 
@@ -65,18 +65,6 @@ public class AnimatingBone implements IBone {
 		for (GeoBone childBone : bone.childBones) {
 			this.childBones.add(new AnimatingBone(model, childBone, this));
 		}
-
-		this.dirtyTracker = new DirtyTracker(this, bone);
-	}
-
-	@Override
-	public AnimatingModel getBoneTree() {
-		return model;
-	}
-
-	@Override
-	public DirtyTracker getDirtyTracker() {
-		return dirtyTracker;
 	}
 
 	public void walkDepthFirst(Consumer<AnimatingBone> consumer) {

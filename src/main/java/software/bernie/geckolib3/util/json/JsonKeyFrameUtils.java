@@ -43,6 +43,7 @@ public class JsonKeyFrameUtils {
 		ImmutableList.Builder<KeyFrame> yKeyFrames = ImmutableList.builder();
 		ImmutableList.Builder<KeyFrame> zKeyFrames = ImmutableList.builder();
 
+		double totalTime = 0;
 		for (int i = 0; i < element.size(); i++) {
 			Map.Entry<String, JsonElement> keyframe = element.get(i);
 			if (keyframe.getKey().equals("easing") || keyframe.getKey().equals("easingArgs")) continue;
@@ -80,20 +81,22 @@ public class JsonKeyFrameUtils {
 				if (hasEasingArgs(keyframe.getValue())) {
 					double[] easingArgs = getEasingArgs(keyframe.getValue());
 					Double arg = easingArgs.length > 0 ? easingArgs[0] : null;
-					xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType, arg);
-					yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType, arg);
-					zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType, arg);
+					xKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType, arg);
+					yKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType, arg);
+					zKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType, arg);
 				} else {
-					xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType);
-					yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType);
-					zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType);
+					xKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentXValue : previousXValue, currentXValue, easingType);
+					yKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentYValue : previousYValue, currentYValue, easingType);
+					zKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentZValue : previousZValue, currentZValue, easingType);
 
 				}
 			} else {
-				xKeyFrame = new KeyFrame(length, i == 0 ? currentXValue : previousXValue, currentXValue);
-				yKeyFrame = new KeyFrame(length, i == 0 ? currentYValue : previousYValue, currentYValue);
-				zKeyFrame = new KeyFrame(length, i == 0 ? currentZValue : previousZValue, currentZValue);
+				xKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentXValue : previousXValue, currentXValue);
+				yKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentYValue : previousYValue, currentYValue);
+				zKeyFrame = new KeyFrame(totalTime, length, i == 0 ? currentZValue : previousZValue, currentZValue);
 			}
+
+			totalTime += length;
 
 			previousXValue = currentXValue;
 			previousYValue = currentYValue;

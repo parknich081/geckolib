@@ -19,6 +19,8 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import software.bernie.geckolib3.core.bone.BoneTree;
+import software.bernie.geckolib3.core.bone.IBone;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
@@ -30,7 +32,7 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 
 	private static final Function<ResourceLocation, RenderType> states = Util.memoize(RenderType::entityCutout);
 
-	private final List<GeoInstanceTree> topLevelBones = new ArrayList<>();
+	private final List<InstancedBone> topLevelBones = new ArrayList<>();
 	private final MatrixTransformStack stack;
 	private final Animator<T> animator;
 
@@ -38,16 +40,16 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 		super(materialManager, tile);
 		stack = new MatrixTransformStack();
 
-		AnimatingModel model = modelProvider.getOrCreateBoneTree(tile);
+		animator = modelProvider.getOrCreateAnimator(tile);
 		RenderType state = states.apply(modelProvider.getTextureResource(tile));
 
 		stack.translate(getInstancePosition()).translate(0.5, 0.01, 0.5).rotateToFace(getFacing());
 
-		for (AnimatingBone bone : model.getTopLevelBones()) {
-			topLevelBones.add(new GeoInstanceTree(materialManager, state, bone));
+		var boneTree = (AnimatingModel) animator.boneTree;
+		for (AnimatingBone bone : boneTree.getTopLevelBones()) {
+			topLevelBones.add(new InstancedBone(materialManager, state, bone));
 		}
 
-		animator = modelProvider.getOrCreateAnimator(tile);
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 
 		animator.tickAnimation(new AnimationEvent<>(blockEntity), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 
-		for (GeoInstanceTree bone : topLevelBones) {
+		for (InstancedBone bone : topLevelBones) {
 			bone.recursiveCheckNeedsUpdate();
 			bone.transform(stack.unwrap());
 		}
@@ -67,14 +69,14 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 		int block = world.getBrightness(LightLayer.BLOCK, pos);
 		int sky = world.getBrightness(LightLayer.SKY, pos);
 
-		for (GeoInstanceTree bone : topLevelBones) {
+		for (InstancedBone bone : topLevelBones) {
 			bone.updateLight(block, sky);
 		}
 	}
 
 	@Override
 	public void remove() {
-		topLevelBones.forEach(GeoInstanceTree::delete);
+		topLevelBones.forEach(InstancedBone::delete);
 	}
 
 	private Direction getFacing() {

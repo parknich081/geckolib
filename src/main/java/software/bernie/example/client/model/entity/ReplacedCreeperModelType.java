@@ -27,7 +27,7 @@ public class ReplacedCreeperModelType extends GeoModelType<Creeper> {
 
 	@Override
 	public Animator<Creeper> createAnimator(Creeper creeper) {
-		return new Animator<>(creeper, this)
+		return new Animator<>(creeper, createModelFor(creeper), this)
 				.createChannel()
 				.setPredicate(this::predicate)
 				.setTransitionLengthTicks(20)

@@ -40,10 +40,9 @@ public abstract class GeoBlockRenderer<T extends BlockEntity> implements IGeoRen
 	}
 
 	public void render(T tile, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
-		AnimatingModel model = modelType.getOrCreateBoneTree(tile);
-		Animator<T> data = modelType.getOrCreateAnimator(tile);
+		Animator<T> animator = modelType.getOrCreateAnimator(tile);
 
-		data.tickAnimation(new AnimationEvent<>(tile), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+		animator.tickAnimation(new AnimationEvent<>(tile), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 		stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0, 0.5);
@@ -53,7 +52,7 @@ public abstract class GeoBlockRenderer<T extends BlockEntity> implements IGeoRen
 		RenderSystem.setShaderTexture(0, getTextureLocation(tile));
 		Color renderColor = getRenderColor(tile, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(tile, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(tile));
-		render(model, tile, partialTicks, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		render((AnimatingModel) animator.boneTree, tile, partialTicks, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		stack.popPose();
 	}
 

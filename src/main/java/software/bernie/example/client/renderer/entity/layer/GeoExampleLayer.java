@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
@@ -31,7 +32,7 @@ public class GeoExampleLayer<T extends LivingEntity> extends GeoLayerRenderer<T>
 		matrixStackIn.scale(1.0f, 1.0f, 1.0f);
 		matrixStackIn.translate(0.0d, 0.0d, 0.0d);
 		this.getRenderer()
-				.render(getEntityModel().getOrCreateBoneTree(entityLivingBaseIn), entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn, bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
+				.render((AnimatingModel) getEntityModel().getOrCreateAnimator(entityLivingBaseIn).boneTree, entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn, bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
 		matrixStackIn.popPose();
 	}
 }

@@ -79,18 +79,17 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 	public void render(float partialTicks, PoseStack stack, VertexConsumer bufferIn, int packedLightIn) {
 		stack.translate(0.0D, 24 / 16F, 0.0D);
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		AnimatingModel model = modelType.getOrCreateBoneTree(itemStack);
 
 		AnimationEvent<ItemStack> itemEvent = new AnimationEvent<>(itemStack, 0, 0, 0, false, Arrays.asList(this.entityLiving, this.armorSlot));
-		Animator<ItemStack> data = modelType.getOrCreateAnimator(itemStack);
+		Animator<ItemStack> animator = modelType.getOrCreateAnimator(itemStack);
 
-		data.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+		animator.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 		this.fitToBiped();
 		stack.pushPose();
 		RenderSystem.setShaderTexture(0, getTextureLocation(itemStack));
 		Color renderColor = getRenderColor(itemStack, partialTicks, stack, null, bufferIn, packedLightIn);
 		RenderType renderType = getRenderType(itemStack, partialTicks, stack, null, bufferIn, packedLightIn, getTextureLocation(itemStack));
-		render(model, itemStack, partialTicks, renderType, stack, null, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		render((AnimatingModel) animator.boneTree, itemStack, partialTicks, renderType, stack, null, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		if (ModList.get().isLoaded("patchouli")) {
 			PatchouliCompat.patchouliLoaded(stack);
 		}
@@ -101,7 +100,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem> extends HumanoidMode
 
 	protected void fitToBiped() {
 		if (!(this.entityLiving instanceof ArmorStand)) {
-			Animator<?> data = modelType.getOrCreateAnimator(itemStack);
+			Animator<ItemStack> data = modelType.getOrCreateAnimator(itemStack);
 			if (this.headBone != null) {
 				IBone headBone = data.getBone(this.headBone);
 				GeoUtils.copyRotations(this.head, headBone);

@@ -118,17 +118,16 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 		entityModelData.netHeadYaw = -netHeadYaw;
 
 		AnimationEvent<T> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-		AnimatingModel model = modelProvider.getOrCreateBoneTree(entity);
-		Animator<T> data = modelProvider.getOrCreateAnimator(entity);
+		Animator<T> animator = modelProvider.getOrCreateAnimator(entity);
 
-        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+        animator.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 
         stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(entity));
 		boolean invis = entity.isInvisibleTo(Minecraft.getInstance().player);
-		render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
+		render((AnimatingModel) animator.boneTree, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
 
 		if (!entity.isSpectator()) {
 			for (GeoLayerRenderer<T> layerRenderer : this.layerRenderers) {

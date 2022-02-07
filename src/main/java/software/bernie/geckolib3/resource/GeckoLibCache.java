@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.common.util.Lazy;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.file.AnimationFile;
 import software.bernie.geckolib3.file.AnimationFileLoader;
@@ -28,7 +29,7 @@ public class GeckoLibCache implements PreparableReloadListener {
 	private final AnimationFileLoader animationLoader;
 	private final GeoModelLoader modelLoader;
 
-	private final ThreadLocal<MolangParser> parser = ThreadLocal.withInitial(() -> {
+	private final Lazy<MolangParser> parser = Lazy.of(() -> {
 		MolangParser p = new MolangParser();
 		MolangRegistrar.registerVars(p);
 		return p;

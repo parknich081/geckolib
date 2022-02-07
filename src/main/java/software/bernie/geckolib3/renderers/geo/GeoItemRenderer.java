@@ -73,10 +73,9 @@ public class GeoItemRenderer<T extends Item> extends BlockEntityWithoutLevelRend
 		this.currentItemStack = itemStack;
 		AnimationEvent<ItemStack> itemEvent = new AnimationEvent<>(itemStack, 0, 0, Minecraft.getInstance()
 				.getFrameTime(), false, Collections.emptyList());
-		Animator<ItemStack> data = modelProvider.getOrCreateAnimator(itemStack);
-		AnimatingModel model = modelProvider.getOrCreateBoneTree(itemStack);
+		Animator<ItemStack> animator = modelProvider.getOrCreateAnimator(itemStack);
 
-        data.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+        animator.tickAnimation(itemEvent, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
         stack.pushPose();
 		stack.translate(0, 0.01f, 0);
 		stack.translate(0.5, 0.5, 0.5);
@@ -84,7 +83,7 @@ public class GeoItemRenderer<T extends Item> extends BlockEntityWithoutLevelRend
 		RenderSystem.setShaderTexture(0, getTextureLocation(itemStack));
 		Color renderColor = getRenderColor(itemStack, 0, stack, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(itemStack, 0, stack, bufferIn, null, packedLightIn, getTextureLocation(itemStack));
-		render(model, itemStack, 0, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		render((AnimatingModel) animator.boneTree, itemStack, 0, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.NO_OVERLAY, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 		stack.popPose();
 	}
 

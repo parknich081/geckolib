@@ -7,17 +7,20 @@ import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.core.Materials;
 import com.jozufozu.flywheel.core.materials.model.ModelData;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.renderer.RenderType;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
-import software.bernie.geckolib3.util.RenderUtils;
 
-public class GeoInstanceTree {
+public class InstancedBone {
 
 	public final AnimatingBone bone;
 	private final ModelData boneInstance;
 
-	private final List<GeoInstanceTree> children;
+	private final List<InstancedBone> children;
 
 	private UpdateTask action;
 
@@ -36,7 +39,10 @@ public class GeoInstanceTree {
 	private float lastPivotY = Float.NaN;
 	private float lastPivotZ = Float.NaN;
 
-	public GeoInstanceTree(MaterialManager materialManager, RenderType tex, AnimatingBone bone) {
+	private final Matrix4f poseMat = new Matrix4f();
+	private final Matrix3f normalMat = new Matrix3f();
+
+	public InstancedBone(MaterialManager materialManager, RenderType tex, AnimatingBone bone) {
 		this.bone = bone;
 
 		if (bone.bone.childCubes.isEmpty()) {
@@ -46,9 +52,9 @@ public class GeoInstanceTree {
 					.model(bone.bone, () -> new BoneModel(bone.bone)).createInstance().loadIdentity();
 		}
 
-		ImmutableList.Builder<GeoInstanceTree> builder = ImmutableList.builder();
+		ImmutableList.Builder<InstancedBone> builder = ImmutableList.builder();
 		for (AnimatingBone childBone : bone.childBones) {
-			builder.add(new GeoInstanceTree(materialManager, tex, childBone));
+			builder.add(new InstancedBone(materialManager, tex, childBone));
 		}
 
 		children = builder.build();
@@ -78,7 +84,7 @@ public class GeoInstanceTree {
 			return action = UpdateTask.UPDATE;
 		}
 
-		for (GeoInstanceTree child : children) {
+		for (InstancedBone child : children) {
 			UpdateTask childTask = child.recursiveCheckNeedsUpdate();
 
 			// don't early return here because we need to check all the children too
@@ -94,10 +100,10 @@ public class GeoInstanceTree {
 			hide();
 			break;
 		case PASSTHROUGH:
-			update(stack, false);
+			passThrough(stack);
 			break;
 		case UPDATE:
-			update(stack, true);
+			forceUpdate(stack);
 
 			//
 			this.lastScaleX = bone.getScaleX();
@@ -116,33 +122,46 @@ public class GeoInstanceTree {
 		}
 	}
 
-	/**
-	 * Calculates the bone transform matrix and passes it on to the children.
-	 *
-	 * @param stack       The MatrixStack we'll use to compute all the bone transforms.
-	 * @param thisChanged If true, all descendent nodes will be updated regardless of their {@link #action}
-	 */
-	private void update(PoseStack stack, boolean thisChanged) {
-		stack.pushPose();
-		RenderUtils.translate(bone, stack);
-		RenderUtils.moveToPivot(bone, stack);
-		RenderUtils.rotate(bone, stack);
-		RenderUtils.moveBackFromPivot(bone, stack);
-		RenderUtils.scale(bone, stack);
+	private void passThrough(PoseStack stack) {
+		pushTransforms(stack);
 
-		if (thisChanged) {
-			if (boneInstance != null) boneInstance.setTransform(stack);
-
-			for (GeoInstanceTree child : children) {
-				child.update(stack, true);
-			}
-		} else {
-			for (GeoInstanceTree child : children) {
-				child.transform(stack);
-			}
+		for (InstancedBone child : children) {
+			child.transform(stack);
 		}
 
 		stack.popPose();
+	}
+
+	private void forceUpdate(PoseStack stack) {
+		pushTransforms(stack);
+
+		if (boneInstance != null) boneInstance.setTransform(stack);
+
+		for (InstancedBone child : children) {
+			child.forceUpdate(stack);
+		}
+
+		stack.popPose();
+	}
+
+	private void pushTransforms(PoseStack stack) {
+		stack.pushPose();
+		if (boneNeedsUpdate()) recalculate();
+		stack.last().pose().multiply(poseMat);
+		stack.last().normal().mul(normalMat);
+	}
+
+	private void recalculate() {
+		var rotation = new Quaternion(bone.getRotationX(), bone.getRotationY(), bone.getRotationZ(), false);
+
+		poseMat.setIdentity();
+		poseMat.translate(new Vector3f( -bone.getPositionX() / 16, bone.getPositionY() / 16, bone.getPositionZ() / 16));
+		poseMat.multiplyWithTranslation(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPivotZ() / 16);
+		poseMat.multiply(rotation);
+		poseMat.multiplyWithTranslation(-bone.getPivotX() / 16, -bone.getPivotY() / 16, -bone.getPivotZ() / 16);
+		poseMat.multiply(Matrix4f.createScaleMatrix(bone.getScaleX(), bone.getScaleY(), bone.getScaleZ()));
+
+		normalMat.load(new Matrix3f(rotation));
 	}
 
 	private boolean boneNeedsUpdate() {
@@ -152,7 +171,7 @@ public class GeoInstanceTree {
 	private void hide() {
 		if (boneInstance != null) boneInstance.setEmptyTransform();
 
-		children.forEach(GeoInstanceTree::hide);
+		children.forEach(InstancedBone::hide);
 
 		hidden = true;
 	}
@@ -160,7 +179,7 @@ public class GeoInstanceTree {
 	public void delete() {
 		if (boneInstance != null) boneInstance.delete();
 
-		children.forEach(GeoInstanceTree::delete);
+		children.forEach(InstancedBone::delete);
 	}
 
 	public void updateLight(int blockLight, int skyLight) {
@@ -168,7 +187,7 @@ public class GeoInstanceTree {
 			boneInstance.setBlockLight(blockLight).setSkyLight(skyLight);
 		}
 
-		for (GeoInstanceTree child : children) {
+		for (InstancedBone child : children) {
 			child.updateLight(blockLight, skyLight);
 		}
 	}

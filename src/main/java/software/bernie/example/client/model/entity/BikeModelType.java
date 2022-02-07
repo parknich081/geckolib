@@ -27,7 +27,7 @@ public class BikeModelType extends GeoModelType<BikeEntity> {
 
 	@Override
 	protected Animator<BikeEntity> createAnimator(BikeEntity bikeEntity) {
-		return new Animator<>(bikeEntity, this)
+		return new Animator<>(bikeEntity, createModelFor(bikeEntity), this)
 				.createChannel()
 				.setPredicate(this::predicate)
 				.build();

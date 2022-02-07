@@ -35,23 +35,22 @@ public class GeoProjectilesRenderer<T extends Entity> extends EntityRenderer<T> 
 	@Override
 	public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
 			MultiBufferSource bufferIn, int packedLightIn) {
-		AnimatingModel model = modelProvider.getOrCreateBoneTree(entityIn);
+		Animator<T> animator = modelProvider.getOrCreateAnimator(entityIn);
+
 		matrixStackIn.pushPose();
 		matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
 		matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
 		RenderSystem.setShaderTexture(0, getTextureLocation(entityIn));
 		Color renderColor = getRenderColor(entityIn, partialTicks, matrixStackIn, bufferIn, null, packedLightIn);
 		RenderType renderType = getRenderType(entityIn, partialTicks, matrixStackIn, bufferIn, null, packedLightIn, getTextureLocation(entityIn));
-		render(model, entityIn, partialTicks, renderType, matrixStackIn, bufferIn, null, packedLightIn, getPackedOverlay(entityIn, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
+		render(((AnimatingModel) animator.boneTree), entityIn, partialTicks, renderType, matrixStackIn, bufferIn, null, packedLightIn, getPackedOverlay(entityIn, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 
 		float lastLimbDistance = 0.0F;
 		float limbSwing = 0.0F;
 		EntityModelData entityModelData = new EntityModelData();
 		AnimationEvent<T> predicate = new AnimationEvent<T>(entityIn, limbSwing, lastLimbDistance, partialTicks, !(lastLimbDistance > -0.15F && lastLimbDistance < 0.15F), Collections.singletonList(entityModelData));
 
-		Animator<T> data = modelProvider.getOrCreateAnimator(entityIn);
-
-        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+        animator.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
         matrixStackIn.popPose();
 		super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}

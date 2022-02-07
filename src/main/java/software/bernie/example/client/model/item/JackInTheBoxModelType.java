@@ -31,7 +31,7 @@ public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
 
 	@Override
 	protected Animator<ItemStack> createAnimator(ItemStack stack) {
-		return new Animator<>(stack, this)
+		return new Animator<>(stack, createModelFor(stack), this)
 				.createChannel()
 				.setTransitionLengthTicks(20)
 				.setPredicate(this::predicate)

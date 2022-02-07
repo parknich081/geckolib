@@ -8,7 +8,7 @@ import software.bernie.geckolib3.core.bone.BoneTree;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 
-public class AnimatingModel implements BoneTree<AnimatingBone> {
+public class AnimatingModel implements BoneTree {
 
 	private final List<AnimatingBone> topLevelBones;
 

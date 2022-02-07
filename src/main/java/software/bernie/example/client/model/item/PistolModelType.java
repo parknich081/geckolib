@@ -27,7 +27,7 @@ public class PistolModelType extends GeoModelType<ItemStack> {
 
 	@Override
 	public Animator<ItemStack> createAnimator(ItemStack entity) {
-		return new Animator<>(entity, this)
+		return new Animator<>(entity, createModelFor(entity), this)
 				.createChannel()
 				.setTransitionLengthTicks(1)
 				.setPredicate(this::predicate)

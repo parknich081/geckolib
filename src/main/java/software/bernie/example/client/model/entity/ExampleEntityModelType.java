@@ -28,7 +28,7 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 
 	@Override
 	protected Animator<GeoExampleEntity> createAnimator(GeoExampleEntity geoExampleEntity) {
-		return new ExampleEntityAnimator(geoExampleEntity, this)
+		return new ExampleEntityAnimator(geoExampleEntity, createModelFor(geoExampleEntity), this)
 				.createChannel()
 				.setPredicate(this::predicate)
 				.build();

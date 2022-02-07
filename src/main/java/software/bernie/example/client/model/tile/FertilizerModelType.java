@@ -43,7 +43,7 @@ public class FertilizerModelType extends GeoModelType<FertilizerTileEntity> {
 
 	@Override
 	protected Animator<FertilizerTileEntity> createAnimator(FertilizerTileEntity fertilizerTileEntity) {
-		return new Animator<>(fertilizerTileEntity, this)
+		return new Animator<>(fertilizerTileEntity, createModelFor(fertilizerTileEntity), this)
 				.createChannel()
 				.setPredicate(this::predicate)
 				.build();

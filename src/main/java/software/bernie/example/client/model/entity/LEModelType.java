@@ -28,7 +28,7 @@ public class LEModelType extends GeoModelType<LEEntity> {
 
 	@Override
 	protected Animator<LEEntity> createAnimator(LEEntity entity) {
-		return new Animator<>(entity, this)
+		return new Animator<>(entity, createModelFor(entity), this)
 				.createChannel()
 				.setTransitionLengthTicks(5)
 				.setPredicate(this::predicate)

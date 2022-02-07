@@ -3,6 +3,7 @@ package software.bernie.geckolib3.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.Function;
 
 import com.eliotlash.molang.MolangParser;
 
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.ModelType;
+import software.bernie.geckolib3.core.bone.BoneTree;
 import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.file.AnimationFile;
@@ -24,13 +26,11 @@ import software.bernie.geckolib3.util.MolangUtils;
 
 public abstract class GeoModelType<T> implements ModelType<T> {
 
-	private final Map<T, Map<ResourceLocation, AnimatingModel>> models = new WeakHashMap<>();
 	private final Map<T, Animator<T>> animators = new WeakHashMap<>();
 
 	protected GeoModelType() {
 	}
 
-	@Override
 	public Animator<T> getOrCreateAnimator(T entity) {
 		return animators.computeIfAbsent(entity, this::createAnimator);
 	}
@@ -44,18 +44,6 @@ public abstract class GeoModelType<T> implements ModelType<T> {
 			throw new GeckoLibException(animationLoc, "Could not find animation file. Please double check name.");
 		}
 		return animation.getAnimation(name);
-	}
-
-	@Override
-	public AnimatingModel getOrCreateBoneTree(T entity) {
-		ResourceLocation location = getModelResource(entity);
-		GeoModel masterModel = GeckoLibCache.getInstance().getModel(location);
-
-		if (masterModel == null) {
-			throw new GeckoLibException(location, "Could not find model. If you are getting this with a built mod, please just restart your game.");
-		}
-		return models.computeIfAbsent(entity, $ -> new HashMap<>())
-				.computeIfAbsent(location, $ -> new AnimatingModel(masterModel));
 	}
 
 	@Override
@@ -89,6 +77,16 @@ public abstract class GeoModelType<T> implements ModelType<T> {
 				parser.setValue("query.yaw_speed", yawSpeed);
 			}
 		}
+	}
+
+	protected AnimatingModel createModelFor(T entity) {
+		ResourceLocation location = getModelResource(entity);
+		GeoModel masterModel = GeckoLibCache.getInstance().getModel(location);
+
+		if (masterModel == null) {
+			throw new GeckoLibException(location, "Could not find model. If you are getting this with a built mod, please just restart your game.");
+		}
+		return new AnimatingModel(masterModel);
 	}
 
 	protected abstract Animator<T> createAnimator(T t);
