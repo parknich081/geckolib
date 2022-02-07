@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.eliotlash.molang.expressions.MolangExpression;
 import com.eliotlash.molang.math.Constant;
 import com.eliotlash.molang.math.IValue;
 import com.eliotlash.molang.MolangException;
@@ -56,9 +57,19 @@ public class JsonKeyFrameUtils {
 			// For rotation:
 			// Dynamic X and Y values get negated.
 			// Constant values get converted to radians.
-			IValue currentXValue = parseExpression(parser, vectorJsonArray.get(0), true, isRotation);
-			IValue currentYValue = parseExpression(parser, vectorJsonArray.get(1), true, isRotation);
-			IValue currentZValue = parseExpression(parser, vectorJsonArray.get(2), false, isRotation);
+			IValue currentXValue;
+			IValue currentYValue;
+			IValue currentZValue;
+
+			if (isRotation) {
+				currentXValue = parseRotation(parser, vectorJsonArray.get(0), true);
+				currentYValue = parseRotation(parser, vectorJsonArray.get(1), true);
+				currentZValue = parseRotation(parser, vectorJsonArray.get(2), false);
+			} else {
+				currentXValue = parseExpression(parser, vectorJsonArray.get(0));
+				currentYValue = parseExpression(parser, vectorJsonArray.get(1));
+				currentZValue = parseExpression(parser, vectorJsonArray.get(2));
+			}
 
 			KeyFrame xKeyFrame;
 			KeyFrame yKeyFrame;
@@ -164,20 +175,21 @@ public class JsonKeyFrameUtils {
 		return convertJson(element, true, parser);
 	}
 
-	public static IValue parseExpression(MolangParser parser, JsonElement element, boolean negateExpression, boolean isRotation) throws
-			MolangException {
+	public static IValue parseExpression(MolangParser parser, JsonElement element) throws MolangException {
 		if (element.getAsJsonPrimitive().isString()) {
-			if (negateExpression && isRotation) {
-				return new Negative(parser.parseJson(element));
-			} else {
-				return parser.parseJson(element);
-			}
+			return parser.parseJson(element);
 		} else {
-			if (isRotation) {
-				return new Constant(Math.toRadians(element.getAsDouble()));
-			} else {
-				return new Constant(element.getAsDouble());
-			}
+			return new Constant(element.getAsDouble());
+		}
+	}
+
+	public static IValue parseRotation(MolangParser parser, JsonElement element, boolean negateExpression) throws MolangException {
+		if (element.getAsJsonPrimitive().isString()) {
+			var expression = parser.parseJson(element);
+			return negateExpression ? new Negative(expression) : expression;
+		} else {
+			var rad = Math.toRadians(element.getAsDouble());
+			return new Constant(rad * (negateExpression ? -1 : 1));
 		}
 	}
 }
