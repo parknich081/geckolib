@@ -5,17 +5,17 @@ import com.eliotlash.molang.MolangParser;
 
 public class MolangRegistrar {
 	public static void registerVars(MolangParser parser) {
-		parser.register(new Variable("query.anim_time", 0));
-		parser.register(new Variable("query.actor_count", 0));
-		parser.register(new Variable("query.health", 0));
-		parser.register(new Variable("query.max_health", 0));
-		parser.register(new Variable("query.distance_from_camera", 0));
-		parser.register(new Variable("query.yaw_speed", 0));
-		parser.register(new Variable("query.is_in_water_or_rain", 0));
-		parser.register(new Variable("query.is_in_water", 0));
-		parser.register(new Variable("query.is_on_ground", 0));
-		parser.register(new Variable("query.time_of_day", 0));
-		parser.register(new Variable("query.is_on_fire", 0));
-		parser.register(new Variable("query.ground_speed", 0));
+		parser.createVariable("query.anim_time");
+		parser.createVariable("query.actor_count");
+		parser.createVariable("query.health");
+		parser.createVariable("query.max_health");
+		parser.createVariable("query.distance_from_camera");
+		parser.createVariable("query.yaw_speed");
+		parser.createVariable("query.is_in_water_or_rain");
+		parser.createVariable("query.is_in_water");
+		parser.createVariable("query.is_on_ground");
+		parser.createVariable("query.time_of_day");
+		parser.createVariable("query.is_on_fire");
+		parser.createVariable("query.ground_speed");
 	}
 }
