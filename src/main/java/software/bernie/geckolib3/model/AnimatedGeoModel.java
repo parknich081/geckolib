@@ -5,7 +5,6 @@ import java.util.Collections;
 import com.eliotlash.molang.MolangParser;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
@@ -25,6 +24,7 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.IAnimatableModelProvider;
 import software.bernie.geckolib3.resource.GeckoLibCache;
+import software.bernie.geckolib3.util.AnimationTicker;
 import software.bernie.geckolib3.util.MolangUtils;
 
 public abstract class AnimatedGeoModel<T extends IAnimatable> extends GeoModelProvider<T>
@@ -49,16 +49,13 @@ public abstract class AnimatedGeoModel<T extends IAnimatable> extends GeoModelPr
 		// Each animation has it's own collection of animations (called the
 		// EntityAnimationManager), which allows for multiple independent animations
 		AnimationData manager = entity.getFactory().getOrCreateAnimationData(uniqueID);
-		if (manager.startTick == null) {
-			manager.startTick = getCurrentTick();
+
+		if (manager.ticker == null) {
+			manager.ticker = new AnimationTicker(manager);
 		}
 
 		if (!MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused) {
-			manager.tick = (getCurrentTick() - manager.startTick);
-			double gameTick = manager.tick;
-			double deltaTicks = gameTick - lastGameTickTime;
-			seekTime += deltaTicks;
-			lastGameTickTime = gameTick;
+			seekTime = manager.tick + MinecraftClient.getInstance().getTickDelta();
 		}
 
 		AnimationEvent<T> predicate;
@@ -150,10 +147,5 @@ public abstract class AnimatedGeoModel<T extends IAnimatable> extends GeoModelPr
 				parser.setValue("query.yaw_speed", yawSpeed);
 			}
 		}
-	}
-
-	@Override
-	public double getCurrentTick() {
-		return GlfwUtil.getTime() * 20;
 	}
 }
