@@ -28,6 +28,7 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.util.GeoUtils;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extends BipedEntityModel
 		implements IGeoRenderer<T> {
 	private static final Map<Class<? extends ArmorItem>, GeoArmorRenderer> renderers = new ConcurrentHashMap<>();
@@ -86,7 +87,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 		stack.scale(-1.0F, -1.0F, 1.0F);
 		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
 
-		AnimationEvent itemEvent = new AnimationEvent(this.currentArmorItem, 0, 0, 0, false,
+		AnimationEvent<T> itemEvent = new AnimationEvent<T>(this.currentArmorItem, 0, 0, 0, false,
 				Arrays.asList(this.itemStack, this.entityLiving, this.armorSlot));
 		modelProvider.setLivingAnimations(currentArmorItem, this.getUniqueID(this.currentArmorItem), itemEvent);
 		this.fitToBiped();
@@ -182,7 +183,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 	/**
 	 * Everything after this point needs to be called every frame before rendering
 	 */
-	public GeoArmorRenderer setCurrentItem(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot) {
+	public GeoArmorRenderer<T> setCurrentItem(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot) {
 		this.entityLiving = entityLiving;
 		this.itemStack = itemStack;
 		this.armorSlot = armorSlot;
@@ -190,7 +191,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 		return this;
 	}
 
-	public final GeoArmorRenderer applyEntityStats(BipedEntityModel defaultArmor) {
+	public final GeoArmorRenderer<T> applyEntityStats(BipedEntityModel defaultArmor) {
 		this.child = defaultArmor.child;
 		this.sneaking = defaultArmor.sneaking;
 		this.riding = defaultArmor.riding;
@@ -199,7 +200,8 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 		return this;
 	}
 
-	public GeoArmorRenderer applySlot(EquipmentSlot slot) {
+	@SuppressWarnings("incomplete-switch")
+	public GeoArmorRenderer<T> applySlot(EquipmentSlot slot) {
 		modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
 
 		IBone headBone = this.getAndHideBone(this.headBone);

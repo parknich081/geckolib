@@ -27,6 +27,7 @@ import software.bernie.geckolib3.ArmorRenderingRegistryImpl;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Mixin({ ArmorFeatureRenderer.class })
 @Environment(EnvType.CLIENT)
 public abstract class MixinArmorFeatureRenderer extends FeatureRenderer {

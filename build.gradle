@@ -137,6 +137,10 @@ remapJar {
     input = shadowJar.archivePath
 }
 
+minecraft {
+	accessWidener "src/main/resources/geckolib.aw"
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {

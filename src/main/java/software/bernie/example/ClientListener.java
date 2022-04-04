@@ -5,15 +5,31 @@
 
 package software.bernie.example;
 
+import java.util.UUID;
+
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.network.PacketContext;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import software.bernie.example.client.renderer.armor.PotatoArmorRenderer;
 import software.bernie.example.client.renderer.entity.BikeGeoRenderer;
+import software.bernie.example.client.renderer.entity.ExampleExtendedRendererEntityRenderer;
 import software.bernie.example.client.renderer.entity.ExampleGeoRenderer;
 import software.bernie.example.client.renderer.entity.LERenderer;
 import software.bernie.example.client.renderer.entity.ReplacedCreeperRenderer;
@@ -26,9 +42,11 @@ import software.bernie.example.registry.BlockRegistry;
 import software.bernie.example.registry.EntityRegistry;
 import software.bernie.example.registry.ItemRegistry;
 import software.bernie.example.registry.TileRegistry;
+import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.renderer.geo.GeoArmorRenderer;
 import software.bernie.geckolib3.renderer.geo.GeoItemRenderer;
 
+@SuppressWarnings("deprecation")
 public class ClientListener implements ClientModInitializer {
 
 	@SuppressWarnings("unchecked")
@@ -41,6 +59,8 @@ public class ClientListener implements ClientModInitializer {
 					(entityRenderDispatcher, context) -> new BikeGeoRenderer(entityRenderDispatcher));
 			EntityRendererRegistry.INSTANCE.register(EntityRegistry.GEOLAYERENTITY,
 					(entityRenderDispatcher, context) -> new LERenderer(entityRenderDispatcher));
+			EntityRendererRegistry.INSTANCE.register(EntityRegistry.EXTENDED_RENDERER_EXAMPLE,
+					(entityRenderDispatcher, context) -> new ExampleExtendedRendererEntityRenderer(entityRenderDispatcher));
 			GeoItemRenderer.registerItemRenderer(ItemRegistry.JACK_IN_THE_BOX, new JackInTheBoxRenderer());
 			GeoItemRenderer.registerItemRenderer(ItemRegistry.PISTOL, new PistolRender());
 			GeoArmorRenderer.registerArmorRenderer(PotatoArmorItem.class, new PotatoArmorRenderer());
@@ -51,6 +71,56 @@ public class ClientListener implements ClientModInitializer {
 					(entityRenderDispatcher, context) -> new ReplacedCreeperRenderer(entityRenderDispatcher));
 
 			BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.BOTARIUM_BLOCK, RenderLayer.getCutout());
+		}
+	}
+
+	public class EntityPacketOnClient {
+		@Environment(EnvType.CLIENT)
+		public void onPacket(PacketContext context, PacketByteBuf byteBuf) {
+			EntityType<?> type = Registry.ENTITY_TYPE.get(byteBuf.readVarInt());
+			UUID entityUUID = byteBuf.readUuid();
+			int entityID = byteBuf.readVarInt();
+			double x = byteBuf.readDouble();
+			double y = byteBuf.readDouble();
+			double z = byteBuf.readDouble();
+			float pitch = (byteBuf.readByte() * 360) / 256.0F;
+			float yaw = (byteBuf.readByte() * 360) / 256.0F;
+			context.getTaskQueue().execute(() -> {
+				ClientWorld world = MinecraftClient.getInstance().world;
+				Entity entity = type.create(world);
+				if (entity != null) {
+					entity.updatePosition(x, y, z);
+					entity.updateTrackedPosition(x, y, z);
+					entity.pitch = pitch;
+					entity.yaw = yaw;
+					entity.setEntityId(entityID);
+					entity.setUuid(entityUUID);
+					world.addEntity(entityID, entity);
+				}
+			});
+		}
+	}
+
+	public static class EntityPacket {
+		public final static Identifier ID = new Identifier(GeckoLib.ModID, "spawn_entity");
+
+		public static Packet<?> createPacket(Entity entity) {
+			PacketByteBuf buf = createBuffer();
+			buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
+			buf.writeUuid(entity.getUuid());
+			buf.writeVarInt(entity.getEntityId());
+			buf.writeDouble(entity.getX());
+			buf.writeDouble(entity.getY());
+			buf.writeDouble(entity.getZ());
+			buf.writeByte(MathHelper.floor(entity.pitch * 256.0F / 360.0F));
+			buf.writeByte(MathHelper.floor(entity.yaw * 256.0F / 360.0F));
+			buf.writeFloat(entity.pitch);
+			buf.writeFloat(entity.yaw);
+			return ServerPlayNetworking.createS2CPacket(ID, buf);
+		}
+
+		private static PacketByteBuf createBuffer() {
+			return new PacketByteBuf(Unpooled.buffer());
 		}
 	}
 }
