@@ -1,3 +1,4 @@
-v3.0.68
+v3.0.69
 
-- Fixes ticking systems with Replay mod - Gecko
+- Added ExtendedGeoEntityRender that adds in a template for rendering and items on Geckolib mobs. Doesn't support Geckolib Armors at this time.
+- Cleaned up of some parts.
