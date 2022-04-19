@@ -80,7 +80,7 @@ public class GeoItemRenderer<T extends Item & IAnimatable>
 		stack.translate(0.5, 0.5, 0.5);
 
 		MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation(animatable));
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(animatable));
+		GeoModel model = modelProvider.getModel(modelProvider.getModelResource(animatable));
 		Color renderColor = getRenderColor(animatable, 0, stack, bufferIn, null, packedLightIn);
 		RenderLayer renderType = getRenderType(animatable, 0, stack, bufferIn, null, packedLightIn,
 				getTextureLocation(animatable));
@@ -92,7 +92,7 @@ public class GeoItemRenderer<T extends Item & IAnimatable>
 
 	@Override
 	public Identifier getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 	@Override

@@ -112,7 +112,7 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 	public void render(MatrixStack stack, VertexConsumerProvider bufferIn, int packedLightIn) {
 		stack.translate(0.0D, 24 / 16F, 0.0D);
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		GeoModel model = modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
+		GeoModel model = modelProvider.getModel(modelProvider.getModelResource(currentArmorItem));
 
 		AnimationEvent<T> itemEvent = new AnimationEvent<T>(this.currentArmorItem, 0, 0,
 				MinecraftClient.getInstance().getTickDelta(), false,
@@ -208,7 +208,7 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 
 	@Override
 	public Identifier getTextureLocation(T instance) {
-		return this.modelProvider.getTextureLocation(instance);
+		return this.modelProvider.getTextureResource(instance);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 
 	@SuppressWarnings("incomplete-switch")
 	public GeoArmorRenderer<T> applySlot() {
-		modelProvider.getModel(modelProvider.getModelLocation(currentArmorItem));
+		modelProvider.getModel(modelProvider.getModelResource(currentArmorItem));
 
 		IBone headBone = this.getAndHideBone(this.headBone);
 		IBone bodyBone = this.getAndHideBone(this.bodyBone);
