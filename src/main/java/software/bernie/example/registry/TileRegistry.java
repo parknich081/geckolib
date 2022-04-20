@@ -5,7 +5,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.registry.Registry;
 import software.bernie.example.block.tile.BotariumTileEntity;
 import software.bernie.example.block.tile.FertilizerTileEntity;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3q.GeckoLib;
 
 public class TileRegistry {
 	public static final BlockEntityType<BotariumTileEntity> BOTARIUM_TILE = Registry.register(

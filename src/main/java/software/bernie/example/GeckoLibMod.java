@@ -5,18 +5,24 @@
 
 package software.bernie.example;
 
-import net.fabricmc.api.ModInitializer;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.loader.api.FabricLoader;
-import software.bernie.example.registry.*;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.example.registry.BlockRegistry;
+import software.bernie.example.registry.EntityRegistry;
+import software.bernie.example.registry.ItemRegistry;
+import software.bernie.example.registry.SoundRegistry;
+import software.bernie.example.registry.TileRegistry;
+import software.bernie.geckolib3q.GeckoLib;
 
 public class GeckoLibMod implements ModInitializer {
 	public static boolean DISABLE_IN_DEV = false;
-	boolean isDevelopmentEnvironment = FabricLoader.getInstance().isDevelopmentEnvironment();
+	boolean isDevelopmentEnvironment = QuiltLoader.isDevelopmentEnvironment();
 
 	@Override
-	public void onInitialize() {
+	public void onInitialize(ModContainer mod) {
 		GeckoLib.initialize();
 		if (isDevelopmentEnvironment && !GeckoLibMod.DISABLE_IN_DEV) {
 			new EntityRegistry();

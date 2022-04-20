@@ -6,8 +6,8 @@ package software.bernie.example.client.model.tile;
 
 import net.minecraft.util.Identifier;
 import software.bernie.example.block.tile.BotariumTileEntity;
-import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3q.model.AnimatedGeoModel;
 
 public class BotariumModel extends AnimatedGeoModel<BotariumTileEntity> {
 	@Override

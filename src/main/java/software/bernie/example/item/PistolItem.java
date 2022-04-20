@@ -26,10 +26,11 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.network.GeckoLibNetwork;
-import software.bernie.geckolib3.network.ISyncable;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import software.bernie.geckolib3q.network.GeckoLibNetwork;
+import software.bernie.geckolib3q.network.ISyncable;
+import software.bernie.geckolib3q.util.GeckoLibUtil;
 
+@SuppressWarnings("deprecation")
 public class PistolItem extends Item implements IAnimatable, ISyncable {
 
 	public AnimationFactory factory = new AnimationFactory(this);
@@ -49,8 +50,8 @@ public class PistolItem extends Item implements IAnimatable, ISyncable {
 				playerentity.getItemCooldownManager().set(this, 5);
 				if (!worldIn.isClient) {
 					RocketProjectile abstractarrowentity = createArrow(worldIn, stack, playerentity);
-					abstractarrowentity.setVelocity(playerentity, playerentity.getPitch(), playerentity.getYaw(), 0.0F,
-							1.0F * 3.0F, 1.0F);
+					abstractarrowentity.setProperties(playerentity, playerentity.getPitch(), playerentity.getYaw(),
+							0.0F, 1.0F * 3.0F, 1.0F);
 
 					abstractarrowentity.setDamage(2.5);
 					abstractarrowentity.age = 35;

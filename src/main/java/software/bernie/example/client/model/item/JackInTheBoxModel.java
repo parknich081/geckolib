@@ -2,8 +2,8 @@ package software.bernie.example.client.model.item;
 
 import net.minecraft.util.Identifier;
 import software.bernie.example.item.JackInTheBoxItem;
-import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3q.model.AnimatedGeoModel;
 
 public class JackInTheBoxModel extends AnimatedGeoModel<JackInTheBoxItem> {
 	@Override

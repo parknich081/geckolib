@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import software.bernie.example.client.model.entity.RocketModel;
 import software.bernie.example.entity.RocketProjectile;
-import software.bernie.geckolib3.renderers.geo.GeoProjectilesRenderer;
+import software.bernie.geckolib3q.renderers.geo.GeoProjectilesRenderer;
 
 public class RocketRender extends GeoProjectilesRenderer<RocketProjectile> {
 

@@ -1,6 +1,7 @@
 package software.bernie.example.registry;
 
-import net.fabricmc.loader.api.FabricLoader;
+import org.quiltmc.loader.api.QuiltLoader;
+
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -18,7 +19,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3q.GeckoLib;
 
 public class RegistryUtils {
 
@@ -35,7 +36,7 @@ public class RegistryUtils {
 	}
 
 	public static <B extends Block> B register(B block, Identifier name, ItemGroup itemGroup) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			Registry.register(Registry.BLOCK, name, block);
 			BlockItem item = new BlockItem(block, (new Settings()).group(itemGroup));
 			item.appendBlocks(Item.BLOCK_ITEMS, item);
@@ -45,28 +46,28 @@ public class RegistryUtils {
 	}
 
 	public static <B extends Block> B registerBlockWithoutItem(B block, Identifier identifier) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			Registry.register(Registry.BLOCK, identifier, block);
 		}
 		return block;
 	}
 
 	public static <B extends Block> B registerBlockWithoutItem(String name, B block) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			Registry.register(Registry.BLOCK, new Identifier(GeckoLib.ModID, name), block);
 		}
 		return block;
 	}
 
 	public static <I extends Item> I registerItem(I item, Identifier name) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			return Registry.register(Registry.ITEM, name, item);
 		}
 		return null;
 	}
 
 	public static <I extends Item> I registerItem(String name, I item) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			return Registry.register(Registry.ITEM, new Identifier(GeckoLib.ModID, name), item);
 		}
 		return null;
@@ -80,7 +81,7 @@ public class RegistryUtils {
 	}
 
 	public static <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(String name, Builder<T> builder) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (QuiltLoader.isDevelopmentEnvironment()) {
 			BlockEntityType<T> blockEntityType = builder.build(null);
 			Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(GeckoLib.ModID, name), blockEntityType);
 			return blockEntityType;
@@ -94,8 +95,9 @@ public class RegistryUtils {
 	}
 
 	public static Block registerLog(Identifier name, MapColor MapColor, MapColor MapColor2) {
-		return register(new PillarBlock(AbstractBlock.Settings.of(Material.WOOD,
-				(blockState) -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? MapColor : MapColor2)
+		return register(new PillarBlock(AbstractBlock.Settings
+				.of(Material.WOOD,
+						(blockState) -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? MapColor : MapColor2)
 				.strength(2.0F).sounds(BlockSoundGroup.WOOD)), name);
 	}
 
@@ -107,12 +109,10 @@ public class RegistryUtils {
 	}
 
 	public static Block registerLog(String name, MapColor MapColor, MapColor MapColor2) {
-		return register(
-				new PillarBlock(AbstractBlock.Settings.of(Material.WOOD,
-						(blockState) -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? MapColor
-								: MapColor2)
-						.strength(2.0F).sounds(BlockSoundGroup.WOOD)),
-				new Identifier(GeckoLib.ModID, name));
+		return register(new PillarBlock(AbstractBlock.Settings
+				.of(Material.WOOD,
+						(blockState) -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? MapColor : MapColor2)
+				.strength(2.0F).sounds(BlockSoundGroup.WOOD)), new Identifier(GeckoLib.ModID, name));
 	}
 
 }

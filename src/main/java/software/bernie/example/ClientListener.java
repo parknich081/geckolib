@@ -7,8 +7,10 @@ package software.bernie.example;
 
 import java.util.UUID;
 
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
@@ -44,16 +46,16 @@ import software.bernie.example.registry.BlockRegistry;
 import software.bernie.example.registry.EntityRegistry;
 import software.bernie.example.registry.ItemRegistry;
 import software.bernie.example.registry.TileRegistry;
-import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
-import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
+import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3q.renderers.geo.GeoArmorRenderer;
+import software.bernie.geckolib3q.renderers.geo.GeoItemRenderer;
 
 @SuppressWarnings("deprecation")
 public class ClientListener implements ClientModInitializer {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public void onInitializeClient() {
+	public void onInitializeClient(ModContainer mod) {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment() && !GeckoLibMod.DISABLE_IN_DEV) {
 			EntityRendererRegistry.register(EntityRegistry.GEO_EXAMPLE_ENTITY, ExampleGeoRenderer::new);
 			EntityRendererRegistry.register(EntityRegistry.GEOLAYERENTITY, LERenderer::new);

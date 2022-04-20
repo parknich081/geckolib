@@ -21,10 +21,11 @@ import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.network.GeckoLibNetwork;
-import software.bernie.geckolib3.network.ISyncable;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import software.bernie.geckolib3q.network.GeckoLibNetwork;
+import software.bernie.geckolib3q.network.ISyncable;
+import software.bernie.geckolib3q.util.GeckoLibUtil;
 
+@SuppressWarnings("deprecation")
 public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 	public AnimationFactory factory = new AnimationFactory(this);
 	private static final String controllerName = "popupController";

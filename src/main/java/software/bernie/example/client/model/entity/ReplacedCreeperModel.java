@@ -1,8 +1,8 @@
 package software.bernie.example.client.model.entity;
 
 import net.minecraft.util.Identifier;
-import software.bernie.geckolib3.GeckoLib;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3q.model.AnimatedGeoModel;
 
 @SuppressWarnings("rawtypes")
 public class ReplacedCreeperModel extends AnimatedGeoModel {

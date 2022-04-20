@@ -260,7 +260,6 @@ public class ExtendedRendererEntity extends PathAwareEntity implements IAnimatab
 		return EntityPacket.createPacket(this);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected ActionResult interactMob(PlayerEntity pPlayer, Hand pHand) {
 		ItemStack item = pPlayer.getStackInHand(pHand);
@@ -272,7 +271,7 @@ public class ExtendedRendererEntity extends PathAwareEntity implements IAnimatab
 				this.setStackInHand(pHand, item);
 			}
 			pPlayer.sendSystemMessage(
-					new LiteralText("Equipped item: " + item.getItem().getRegistryEntry().toString() + "!"),
+					new LiteralText("Equipped item: " + item.getItem().getName().toString() + "!"),
 					this.getUuid());
 			return ActionResult.SUCCESS;
 		}
