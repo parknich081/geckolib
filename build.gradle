@@ -201,7 +201,7 @@ if (file('key.properties').exists()) {
     project {
         apiKey = curseProp.getProperty('curseKey')
         id = "388172"
-        releaseType = "release"
+        releaseType = "alpha"
         changelogType = 'text'
         changelog = file('changelog.txt')
         addGameVersion("1.18.2")
@@ -209,7 +209,7 @@ if (file('key.properties').exists()) {
         addGameVersion("Java 17")
 
         relations {
-            requiredDependency 'fabric-api'      
+            //requiredDependency 'fabric-api'      
         }
         mainArtifact(remapJar)
 
