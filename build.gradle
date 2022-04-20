@@ -208,9 +208,9 @@ if (file('key.properties').exists()) {
         addGameVersion("Fabric")
         addGameVersion("Java 17")
 
-        relations {
+        //relations {
             //requiredDependency 'fabric-api'      
-        }
+        //}
         mainArtifact(remapJar)
 
         afterEvaluate {
