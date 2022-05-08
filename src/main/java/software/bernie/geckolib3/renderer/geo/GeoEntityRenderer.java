@@ -37,6 +37,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.util.AnimationUtils;
+
 @SuppressWarnings({ "unchecked" })
 public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
@@ -157,10 +158,11 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
 		RenderLayer renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
 				getTexture(entity));
-		boolean invis = entity.isInvisibleTo(MinecraftClient.getInstance().player);
-		render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn,
-				getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
-				(float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
+		if (!entity.isInvisibleTo(MinecraftClient.getInstance().player))
+			render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn,
+					getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
+					(float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f,
+					(float) renderColor.getAlpha() / 255);
 
 		if (!entity.isSpectator()) {
 			for (GeoLayerRenderer<T> layerRenderer : this.layerRenderers) {
@@ -220,8 +222,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 				f = 1.0F;
 			}
 
-			matrixStackIn
-					.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getDeathMaxRotation(entityLiving)));
+			matrixStackIn.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getDeathMaxRotation(entityLiving)));
 		} else if (entityLiving.isUsingRiptide()) {
 			matrixStackIn.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entityLiving.pitch));
 			matrixStackIn.multiply(
