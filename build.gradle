@@ -193,6 +193,11 @@ processResources {
     }
 }
 
+task publishToModSites {
+    publishToModSites.dependsOn modrinth
+    publishToModSites.dependsOn curseforge
+}
+
 if (file('key.properties').exists()) {
 	modrinth {
 		def modrinthProp = new Properties()
@@ -226,9 +231,6 @@ if (file('key.properties').exists()) {
         addGameVersion("Fabric")
         addGameVersion("Java 17")
 
-        //relations {
-            //requiredDependency 'fabric-api'      
-        //}
         mainArtifact(remapJar)
 
         afterEvaluate {
