@@ -9,14 +9,13 @@ import java.util.UUID;
 
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.fabricmc.loader.api.FabricLoader;
@@ -31,6 +30,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import software.bernie.example.ClientListener.EntityPacketOnClient;
 import software.bernie.example.client.renderer.armor.PotatoArmorRenderer;
 import software.bernie.example.client.renderer.entity.BikeGeoRenderer;
 import software.bernie.example.client.renderer.entity.ExampleExtendedRendererEntityRenderer;
@@ -74,15 +74,15 @@ public class ClientListener implements ClientModInitializer {
 			EntityRendererRegistry.register(EntityType.CREEPER, (ctx) -> new ReplacedCreeperRenderer(ctx));
 
 			BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.BOTARIUM_BLOCK, RenderLayer.getCutout());
-			ClientSidePacketRegistry.INSTANCE.register(EntityPacket.ID, (ctx, buf) -> {
-				EntityPacketOnClient.onPacket(ctx, buf);
+			ClientPlayNetworking.registerGlobalReceiver(EntityPacket.ID, (client, handler, buf, responseSender) -> {
+				EntityPacketOnClient.onPacket(client, buf);
 			});
 		}
 	}
 
 	public class EntityPacketOnClient {
 		@Environment(EnvType.CLIENT)
-		public static void onPacket(PacketContext context, PacketByteBuf byteBuf) {
+		public static void onPacket(MinecraftClient context, PacketByteBuf byteBuf) {
 			EntityType<?> type = Registry.ENTITY_TYPE.get(byteBuf.readVarInt());
 			UUID entityUUID = byteBuf.readUuid();
 			int entityID = byteBuf.readVarInt();
@@ -91,7 +91,7 @@ public class ClientListener implements ClientModInitializer {
 			double z = byteBuf.readDouble();
 			float pitch = (byteBuf.readByte() * 360) / 256.0F;
 			float yaw = (byteBuf.readByte() * 360) / 256.0F;
-			context.getTaskQueue().execute(() -> {
+			context.execute(() -> {
 				@SuppressWarnings("resource")
 				ClientWorld world = MinecraftClient.getInstance().world;
 				Entity entity = type.create(world);
