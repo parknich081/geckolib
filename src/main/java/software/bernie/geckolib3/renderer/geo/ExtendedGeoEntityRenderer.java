@@ -138,12 +138,17 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 		super.renderLate(animatable, stackIn, ticks, renderTypeBuffer, bufferIn, packedLightIn, packedOverlayIn, red,
 				green, blue, partialTicks);
 		this.currentEntityBeingRendered = animatable;
+		this.currentVertexBuilderInUse = bufferIn;
+		this.currentPartialTicks = partialTicks;
 	}
 
 	protected final BipedEntityModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_INNER = new BipedEntityModel<>(0.5F);
 	protected final BipedEntityModel<LivingEntity> DEFAULT_BIPED_ARMOR_MODEL_OUTER = new BipedEntityModel<>(1.0F);
 
 	protected abstract boolean isArmorBone(final GeoBone bone);
+
+	private VertexConsumer currentVertexBuilderInUse;
+	private float currentPartialTicks;
 
 	protected void moveAndRotateMatrixToMatchBone(MatrixStack stack, GeoBone bone) {
 		// First, let's move our render position to the pivot point...
@@ -243,13 +248,18 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 	@Override
 	public void renderRecursively(GeoBone bone, MatrixStack stack, VertexConsumer bufferIn, int packedLightIn,
 			int packedOverlayIn, float red, float green, float blue, float alpha) {
-		Identifier tfb = this.getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL ? null
+		Identifier tfb = this.getCurrentModelRenderCycle() != EModelRenderCycle.INITIAL ? null
 				: this.getTextureForBone(bone.getName(), this.currentEntityBeingRendered);
 		boolean customTextureMarker = tfb != null;
 		Identifier currentTexture = this.getTextureLocation(this.currentEntityBeingRendered);
 		if (customTextureMarker) {
 			currentTexture = tfb;
 			this.bindTexture(currentTexture);
+			if (this.rtb != null) {
+				RenderLayer rt = this.getRenderTypeForBone(bone, this.currentEntityBeingRendered,
+						this.currentPartialTicks, stack, bufferIn, this.rtb, packedLightIn, currentTexture);
+				bufferIn = this.rtb.getBuffer(rt);
+			}
 		}
 		if (this.getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
 			stack.push();
@@ -294,12 +304,23 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 			}
 			stack.pop();
 		}
+		// reset buffer
+		if (customTextureMarker) {
+			bufferIn = this.currentVertexBuilderInUse;
+		}
 
 		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 
 		if (customTextureMarker) {
 			this.bindTexture(this.getTextureLocation(this.currentEntityBeingRendered));
 		}
+	}
+
+	private RenderLayer getRenderTypeForBone(GeoBone bone, T currentEntityBeingRendered2, float currentPartialTicks2,
+			MatrixStack stack, VertexConsumer bufferIn, VertexConsumerProvider currentRenderTypeBufferInUse2,
+			int packedLightIn, Identifier currentTexture) {
+		return this.getRenderType(currentEntityBeingRendered2, currentPartialTicks2, stack,
+				currentRenderTypeBufferInUse2, bufferIn, packedLightIn, currentTexture);
 	}
 
 	// Internal use only. Basically renders the passed "part" of the armor model on
@@ -320,7 +341,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 
 	protected void renderBlock(MatrixStack matrixStack, VertexConsumerProvider rtb, int packedLightIn,
 			BlockState iBlockState) {
-		// TODO: Re-implement, doesn't do anyhting yet
+		// TODO: Re-implement, doesn't do anything yet
 	}
 
 	/*
