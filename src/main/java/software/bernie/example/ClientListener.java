@@ -11,9 +11,9 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.fabricmc.loader.api.FabricLoader;
@@ -46,7 +46,6 @@ import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.renderer.geo.GeoArmorRenderer;
 import software.bernie.geckolib3.renderer.geo.GeoItemRenderer;
 
-@SuppressWarnings("deprecation")
 public class ClientListener implements ClientModInitializer {
 
 	@SuppressWarnings("unchecked")
@@ -59,8 +58,8 @@ public class ClientListener implements ClientModInitializer {
 					(entityRenderDispatcher, context) -> new BikeGeoRenderer(entityRenderDispatcher));
 			EntityRendererRegistry.INSTANCE.register(EntityRegistry.GEOLAYERENTITY,
 					(entityRenderDispatcher, context) -> new LERenderer(entityRenderDispatcher));
-			EntityRendererRegistry.INSTANCE.register(EntityRegistry.EXTENDED_RENDERER_EXAMPLE,
-					(entityRenderDispatcher, context) -> new ExampleExtendedRendererEntityRenderer(entityRenderDispatcher));
+			EntityRendererRegistry.INSTANCE.register(EntityRegistry.EXTENDED_RENDERER_EXAMPLE, (entityRenderDispatcher,
+					context) -> new ExampleExtendedRendererEntityRenderer(entityRenderDispatcher));
 			GeoItemRenderer.registerItemRenderer(ItemRegistry.JACK_IN_THE_BOX, new JackInTheBoxRenderer());
 			GeoItemRenderer.registerItemRenderer(ItemRegistry.PISTOL, new PistolRender());
 			GeoArmorRenderer.registerArmorRenderer(PotatoArmorItem.class, new PotatoArmorRenderer());
@@ -71,12 +70,15 @@ public class ClientListener implements ClientModInitializer {
 					(entityRenderDispatcher, context) -> new ReplacedCreeperRenderer(entityRenderDispatcher));
 
 			BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.BOTARIUM_BLOCK, RenderLayer.getCutout());
+			ClientPlayNetworking.registerGlobalReceiver(EntityPacket.ID, (client, handler, buf, responseSender) -> {
+				EntityPacketOnClient.onPacket(client, buf);
+			});
 		}
 	}
 
-	public class EntityPacketOnClient {
+	public static class EntityPacketOnClient {
 		@Environment(EnvType.CLIENT)
-		public void onPacket(PacketContext context, PacketByteBuf byteBuf) {
+		public static void onPacket(MinecraftClient context, PacketByteBuf byteBuf) {
 			EntityType<?> type = Registry.ENTITY_TYPE.get(byteBuf.readVarInt());
 			UUID entityUUID = byteBuf.readUuid();
 			int entityID = byteBuf.readVarInt();
@@ -85,7 +87,7 @@ public class ClientListener implements ClientModInitializer {
 			double z = byteBuf.readDouble();
 			float pitch = (byteBuf.readByte() * 360) / 256.0F;
 			float yaw = (byteBuf.readByte() * 360) / 256.0F;
-			context.getTaskQueue().execute(() -> {
+			context.execute(() -> {
 				ClientWorld world = MinecraftClient.getInstance().world;
 				Entity entity = type.create(world);
 				if (entity != null) {
