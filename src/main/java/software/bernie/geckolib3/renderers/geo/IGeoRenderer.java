@@ -27,15 +27,18 @@ public interface IGeoRenderer<T> {
 			PoseStack matrixStackIn, @Nullable MultiBufferSource renderTypeBuffer,
 			@Nullable VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,
 			float blue, float alpha) {
-		renderEarly(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		renderEarly(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
+				packedOverlayIn, red, green, blue, alpha);
 
 		if (renderTypeBuffer != null) {
 			vertexBuilder = renderTypeBuffer.getBuffer(type);
 		}
-		renderLate(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		renderLate(animatable, matrixStackIn, partialTicks, renderTypeBuffer, vertexBuilder, packedLightIn,
+				packedOverlayIn, red, green, blue, alpha);
 		// Render all top level bones
 		for (AnimatingBone group : model.getTopLevelBones()) {
-			renderRecursively(group, matrixStackIn, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+			renderRecursively(group, matrixStackIn, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue,
+					alpha);
 		}
 	}
 
@@ -48,12 +51,16 @@ public interface IGeoRenderer<T> {
 		RenderUtils.scale(bone, stack);
 		RenderUtils.moveBackFromPivot(bone, stack);
 
-		if (!bone.isHidden) {
+		if (!bone.isHidden()) {
 			for (GeoCube cube : bone.bone.childCubes) {
 				stack.pushPose();
-				renderCube(cube, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+				if (!bone.cubesAreHidden()) {
+					renderCube(cube, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+				}
 				stack.popPose();
 			}
+		}
+		if (!bone.childBonesAreHiddenToo()) {
 			for (AnimatingBone childBone : bone.childBones) {
 				renderRecursively(childBone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 			}
@@ -93,24 +100,25 @@ public interface IGeoRenderer<T> {
 			for (GeoVertex vertex : quad.vertices) {
 				Vector4f vector4f = new Vector4f(vertex.position.x(), vertex.position.y(), vertex.position.z(), 1.0F);
 				vector4f.transform(matrix4f);
-				bufferIn.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.textureU, vertex.textureV, packedOverlayIn, packedLightIn, normal.x(), normal.y(), normal.z());
+				bufferIn.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.textureU,
+						vertex.textureV, packedOverlayIn, packedLightIn, normal.x(), normal.y(), normal.z());
 			}
 		}
 	}
 
 	GeoModelType<T> getModelType();
 
-	default void renderEarly(T animatable, PoseStack stackIn, float ticks, @Nullable MultiBufferSource renderTypeBuffer,
-			@Nullable VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green,
-			float blue, float partialTicks) {
+	default void renderEarly(T animatable, PoseStack stackIn, float partialTicks,
+			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,
+			int packedOverlayIn, float red, float green, float blue, float alpha) {
 	}
 
 	default void renderLate(T animatable, PoseStack stackIn, float ticks, MultiBufferSource renderTypeBuffer,
 			VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue,
-			float partialTicks) {
+			float alpha) {
 	}
 
-	default RenderType getRenderType(T animatable, float partialTicks, PoseStack stack,
+	default RenderType getRenderType(T currentArmorItem, float partialTicks, PoseStack stack,
 			@Nullable MultiBufferSource renderTypeBuffer, @Nullable VertexConsumer vertexBuilder, int packedLightIn,
 			ResourceLocation textureLocation) {
 		return RenderType.entityCutout(textureLocation);

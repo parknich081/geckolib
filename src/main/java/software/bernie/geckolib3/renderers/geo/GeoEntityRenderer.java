@@ -29,8 +29,8 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.engine.Animator;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
@@ -38,7 +38,7 @@ import software.bernie.geckolib3.resource.GeckoLibCache;
 
 public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRenderer<T> implements IGeoRenderer<T> {
 
-	private final GeoModelType<T> modelProvider;
+	protected final GeoModelType<T> modelProvider;
 	protected final List<GeoLayerRenderer<T>> layerRenderers = Lists.newArrayList();
 
 	public ItemStack mainHand;
@@ -60,8 +60,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 	public void render(T entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource bufferIn,
 			int packedLightIn) {
 		stack.pushPose();
-		boolean shouldSit = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle()
-				.shouldRiderSit());
+		boolean shouldSit = entity.isPassenger()
+				&& (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
 		EntityModelData entityModelData = new EntityModelData();
 		entityModelData.isSitting = shouldSit;
 		entityModelData.isChild = entity.isBaby();
@@ -95,7 +95,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 			Direction direction = entity.getBedOrientation();
 			if (direction != null) {
 				float f4 = entity.getEyeHeight(Pose.STANDING) - 0.1F;
-				stack.translate((double) ((float) (-direction.getStepX()) * f4), 0.0D, (double) ((float) (-direction.getStepZ()) * f4));
+				stack.translate((double) ((float) (-direction.getStepX()) * f4), 0.0D,
+						(double) ((float) (-direction.getStepZ()) * f4));
 			}
 		}
 		float f7 = this.handleRotationFloat(entity, partialTicks);
@@ -117,21 +118,27 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 		entityModelData.headPitch = -headPitch;
 		entityModelData.netHeadYaw = -netHeadYaw;
 
-		AnimationEvent<T> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
+		AnimationEvent<T> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks,
+				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 		Animator<T> animator = modelProvider.getOrCreateAnimator(entity);
 
-        animator.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+		animator.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 
-        stack.translate(0, 0.01f, 0);
+		stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
-		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(entity));
-		boolean invis = entity.isInvisibleTo(Minecraft.getInstance().player);
-		render((AnimatingModel) animator.boneTree, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
+		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
+				getTextureLocation(entity));
+		if (!entity.isInvisibleTo(Minecraft.getInstance().player))
+			render((AnimatingModel) animator.boneTree, entity, partialTicks, renderType, stack, bufferIn, null,
+					packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
+					(float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f,
+					(float) renderColor.getAlpha() / 255);
 
 		if (!entity.isSpectator()) {
 			for (GeoLayerRenderer<T> layerRenderer : this.layerRenderers) {
-				layerRenderer.render(stack, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks, f7, netHeadYaw, headPitch);
+				layerRenderer.render(stack, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks,
+						f7, netHeadYaw, headPitch);
 			}
 		}
 		if (ModList.get().isLoaded("patchouli")) {
@@ -153,7 +160,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 		this.boots = animatable.getItemBySlot(EquipmentSlot.FEET);
 		this.rtb = renderTypeBuffer;
 		this.whTexture = this.getTextureLocation(animatable);
-		IGeoRenderer.super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
+		IGeoRenderer.super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn,
+				packedOverlayIn, red, green, blue, partialTicks);
 	}
 
 	@Override
@@ -162,7 +170,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 	}
 
 	public static int getPackedOverlay(LivingEntity livingEntityIn, float uIn) {
-		return OverlayTexture.pack(OverlayTexture.u(uIn), OverlayTexture.v(livingEntityIn.hurtTime > 0 || livingEntityIn.deathTime > 0));
+		return OverlayTexture.pack(OverlayTexture.u(uIn),
+				OverlayTexture.v(livingEntityIn.hurtTime > 0 || livingEntityIn.deathTime > 0));
 	}
 
 	protected void applyRotations(T entityLiving, PoseStack matrixStackIn, float ageInTicks, float rotationYaw,
@@ -182,7 +191,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 			matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(f * this.getDeathMaxRotation(entityLiving)));
 		} else if (entityLiving.isAutoSpinAttack()) {
 			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90.0F - entityLiving.getXRot()));
-			matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(((float) entityLiving.tickCount + partialTicks) * -75.0F));
+			matrixStackIn
+					.mulPose(Vector3f.YP.rotationDegrees(((float) entityLiving.tickCount + partialTicks) * -75.0F));
 		} else if (pose == Pose.SLEEPING) {
 			Direction direction = entityLiving.getBedOrientation();
 			float f1 = direction != null ? getFacingAngle(direction) : rotationYaw;
@@ -191,7 +201,8 @@ public abstract class GeoEntityRenderer<T extends LivingEntity> extends EntityRe
 			matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(270.0F));
 		} else if (entityLiving.hasCustomName() || entityLiving instanceof Player) {
 			String s = ChatFormatting.stripFormatting(entityLiving.getName().getString());
-			if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof Player) || ((Player) entityLiving).isModelPartShown(PlayerModelPart.CAPE))) {
+			if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof Player)
+					|| ((Player) entityLiving).isModelPartShown(PlayerModelPart.CAPE))) {
 				matrixStackIn.translate(0.0D, (double) (entityLiving.getBbHeight() + 0.1F), 0.0D);
 				matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 			}

@@ -27,18 +27,19 @@ public abstract class GeoArmorItem extends ArmorItem {
 			@Override
 			public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack itemStack,
 					EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-				return GeoArmorRenderer.getRenderer(GeoArmorItem.this.getClass())
+				return GeoArmorRenderer.getRenderer(GeoArmorItem.this.getClass(), entityLiving)
 						.setCurrentItem(entityLiving, itemStack, armorSlot).applyEntityStats(_default)
 						.applySlot(armorSlot);
 			}
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
 	@Override
 	public final String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
 		Class<? extends GeoArmorItem> clazz = this.getClass();
-		GeoArmorRenderer<? super GeoArmorItem> renderer = GeoArmorRenderer.getRenderer(clazz);
-		return renderer.getTextureLocation(stack).toString();
+		GeoArmorRenderer<? super GeoArmorItem> renderer = GeoArmorRenderer.getRenderer(clazz, entity);
+		return renderer.getTextureResource(stack).toString();
 	}
 }

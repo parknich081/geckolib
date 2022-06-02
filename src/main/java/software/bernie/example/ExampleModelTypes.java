@@ -7,8 +7,8 @@ import software.bernie.example.client.model.entity.LEModelType;
 import software.bernie.example.client.model.entity.ReplacedCreeperModelType;
 import software.bernie.example.client.model.item.JackInTheBoxModelType;
 import software.bernie.example.client.model.item.PistolModelType;
-import software.bernie.example.client.model.tile.FertilizerModelType;
 import software.bernie.example.client.model.tile.BotariumModelType;
+import software.bernie.example.client.model.tile.FertilizerModelType;
 
 public class ExampleModelTypes {
 

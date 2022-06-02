@@ -1,9 +1,7 @@
 package software.bernie.geckolib3.model;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.function.Function;
 
 import com.eliotlash.molang.MolangParser;
 
@@ -14,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.ModelType;
-import software.bernie.geckolib3.core.bone.BoneTree;
 import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.file.AnimationFile;
@@ -93,7 +90,7 @@ public abstract class GeoModelType<T> implements ModelType<T> {
 
 	public abstract ResourceLocation getModelResource(T object);
 
-	public abstract ResourceLocation getTextureResource(T object);
+	public abstract ResourceLocation getTextureResource(T instance);
 
 	/**
 	 * This resource location needs to point to a json file of your animation file,

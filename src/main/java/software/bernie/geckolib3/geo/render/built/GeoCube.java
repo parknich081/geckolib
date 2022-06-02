@@ -4,7 +4,11 @@ import com.mojang.math.Vector3f;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.geckolib3.geo.raw.pojo.*;
+import software.bernie.geckolib3.geo.raw.pojo.Cube;
+import software.bernie.geckolib3.geo.raw.pojo.FaceUv;
+import software.bernie.geckolib3.geo.raw.pojo.ModelProperties;
+import software.bernie.geckolib3.geo.raw.pojo.UvFaces;
+import software.bernie.geckolib3.geo.raw.pojo.UvUnion;
 import software.bernie.geckolib3.util.VectorUtils;
 
 public class GeoCube {

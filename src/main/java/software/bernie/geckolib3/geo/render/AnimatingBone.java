@@ -6,9 +6,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-
 import software.bernie.geckolib3.core.bone.IBone;
 import software.bernie.geckolib3.core.bone.ImmutableBone;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
@@ -22,6 +19,8 @@ public class AnimatingBone implements IBone {
 	public final List<AnimatingBone> childBones = new ArrayList<>();
 
 	public boolean isHidden;
+	public boolean areCubesHidden = false;
+	public boolean hideChildBonesToo;
 
 	public float scaleX;
 	public float scaleY;
@@ -141,7 +140,7 @@ public class AnimatingBone implements IBone {
 
 	@Override
 	public void setHidden(boolean hidden) {
-		this.isHidden = hidden;
+		this.setHidden(hidden, hidden);
 	}
 
 	@Override
@@ -212,5 +211,26 @@ public class AnimatingBone implements IBone {
 	@Override
 	public String getName() {
 		return bone.name;
+	}
+
+	@Override
+	public boolean cubesAreHidden() {
+		return areCubesHidden;
+	}
+
+	@Override
+	public boolean childBonesAreHiddenToo() {
+		return hideChildBonesToo;
+	}
+
+	@Override
+	public void setCubesHidden(boolean hidden) {
+		this.areCubesHidden = hidden;
+	}
+
+	@Override
+	public void setHidden(boolean selfHidden, boolean skipChildRendering) {
+		this.isHidden = selfHidden;
+		this.hideChildBonesToo = skipChildRendering;
 	}
 }

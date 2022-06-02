@@ -43,6 +43,7 @@ configurations {
 minecraft {
 	// Parchment is mojmap + method parameters + documentation
 	mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 	runs {
 		client {
 			workingDirectory project.file('runs/' + name)
@@ -116,7 +117,6 @@ repositories {
 	maven { url "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/" }
 	maven { url "https://maven.enginehub.org/repo/" }
 	maven { url "https://maven.blamejared.com" }
-	maven { url "https://minecraft.curseforge.com/api/maven/" }
 	maven { url "https://maven.cloudsmith.io/geckolib3/geckolib/" }
 	maven { url "https://cfa2.cursemaven.com" }
 	maven { url "https://plugins.gradle.org/m2/" }
@@ -130,17 +130,19 @@ dependencies {
 	library(project(':geckolib-core')) {
 		exclude group: 'org.apache.commons'
 	}
+	library 'com.eliotlash.mclib:mclib:18'
 	library group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
 	library group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.0'
-
+	
+	shade 'com.eliotlash.molang:molang:18'
 	shade(project(':geckolib-core:molang'))
 	shade(project(':geckolib-core')) {
 		exclude group: 'org.apache.commons'
 	}
 	shade group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
 	shade group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.0'
-
-	implementation fg.deobf("com.jozufozu.flywheel:Flywheel-Forge:${flywheel_version}")
+	
+	implementation fg.deobf("curse.maven:flywheel-486392:3737402")
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'

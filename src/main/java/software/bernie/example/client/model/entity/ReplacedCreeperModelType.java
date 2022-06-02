@@ -5,8 +5,8 @@ import net.minecraft.world.entity.monster.Creeper;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.engine.AnimationChannel;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.engine.Animator;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class ReplacedCreeperModelType extends GeoModelType<Creeper> {

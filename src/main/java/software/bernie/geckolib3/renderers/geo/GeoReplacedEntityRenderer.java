@@ -30,14 +30,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraftforge.fml.ModList;
 import software.bernie.geckolib3.compat.PatchouliCompat;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.engine.Animator;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.GeoModelType;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.resource.GeckoLibCache;
 
-public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends EntityRenderer<E> implements IGeoRenderer<E> {
+public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends EntityRenderer<E>
+		implements IGeoRenderer<E> {
 	private final GeoModelType<E> modelProvider;
 	protected final List<GeoLayerRenderer<E>> layerRenderers = Lists.newArrayList();
 	private static final Map<Class<?>, GeoReplacedEntityRenderer<?>> renderers = new ConcurrentHashMap<>();
@@ -54,13 +55,14 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		return renderers.get(item);
 	}
 
+	@SuppressWarnings("resource")
 	@Override
-	public void render(E entity, float entityYaw, float partialTicks, PoseStack stack,
-			MultiBufferSource bufferIn, int packedLightIn) {
+	public void render(E entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource bufferIn,
+			int packedLightIn) {
 
 		stack.pushPose();
-		boolean shouldSit = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle()
-				.shouldRiderSit());
+		boolean shouldSit = entity.isPassenger()
+				&& (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
 		EntityModelData entityModelData = new EntityModelData();
 		entityModelData.isSitting = shouldSit;
 		entityModelData.isChild = entity.isBaby();
@@ -68,7 +70,7 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
 		float f1 = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
 		float f2 = f1 - f;
-		if (shouldSit && entity.getVehicle() instanceof LivingEntity livingentity) {
+		if (shouldSit && entity.getVehicle()instanceof LivingEntity livingentity) {
 			f = Mth.rotLerp(partialTicks, livingentity.yBodyRotO, livingentity.yBodyRot);
 			f2 = f1 - f;
 			float f3 = Mth.wrapDegrees(f2);
@@ -117,22 +119,28 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 		entityModelData.headPitch = -f6;
 		entityModelData.netHeadYaw = -f2;
 
-		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
+		AnimationEvent<E> predicate = new AnimationEvent<>(entity, limbSwing, limbSwingAmount, partialTicks,
+				!(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
 
 		Animator<E> data = modelProvider.getOrCreateAnimator(entity);
 
-        data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+		data.tickAnimation(predicate, GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
 
-        stack.translate(0, 0.01f, 0);
+		stack.translate(0, 0.01f, 0);
 		RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 		Color renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null, packedLightIn);
-		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn, getTextureLocation(entity));
-		boolean invis = entity.isInvisibleTo(Minecraft.getInstance().player);
-		render(((AnimatingModel) data.boneTree), entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn, getPackedOverlay(entity, this.getOverlayProgress(entity, partialTicks)), (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f, invis ? 0.0F : (float) renderColor.getAlpha() / 255);
+		RenderType renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
+				getTextureLocation(entity));
+		if (!entity.isInvisibleTo(Minecraft.getInstance().player))
+			render(((AnimatingModel) data.boneTree), entity, partialTicks, renderType, stack, bufferIn, null,
+					packedLightIn, getPackedOverlay(entity, this.getOverlayProgress(entity, partialTicks)),
+					(float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
+					(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
 
 		if (!entity.isSpectator()) {
 			for (GeoLayerRenderer<E> layerRenderer : this.layerRenderers) {
-				layerRenderer.render(stack, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks, f7, f2, f6);
+				layerRenderer.render(stack, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks,
+						f7, f2, f6);
 			}
 		}
 		if (ModList.get().isLoaded("patchouli")) {
@@ -161,7 +169,8 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 	}
 
 	public static int getPackedOverlay(LivingEntity livingEntityIn, float uIn) {
-		return OverlayTexture.pack(OverlayTexture.u(uIn), OverlayTexture.v(livingEntityIn.hurtTime > 0 || livingEntityIn.deathTime > 0));
+		return OverlayTexture.pack(OverlayTexture.u(uIn),
+				OverlayTexture.v(livingEntityIn.hurtTime > 0 || livingEntityIn.deathTime > 0));
 	}
 
 	protected void applyRotations(LivingEntity entityLiving, PoseStack matrixStackIn, float ageInTicks,
@@ -181,7 +190,8 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 			matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(f * this.getDeathMaxRotation(entityLiving)));
 		} else if (entityLiving.isAutoSpinAttack()) {
 			matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90.0F - entityLiving.getXRot()));
-			matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(((float) entityLiving.tickCount + partialTicks) * -75.0F));
+			matrixStackIn
+					.mulPose(Vector3f.YP.rotationDegrees(((float) entityLiving.tickCount + partialTicks) * -75.0F));
 		} else if (pose == Pose.SLEEPING) {
 			Direction direction = entityLiving.getBedOrientation();
 			float f1 = direction != null ? getFacingAngle(direction) : rotationYaw;
@@ -190,7 +200,8 @@ public abstract class GeoReplacedEntityRenderer<E extends LivingEntity> extends 
 			matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(270.0F));
 		} else if (entityLiving.hasCustomName() || entityLiving instanceof Player) {
 			String s = ChatFormatting.stripFormatting(entityLiving.getName().getString());
-			if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof Player) || ((Player) entityLiving).isModelPartShown(PlayerModelPart.CAPE))) {
+			if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof Player)
+					|| ((Player) entityLiving).isModelPartShown(PlayerModelPart.CAPE))) {
 				matrixStackIn.translate(0.0D, entityLiving.getBbHeight() + 0.1F, 0.0D);
 				matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 			}

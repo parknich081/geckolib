@@ -12,6 +12,7 @@ public class FlywheelCompat {
 
 	private static boolean done = false;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void init(final WorldEvent.Load event) {
 		if (done) return;
 		done = true;

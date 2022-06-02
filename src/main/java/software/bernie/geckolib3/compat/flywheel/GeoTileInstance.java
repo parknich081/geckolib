@@ -8,7 +8,6 @@ import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.api.instance.DynamicInstance;
 import com.jozufozu.flywheel.backend.instancing.blockentity.BlockEntityInstance;
 import com.jozufozu.flywheel.util.AnimationTickHolder;
-import com.jozufozu.flywheel.util.transform.MatrixTransformStack;
 
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
@@ -19,10 +18,8 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import software.bernie.geckolib3.core.bone.BoneTree;
-import software.bernie.geckolib3.core.bone.IBone;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.engine.Animator;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.AnimatingBone;
 import software.bernie.geckolib3.geo.render.AnimatingModel;
 import software.bernie.geckolib3.model.GeoModelType;
@@ -43,7 +40,8 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 		animator = modelProvider.getOrCreateAnimator(tile);
 		RenderType state = states.apply(modelProvider.getTextureResource(tile));
 
-		stack.translate(getInstancePosition()).translate(0.5, 0.01, 0.5).rotateToFace(getFacing());
+		// stack.translate(getInstancePosition()).translate(0.5, 0.01,
+		// 0.5).rotateToFace(getFacing());
 
 		var boneTree = (AnimatingModel) animator.boneTree;
 		for (AnimatingBone bone : boneTree.getTopLevelBones()) {
@@ -55,7 +53,8 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 	@Override
 	public void beginFrame() {
 
-		animator.tickAnimation(new AnimationEvent<>(blockEntity), GeckoLibCache.getInstance().getParser(), AnimationTickHolder.getRenderTime());
+		animator.tickAnimation(new AnimationEvent<>(blockEntity), GeckoLibCache.getInstance().getParser(),
+				AnimationTickHolder.getRenderTime());
 
 		for (InstancedBone bone : topLevelBones) {
 			bone.recursiveCheckNeedsUpdate();
@@ -79,6 +78,7 @@ public class GeoTileInstance<T extends BlockEntity> extends BlockEntityInstance<
 		topLevelBones.forEach(InstancedBone::delete);
 	}
 
+	@SuppressWarnings("unused")
 	private Direction getFacing() {
 		BlockState blockState = blockEntity.getBlockState();
 		if (blockState.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {

@@ -23,7 +23,9 @@ public class GeoBone implements ImmutableBone {
 
 	public final String name;
 
-	public final boolean isHidden;
+	public boolean isHidden;
+	public boolean areCubesHidden = false;
+	public boolean hideChildBonesToo;
 
 	public final float scaleX = 1;
 	public final float scaleY = 1;
@@ -156,9 +158,34 @@ public class GeoBone implements ImmutableBone {
 	public float getPivotZ() {
 		return this.rotationPointZ;
 	}
+	
+	@Override
+	public void setHidden(boolean hidden) {
+		this.setHidden(hidden, hidden);
+	}
 
 	@Nullable
 	public GeoBone getParent() {
 		return this.parent;
+	}
+	@Override
+	public boolean cubesAreHidden() {
+		return areCubesHidden;
+	}
+
+	@Override
+	public boolean childBonesAreHiddenToo() {
+		return hideChildBonesToo;
+	}
+
+	@Override
+	public void setCubesHidden(boolean hidden) {
+		this.areCubesHidden = hidden;
+	}
+
+	@Override
+	public void setHidden(boolean selfHidden, boolean skipChildRendering) {
+		this.isHidden = selfHidden;
+		this.hideChildBonesToo = skipChildRendering;
 	}
 }

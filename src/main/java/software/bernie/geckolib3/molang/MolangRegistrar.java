@@ -1,6 +1,5 @@
 package software.bernie.geckolib3.molang;
 
-import com.eliotlash.molang.math.Variable;
 import com.eliotlash.molang.MolangParser;
 
 public class MolangRegistrar {

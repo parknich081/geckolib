@@ -8,9 +8,9 @@ import software.bernie.example.registry.SoundRegistry;
 import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.engine.AnimationChannel;
+import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.engine.Animator;
 import software.bernie.geckolib3.model.GeoModelType;
 
 public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
@@ -45,6 +45,7 @@ public class JackInTheBoxModelType extends GeoModelType<ItemStack> {
 		return null;
 	}
 
+	@SuppressWarnings("resource")
 	private void soundListener(SoundKeyframeEvent<ItemStack> event) {
 		// The animation for the JackInTheBoxItem has a sound keyframe at time 0:00.
 		// As soon as that keyframe gets hit this method fires and it starts playing the

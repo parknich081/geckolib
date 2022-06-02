@@ -11,7 +11,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import software.bernie.example.registry.*;
+import software.bernie.example.registry.BlockRegistry;
+import software.bernie.example.registry.EntityRegistry;
+import software.bernie.example.registry.ItemRegistry;
+import software.bernie.example.registry.SoundRegistry;
+import software.bernie.example.registry.TileRegistry;
 import software.bernie.geckolib3.GeckoLib;
 
 @Mod(GeckoLib.ModID)

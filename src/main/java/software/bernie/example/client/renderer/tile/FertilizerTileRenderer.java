@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.example.ExampleModelTypes;
 import software.bernie.example.block.tile.FertilizerTileEntity;
-import software.bernie.example.client.model.tile.FertilizerModelType;
 import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class FertilizerTileRenderer extends GeoBlockRenderer<FertilizerTileEntity> {
