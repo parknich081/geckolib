@@ -1,7 +1,5 @@
 package software.bernie.example.client.model.entity;
 
-import java.util.Optional;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
@@ -52,10 +50,21 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 	@Override
 	protected Animator<GeoExampleEntity> createAnimator(GeoExampleEntity geoExampleEntity) {
 		return new ExampleEntityAnimator(geoExampleEntity, createModelFor(geoExampleEntity), this).createChannel()
-				.setPredicate(this::predicate).setPredicate(this::predicateTwoHandedSwing)
-				.setPredicate(this::predicateTwoHandedPose).setPredicate(this::predicateRightArmPose)
-				.setPredicate(this::predicateRightArmSwing).setPredicate(this::predicateLeftArmSwing)
-				.setPredicate(this::predicateLeftArmPose).build();
+				.setPredicate(this::predicate).setPredicate(this::predicateTwoHandedPose)
+				.build();
+	}
+
+	private AnimationBuilder predicateBodyPose(AnimationChannel<GeoExampleEntity> controller,
+			AnimationEvent<GeoExampleEntity> event) {
+		AnimationBuilder animation = new AnimationBuilder();
+		if (event.getAnimatable().isTwoHandedAnimationRunning()) {
+
+		} else if (event.getAnimatable().isPassenger()) {
+			animation = new AnimationBuilder().addAnimation(ANIM_NAME_SITTING, true);
+		} else if (event.getAnimatable().isCrouching()) {
+			animation = new AnimationBuilder().addAnimation(ANIM_NAME_SNEAKING, true);
+		}
+		return animation;
 	}
 
 	private AnimationBuilder predicateRightArmSwing(AnimationChannel<GeoExampleEntity> controller,
@@ -86,7 +95,35 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 
 	private AnimationBuilder predicate(AnimationChannel<GeoExampleEntity> controller,
 			AnimationEvent<GeoExampleEntity> event) {
-		return new AnimationBuilder().addAnimation("animation.bat.fly", true);
+		AnimationBuilder animation = new AnimationBuilder();
+		if (event.getAnimatable().isTwoHandedAnimationRunning()) {
+			if (event.getAnimatable().isSpellCasting()) {
+				animation = new AnimationBuilder().addAnimation(ANIM_NAME_SPELLCASTING, true);
+			} else {
+				// If item instanceof ItemGreatsword => Greatsword animation
+				// If item instanceof Spear => spear animation
+				// If item instanceof Firearm/Bow/Crossbow => firearm animation
+				if (event.getAnimatable().getOffhandItem().getItem()
+						.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.BOW
+						|| event.getAnimatable().getOffhandItem().getItem()
+								.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.CROSSBOW) {
+					// Firearm
+					animation = new AnimationBuilder()
+							.addAnimation(!event.getAnimatable().isLeftHanded() ? ANIM_NAME_FIREARM_POSE_LEFT
+									: ANIM_NAME_FIREARM_POSE_RIGHT, true);
+				} else if (event.getAnimatable().getOffhandItem().getItem()
+						.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.SPEAR) {
+					// Yes this is for tridents but we can use it anyway
+					// Spear
+					animation =  new AnimationBuilder()
+							.addAnimation(!event.getAnimatable().isLeftHanded() ? ANIM_NAME_SPEAR_POSE_LEFT
+									: ANIM_NAME_SPEAR_POSE_RIGHT, true);
+				}
+			}
+		} else {
+			animation = new AnimationBuilder().addAnimation(ANIM_NAME_IDLE, true);
+		}
+		return new AnimationBuilder().addAnimation(ANIM_NAME_IDLE, true);
 	}
 
 	private AnimationBuilder predicateRightArmPose(AnimationChannel<GeoExampleEntity> controller,
@@ -117,48 +154,33 @@ public class ExampleEntityModelType extends GeoModelType<GeoExampleEntity> {
 
 	private AnimationBuilder predicateTwoHandedPose(AnimationChannel<GeoExampleEntity> controller,
 			AnimationEvent<GeoExampleEntity> event) {
+		AnimationBuilder animation = new AnimationBuilder();
 		if (event.getAnimatable().isTwoHandedAnimationRunning()) {
 			if (event.getAnimatable().isSpellCasting()) {
 				return new AnimationBuilder().addAnimation(ANIM_NAME_SPELLCASTING, true);
 			} else {
-				// First: Check for firearm, spear and greatsword in either hand
-				// Main hand has priority
-				Optional<AnimationBuilder> resultState = performTwoHandedLogicPerHand(
-						event.getAnimatable().getMainHandItem(), event.getAnimatable().isLeftHanded(), controller,
-						event);
-				if (!resultState.isPresent()) {
-					resultState = performTwoHandedLogicPerHand(event.getAnimatable().getOffhandItem(),
-							!event.getAnimatable().isLeftHanded(), controller, event);
-				}
-				if (resultState.isPresent()) {
-					return resultState.get();
+				// If item instanceof ItemGreatsword => Greatsword animation
+				// If item instanceof Spear => spear animation
+				// If item instanceof Firearm/Bow/Crossbow => firearm animation
+				if (event.getAnimatable().getOffhandItem().getItem()
+						.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.BOW
+						|| event.getAnimatable().getOffhandItem().getItem()
+								.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.CROSSBOW) {
+					// Firearm
+					animation = new AnimationBuilder()
+							.addAnimation(!event.getAnimatable().isLeftHanded() ? ANIM_NAME_FIREARM_POSE_LEFT
+									: ANIM_NAME_FIREARM_POSE_RIGHT, true);
+				} else if (event.getAnimatable().getOffhandItem().getItem()
+						.getUseAnimation(event.getAnimatable().getOffhandItem()) == UseAnim.SPEAR) {
+					// Yes this is for tridents but we can use it anyway
+					// Spear
+					animation = new AnimationBuilder()
+							.addAnimation(!event.getAnimatable().isLeftHanded() ? ANIM_NAME_SPEAR_POSE_LEFT
+									: ANIM_NAME_SPEAR_POSE_RIGHT, true);
 				}
 			}
 		}
-		return new AnimationBuilder();
-	}
-
-	private Optional<AnimationBuilder> performTwoHandedLogicPerHand(ItemStack itemStack, boolean leftHanded,
-			AnimationChannel<GeoExampleEntity> controller, AnimationEvent<GeoExampleEntity> event) {
-		if (itemStack.isEmpty()) {
-			return Optional.empty();
-		}
-		Item item = itemStack.getItem();
-		// If item instanceof ItemGreatsword => Greatsword animation
-		// If item instanceof Spear => spear animation
-		// If item instanceof Firearm/Bow/Crossbow => firearm animation
-		if (item.getUseAnimation(itemStack) == UseAnim.BOW || item.getUseAnimation(itemStack) == UseAnim.CROSSBOW) {
-			// Firearm
-			return Optional.of(new AnimationBuilder()
-					.addAnimation(leftHanded ? ANIM_NAME_FIREARM_POSE_LEFT : ANIM_NAME_FIREARM_POSE_RIGHT, true));
-		} else if (item.getUseAnimation(itemStack) == UseAnim.SPEAR) {
-			// Yes this is for tridents but we can use it anyway
-			// Spear
-			return Optional.of(new AnimationBuilder()
-					.addAnimation(leftHanded ? ANIM_NAME_SPEAR_POSE_LEFT : ANIM_NAME_SPEAR_POSE_RIGHT, true));
-		}
-		// If item is greatsword => greatsword animation
-		return Optional.of(new AnimationBuilder());
+		return animation;
 	}
 
 	private AnimationBuilder predicateTwoHandedSwing(AnimationChannel<GeoExampleEntity> controller,

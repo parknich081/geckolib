@@ -67,7 +67,7 @@ import software.bernie.geckolib3.model.GeoModelType;
 @OnlyIn(Dist.CLIENT)
 public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity> extends GeoEntityRenderer<T> {
 
-	static enum EModelRenderCycle {
+	public static enum EModelRenderCycle {
 		INITIAL, REPEATED, SPECIAL /* For special use by the user */
 	}
 
@@ -107,8 +107,6 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity> extends 
 			int packedLightIn) {
 		this.setCurrentModelRenderCycle(EModelRenderCycle.INITIAL);
 		super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
-		// Now, render the heads
-		this.renderHeads(stack, bufferIn, packedLightIn);
 	}
 
 	// Yes, this is necessary to be done after everything else, otherwise it will
@@ -154,12 +152,13 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity> extends 
 			}
 			stack.scale(1.1875F * sx, 1.1875F * sy, 1.1875F * sz);
 			stack.translate(-0.5, 0, -0.5);
+			float limbSwing = this.currentEntityBeingRendered.animationPosition - this.currentEntityBeingRendered.animationSpeed * (1.0F - currentPartialTicks);
 			SkullBlock.Type skullblock$type = ((AbstractSkullBlock) ((BlockItem) itemStack.getItem()).getBlock())
 					.getType();
 			SkullModelBase skullmodelbase = SkullBlockRenderer
 					.createSkullRenderers(Minecraft.getInstance().getEntityModels()).get(skullblock$type);
 			RenderType rendertype = SkullBlockRenderer.getRenderType(skullblock$type, skullOwnerProfile);
-			SkullBlockRenderer.renderSkull((Direction) null, 0.0F, 0.0F, stack, buffer, packedLightIn, skullmodelbase,
+			SkullBlockRenderer.renderSkull((Direction) null, 0.0F, limbSwing, stack, buffer, packedLightIn, skullmodelbase,
 					rendertype);
 			stack.popPose();
 
@@ -175,6 +174,8 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity> extends 
 		super.render(model, animatable, partialTicks, type, matrixStackIn, renderTypeBuffer, vertexBuilder,
 				packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		this.setCurrentModelRenderCycle(EModelRenderCycle.REPEATED);
+		// Now, render the heads
+		this.renderHeads(matrixStackIn, renderTypeBuffer, packedLightIn);
 	}
 
 	protected float getWidthScale(T entity) {
