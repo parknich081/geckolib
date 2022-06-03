@@ -22,7 +22,7 @@ public abstract class GeoArmorItem extends ArmorItem implements ArmorProvider {
 	public BipedEntityModel<LivingEntity> getArmorModel(LivingEntity entityLiving, ItemStack itemStack,
 			EquipmentSlot armorSlot, BipedEntityModel<LivingEntity> _default) {
 		return GeoArmorRenderer.getRenderer(this.getClass()).applyEntityStats(_default).applySlot(armorSlot)
-				.setCurrentItem(entityLiving, itemStack, armorSlot);
+				.setCurrentItem(entityLiving, itemStack, armorSlot, _default);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

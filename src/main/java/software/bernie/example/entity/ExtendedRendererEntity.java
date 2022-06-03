@@ -2,15 +2,19 @@ package software.bernie.example.entity;
 
 import java.util.Optional;
 
+import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
@@ -259,9 +263,14 @@ public class ExtendedRendererEntity extends PathAwareEntity implements IAnimatab
 			if (item.getItem() instanceof ArmorItem) {
 				ArmorItem ai = (ArmorItem) item.getItem();
 				this.equipStack(ai.getSlotType(), item);
+			} else if (item.getItem() instanceof BlockItem
+					&& ((BlockItem) item.getItem()).getBlock() instanceof AbstractSkullBlock) {
+				this.equipStack(EquipmentSlot.HEAD, item);
 			} else {
 				this.setStackInHand(pHand, item);
 			}
+			pPlayer.sendSystemMessage(new LiteralText("Equipped item: " + item.getItem().getTranslationKey() + "!"),
+					this.getUuid());
 			return ActionResult.SUCCESS;
 		}
 		return super.interactMob(pPlayer, pHand);
