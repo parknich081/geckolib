@@ -1,3 +1,5 @@
-3.0.6
+3.0.7
 
-- Simple log spam fix in dev for the pistol and blocks.
+- Head rendering support and WIP Geo Armor Support for ExtendedGeoRender - DerToaster
+- Updates Core.
+- Potato Armor example replaced by Wolf Armor, created by  Spectral Studios
