@@ -15,7 +15,7 @@ import software.bernie.example.registry.EntityRegistry;
 import software.bernie.example.registry.ItemRegistry;
 import software.bernie.example.registry.SoundRegistry;
 import software.bernie.example.registry.TileRegistry;
-import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3.GeckoLib;
 
 public class GeckoLibMod implements ModInitializer {
 	public static boolean DISABLE_IN_DEV = false;

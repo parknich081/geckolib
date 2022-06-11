@@ -7,7 +7,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import software.bernie.example.block.tile.FertilizerTileEntity;
 import software.bernie.example.client.model.tile.FertilizerModel;
-import software.bernie.geckolib3q.renderers.geo.GeoBlockRenderer;
+import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer;
 
 public class FertilizerTileRenderer extends GeoBlockRenderer<FertilizerTileEntity> {
 	public FertilizerTileRenderer() {

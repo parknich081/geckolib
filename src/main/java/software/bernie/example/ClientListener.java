@@ -39,15 +39,15 @@ import software.bernie.example.client.renderer.entity.ReplacedCreeperRenderer;
 import software.bernie.example.client.renderer.entity.RocketRender;
 import software.bernie.example.client.renderer.item.JackInTheBoxRenderer;
 import software.bernie.example.client.renderer.item.PistolRender;
-import software.bernie.example.client.renderer.tile.BotariumTileRenderer;
+import software.bernie.example.client.renderer.tile.HabitatTileRenderer;
 import software.bernie.example.client.renderer.tile.FertilizerTileRenderer;
 import software.bernie.example.registry.BlockRegistry;
 import software.bernie.example.registry.EntityRegistry;
 import software.bernie.example.registry.ItemRegistry;
 import software.bernie.example.registry.TileRegistry;
-import software.bernie.geckolib3q.GeckoLib;
-import software.bernie.geckolib3q.renderers.geo.GeoArmorRenderer;
-import software.bernie.geckolib3q.renderers.geo.GeoItemRenderer;
+import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
+import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
 @SuppressWarnings("deprecation")
 public class ClientListener implements ClientModInitializer {
@@ -66,8 +66,8 @@ public class ClientListener implements ClientModInitializer {
 			GeoArmorRenderer.registerArmorRenderer(new PotatoArmorRenderer(), ItemRegistry.POTATO_HEAD,
 					ItemRegistry.POTATO_CHEST, ItemRegistry.POTATO_LEGGINGS, ItemRegistry.POTATO_BOOTS);
 			EntityRendererRegistry.register(EntityRegistry.ROCKET, (ctx) -> new RocketRender(ctx));
-			BlockEntityRendererRegistry.register(TileRegistry.BOTARIUM_TILE,
-					(BlockEntityRendererFactory.Context rendererDispatcherIn) -> new BotariumTileRenderer());
+			BlockEntityRendererRegistry.register(TileRegistry.HABITAT_TILE,
+					(BlockEntityRendererFactory.Context rendererDispatcherIn) -> new HabitatTileRenderer());
 			BlockEntityRendererRegistry.register(TileRegistry.FERTILIZER,
 					(BlockEntityRendererFactory.Context rendererDispatcherIn) -> new FertilizerTileRenderer());
 

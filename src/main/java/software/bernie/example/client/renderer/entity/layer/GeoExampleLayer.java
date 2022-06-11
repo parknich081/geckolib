@@ -6,9 +6,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import software.bernie.geckolib3q.GeckoLib;
-import software.bernie.geckolib3q.renderers.geo.GeoLayerRenderer;
-import software.bernie.geckolib3q.renderers.geo.IGeoRenderer;
+import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
+import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 @SuppressWarnings("rawtypes")
 public class GeoExampleLayer extends GeoLayerRenderer {

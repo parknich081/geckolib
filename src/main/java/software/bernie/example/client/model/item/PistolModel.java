@@ -2,8 +2,8 @@ package software.bernie.example.client.model.item;
 
 import net.minecraft.util.Identifier;
 import software.bernie.example.item.PistolItem;
-import software.bernie.geckolib3q.GeckoLib;
-import software.bernie.geckolib3q.model.AnimatedGeoModel;
+import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class PistolModel extends AnimatedGeoModel<PistolItem> {
 	@Override
