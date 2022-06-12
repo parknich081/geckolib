@@ -12,7 +12,7 @@
 //
 //     GeoModel data = Converter.fromJsonString(jsonString);
 
-package software.bernie.geckolib3q.geo.raw.pojo;
+package software.bernie.geckolib3.geo.raw.pojo;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

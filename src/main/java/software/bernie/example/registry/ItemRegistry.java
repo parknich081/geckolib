@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import software.bernie.example.item.JackInTheBoxItem;
 import software.bernie.example.item.PistolItem;
 import software.bernie.example.item.PotatoArmorItem;
-import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3.GeckoLib;
 
 @SuppressWarnings("deprecation")
 public class ItemRegistry {

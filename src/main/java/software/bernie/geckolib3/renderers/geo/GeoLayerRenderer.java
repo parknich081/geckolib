@@ -1,7 +1,8 @@
 package software.bernie.geckolib3.renderers.geo;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;

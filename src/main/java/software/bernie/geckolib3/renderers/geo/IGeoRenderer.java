@@ -1,7 +1,8 @@
 package software.bernie.geckolib3.renderers.geo;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -70,7 +71,7 @@ public interface IGeoRenderer<T> {
 		RenderUtils.rotate(cube, stack);
 		RenderUtils.moveBackFromPivot(cube, stack);
 		Matrix3f matrix3f = stack.peek().getNormal();
-		Matrix4f matrix4f = stack.peek().getModel();
+		Matrix4f matrix4f = stack.peek().getPosition();
 
 		for (GeoQuad quad : cube.quads) {
 			if (quad == null) {

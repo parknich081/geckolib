@@ -2,8 +2,9 @@ package software.bernie.example.client.renderer.entity;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;

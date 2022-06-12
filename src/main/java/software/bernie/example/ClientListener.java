@@ -39,8 +39,8 @@ import software.bernie.example.client.renderer.entity.ReplacedCreeperRenderer;
 import software.bernie.example.client.renderer.entity.RocketRender;
 import software.bernie.example.client.renderer.item.JackInTheBoxRenderer;
 import software.bernie.example.client.renderer.item.PistolRender;
-import software.bernie.example.client.renderer.tile.HabitatTileRenderer;
 import software.bernie.example.client.renderer.tile.FertilizerTileRenderer;
+import software.bernie.example.client.renderer.tile.HabitatTileRenderer;
 import software.bernie.example.registry.BlockRegistry;
 import software.bernie.example.registry.EntityRegistry;
 import software.bernie.example.registry.ItemRegistry;
@@ -73,7 +73,7 @@ public class ClientListener implements ClientModInitializer {
 
 			EntityRendererRegistry.register(EntityType.CREEPER, (ctx) -> new ReplacedCreeperRenderer(ctx));
 
-			BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.BOTARIUM_BLOCK, RenderLayer.getCutout());
+			BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.FERTILIZER_BLOCK, RenderLayer.getCutout());
 			ClientPlayNetworking.registerGlobalReceiver(EntityPacket.ID, (client, handler, buf, responseSender) -> {
 				EntityPacketOnClient.onPacket(client, buf);
 			});
@@ -97,7 +97,7 @@ public class ClientListener implements ClientModInitializer {
 				Entity entity = type.create(world);
 				if (entity != null) {
 					entity.updatePosition(x, y, z);
-					entity.updateTrackedPosition(x, y, z);
+					entity.method_43391(x, y, z);
 					entity.setPitch(pitch);
 					entity.setYaw(yaw);
 					entity.setId(entityID);

@@ -19,7 +19,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3.GeckoLib;
 
 public class RegistryUtils {
 

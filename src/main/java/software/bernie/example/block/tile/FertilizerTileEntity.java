@@ -12,11 +12,11 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class BotariumTileEntity extends BlockEntity implements IAnimatable {
+public class FertilizerTileEntity extends BlockEntity implements IAnimatable {
 	private final AnimationFactory factory = new AnimationFactory(this);
 
-    public BotariumTileEntity(BlockPos pos, BlockState state) {
-		super(TileRegistry.BOTARIUM_TILE, pos, state);
+    public FertilizerTileEntity(BlockPos pos, BlockState state) {
+		super(TileRegistry.FERTILIZER, pos, state);
 	}
 
     @SuppressWarnings("unchecked")
@@ -29,7 +29,7 @@ public class BotariumTileEntity extends BlockEntity implements IAnimatable {
 	@Override
 	public void registerControllers(AnimationData data) {
 		data.addAnimationController(
-				new AnimationController<BotariumTileEntity>(this, "controller", 0, this::predicate));
+				new AnimationController<FertilizerTileEntity>(this, "controller", 0, this::predicate));
 	}
 
 	@Override

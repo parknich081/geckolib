@@ -1,5 +1,7 @@
 package software.bernie.example.entity;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,7 +15,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -77,7 +78,7 @@ public class BikeEntity extends AnimalEntity implements IAnimatable {
 	}
 
 	@Override
-	public boolean canBeControlledByRider() {
+	public boolean hasPlayerRider() {
 		return true;
 	}
 

@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.network.Packet;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
@@ -276,8 +276,7 @@ public class ExtendedRendererEntity extends PathAwareEntity implements IAnimatab
 			} else {
 				this.setStackInHand(pHand, item);
 			}
-			pPlayer.sendSystemMessage(new LiteralText("Equipped item: " + item.getItem().getTranslationKey() + "!"),
-					this.getUuid());
+			pPlayer.sendSystemMessage(Text.translatable("Equipped item: " + item.getItem().getTranslationKey() + "!"));
 			return ActionResult.SUCCESS;
 		}
 		return super.interactMob(pPlayer, pHand);

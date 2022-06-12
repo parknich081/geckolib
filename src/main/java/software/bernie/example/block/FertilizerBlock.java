@@ -15,8 +15,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import software.bernie.example.registry.TileRegistry;
 
-public class BotariumBlock extends FacingBlock implements BlockEntityProvider {
-	public BotariumBlock() {
+public class FertilizerBlock extends FacingBlock implements BlockEntityProvider {
+	public FertilizerBlock() {
 		super(AbstractBlock.Settings.of(Material.STONE).nonOpaque());
 	}
 
@@ -37,6 +37,6 @@ public class BotariumBlock extends FacingBlock implements BlockEntityProvider {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return TileRegistry.BOTARIUM_TILE.instantiate(pos, state);
+		return TileRegistry.FERTILIZER.instantiate(pos, state);
 	}
 }

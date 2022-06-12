@@ -1,4 +1,4 @@
-package software.bernie.geckolib3q.geo.raw.pojo;
+package software.bernie.geckolib3.geo.raw.pojo;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

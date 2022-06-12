@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.quiltmc.loader.api.QuiltLoader;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -33,12 +33,12 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.LightType;
+import software.bernie.geckolib3.compat.PatchouliCompat;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimatableModel;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.util.Color;
-import software.bernie.geckolib3.compat.PatchouliCompat;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
@@ -320,7 +320,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		float f1 = (float) (vec3.y - d4);
 		float f2 = (float) (vec3.z - d5);
 		VertexConsumer vertexconsumer = buffer.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = poseStack.peek().getModel();
+		Matrix4f matrix4f = poseStack.peek().getPosition();
 		float f4 = MathHelper.fastInverseSqrt(f * f + f2 * f2) * 0.025F / 2.0F;
 		float f5 = f2 * f4;
 		float f6 = f * f4;

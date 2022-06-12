@@ -17,7 +17,7 @@ import software.bernie.example.entity.ExtendedRendererEntity;
 import software.bernie.example.entity.GeoExampleEntity;
 import software.bernie.example.entity.LEEntity;
 import software.bernie.example.entity.RocketProjectile;
-import software.bernie.geckolib3q.GeckoLib;
+import software.bernie.geckolib3.GeckoLib;
 
 public class EntityRegistry {
 	public static final EntityType<GeoExampleEntity> GEO_EXAMPLE_ENTITY = buildEntity(GeoExampleEntity::new,

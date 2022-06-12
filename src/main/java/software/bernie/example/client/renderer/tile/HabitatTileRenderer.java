@@ -1,7 +1,8 @@
 package software.bernie.example.client.renderer.tile;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -21,6 +22,6 @@ public class HabitatTileRenderer extends GeoBlockRenderer<HabitatTileEntity> {
 	public RenderLayer getRenderType(HabitatTileEntity animatable, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn,
 			Identifier textureLocation) {
-		return RenderLayer.getEntityTranslucent(getTextureResource(animatable));
+		return RenderLayer.getEntityTranslucent(this.getTextureLocation(animatable));
 	}
 }

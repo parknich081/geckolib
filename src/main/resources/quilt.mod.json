@@ -19,7 +19,7 @@
 			],
 			"client_init": [
 				"software.bernie.example.ClientListener",
-				"software.bernie.geckolib3q.network.ClientPackets"
+				"software.bernie.geckolib3.network.ClientPackets"
 			]
 		},
 		"depends": [

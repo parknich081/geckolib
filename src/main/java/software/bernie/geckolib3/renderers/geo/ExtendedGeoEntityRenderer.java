@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BlockState;
@@ -20,7 +21,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPart.Cuboid;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
@@ -44,9 +44,9 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
+import software.bernie.geckolib3.ArmorRenderingRegistryImpl;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.ArmorRenderingRegistryImpl;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
@@ -232,7 +232,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 		stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(bone.getRotationY()));
 		stack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(bone.getRotationZ()));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected void handleArmorRenderingForBone(GeoBone bone, MatrixStack stack, VertexConsumer bufferIn,
 			int packedLightIn, int packedOverlayIn, Identifier currentTexture) {
@@ -392,9 +392,9 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 					if (boneItem != null) {
 						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 
-						MinecraftClient.getInstance().getHeldItemRenderer().renderItem(currentEntityBeingRendered,
-								boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), false, stack,
-								rtb, packedLightIn);
+						MinecraftClient.getInstance().getItemRenderer().renderItem(currentEntityBeingRendered, boneItem,
+								this.getCameraTransformForItemAtBone(boneItem, bone.getName()), false, stack, rtb, null,
+								packedLightIn, packedOverlayIn, packedOverlayIn);
 
 						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
 					}
