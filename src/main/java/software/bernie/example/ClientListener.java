@@ -8,6 +8,7 @@ package software.bernie.example;
 import java.util.UUID;
 
 import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 
@@ -18,7 +19,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -55,7 +55,7 @@ public class ClientListener implements ClientModInitializer {
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		if (FabricLoader.getInstance().isDevelopmentEnvironment() && !GeckoLibMod.DISABLE_IN_DEV) {
+		if (QuiltLoader.isDevelopmentEnvironment() && !GeckoLibMod.DISABLE_IN_DEV) {
 			EntityRendererRegistry.register(EntityRegistry.GEO_EXAMPLE_ENTITY, ExampleGeoRenderer::new);
 			EntityRendererRegistry.register(EntityRegistry.GEOLAYERENTITY, LERenderer::new);
 			EntityRendererRegistry.register(EntityRegistry.BIKE_ENTITY, BikeGeoRenderer::new);
