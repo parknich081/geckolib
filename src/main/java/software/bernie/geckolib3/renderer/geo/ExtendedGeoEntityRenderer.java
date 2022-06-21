@@ -15,6 +15,7 @@ import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.fabricmc.fabric.impl.client.rendering.ArmorRenderingRegistryImpl;
 import net.minecraft.block.AbstractSkullBlock;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -49,6 +50,7 @@ import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.item.GeoArmorItem;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.util.RenderUtils;
 
 /**
  * @author DerToaster98 Copyright (c) 30.03.2022 Developed by DerToaster98
@@ -61,7 +63,14 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
  */
 public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimatable> extends GeoEntityRenderer<T> {
 
-	static enum EModelRenderCycle {
+	/*
+	 * Allows the end user to introduce custom render cycles
+	 */
+	public static interface IRenderCycle {
+		public String name();
+	}
+
+	public static enum EModelRenderCycle implements IRenderCycle {
 		INITIAL, REPEATED, SPECIAL /* For special use by the user */
 	}
 
@@ -73,13 +82,13 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 	/*
 	 * 0 => Normal model 1 => Magical armor overlay
 	 */
-	private EModelRenderCycle currentModelRenderCycle = EModelRenderCycle.INITIAL;
+	private IRenderCycle currentModelRenderCycle = EModelRenderCycle.INITIAL;
 
-	protected EModelRenderCycle getCurrentModelRenderCycle() {
+	protected IRenderCycle getCurrentModelRenderCycle() {
 		return this.currentModelRenderCycle;
 	}
 
-	protected void setCurrentModelRenderCycle(EModelRenderCycle currentModelRenderCycle) {
+	protected void setCurrentModelRenderCycle(IRenderCycle currentModelRenderCycle) {
 		this.currentModelRenderCycle = currentModelRenderCycle;
 	}
 
@@ -385,29 +394,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 				if (boneItem != null || boneBlock != null) {
 
 //					stack.push();
-					// First, let's move our render position to the pivot point...
-					stack.translate(bone.getPivotX() / 16, bone.getPivotY() / 16, bone.getPositionZ() / 16);
-
-					stack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(bone.getRotationX()));
-					stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(bone.getRotationY()));
-					stack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(bone.getRotationZ()));
-
-					if (boneItem != null) {
-						this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
-
-						MinecraftClient.getInstance().getHeldItemRenderer().renderItem(currentEntityBeingRendered,
-								boneItem, this.getCameraTransformForItemAtBone(boneItem, bone.getName()), false, stack,
-								rtb, packedLightIn);
-
-						this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
-					}
-					if (boneBlock != null) {
-						this.preRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
-
-						this.renderBlock(stack, this.rtb, packedLightIn, boneBlock);
-
-						this.postRenderBlock(boneBlock, bone.getName(), this.currentEntityBeingRendered);
-					}
+					this.handleItemAndBlockBoneRendering(stack, bone, boneItem, boneBlock, packedLightIn);
 
 //					stack.pop();
 
@@ -416,12 +403,55 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 			}
 			stack.pop();
 		}
+		this.customBoneSpecificRenderingHook(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue,
+				alpha, customTextureMarker, currentTexture);
 		// reset buffer
 		if (customTextureMarker) {
 			bufferIn = this.currentVertexBuilderInUse;
 		}
 
 		super.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+	}
+
+	/*
+	 * Gets called after armor and item rendering but in every render cycle. This
+	 * serves as a hook for modders to include their own bone specific rendering
+	 */
+	protected void customBoneSpecificRenderingHook(GeoBone bone, MatrixStack stack, VertexConsumer bufferIn,
+			int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha,
+			boolean customTextureMarker, Identifier currentTexture) {
+	}
+
+	protected void handleItemAndBlockBoneRendering(MatrixStack stack, GeoBone bone, @Nullable ItemStack boneItem,
+			@Nullable BlockState boneBlock, int packedLightIn) {
+		RenderUtils.translate(bone, stack);
+		RenderUtils.moveToPivot(bone, stack);
+		RenderUtils.rotate(bone, stack);
+		RenderUtils.scale(bone, stack);
+		RenderUtils.moveBackFromPivot(bone, stack);
+
+		this.moveAndRotateMatrixToMatchBone(stack, bone);
+
+		if (boneItem != null) {
+			this.preRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
+
+			this.renderItemStack(stack, this.rtb, packedLightIn, boneItem, bone.getName());
+
+			this.postRenderItem(stack, boneItem, bone.getName(), this.currentEntityBeingRendered, bone);
+		}
+		if (boneBlock != null) {
+			this.preRenderBlock(stack, boneBlock, bone.getName(), this.currentEntityBeingRendered);
+
+			this.renderBlock(stack, this.rtb, packedLightIn, boneBlock);
+
+			this.postRenderBlock(stack, boneBlock, bone.getName(), this.currentEntityBeingRendered);
+		}
+	}
+
+	protected void renderItemStack(MatrixStack stack, VertexConsumerProvider rtb, int packedLightIn, ItemStack boneItem,
+			String boneName) {
+		MinecraftClient.getInstance().getHeldItemRenderer().renderItem(currentEntityBeingRendered, boneItem,
+				this.getCameraTransformForItemAtBone(boneItem, boneName), false, stack, rtb, packedLightIn);
 	}
 
 	private RenderLayer getRenderTypeForBone(GeoBone bone, T currentEntityBeingRendered2, float currentPartialTicks2,
@@ -449,7 +479,16 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 
 	protected void renderBlock(MatrixStack matrixStack, VertexConsumerProvider rtb, int packedLightIn,
 			BlockState iBlockState) {
-		// TODO: Re-implement, doesn't do anything yet
+		if (iBlockState.getRenderType() != BlockRenderType.MODEL) {
+			return;
+		}
+		matrixStack.push();
+		matrixStack.translate(-0.25F, -0.25F, -0.25F);
+		matrixStack.scale(0.5F, 0.5F, 0.5F);
+
+		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(iBlockState, matrixStack, rtb,
+				packedLightIn, packedLightIn);
+		matrixStack.pop();
 	}
 
 	/*
@@ -469,12 +508,13 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 	protected abstract void preRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity,
 			IBone bone);
 
-	protected abstract void preRenderBlock(BlockState block, String boneName, T currentEntity);
+	protected abstract void preRenderBlock(MatrixStack matrixStack, BlockState block, String boneName, T currentEntity);
 
 	protected abstract void postRenderItem(MatrixStack matrixStack, ItemStack item, String boneName, T currentEntity,
 			IBone bone);
 
-	protected abstract void postRenderBlock(BlockState block, String boneName, T currentEntity);
+	protected abstract void postRenderBlock(MatrixStack matrixStack, BlockState block, String boneName,
+			T currentEntity);
 
 	/*
 	 * Return null, if there is no armor on this bone
