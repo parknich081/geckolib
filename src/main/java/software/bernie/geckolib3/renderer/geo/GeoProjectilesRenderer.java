@@ -23,6 +23,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.util.AnimationUtils;
+
 @SuppressWarnings({ "unchecked" })
 public class GeoProjectilesRenderer<T extends Entity & IAnimatable> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
@@ -90,6 +91,11 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimatable> extends Enti
 	@Override
 	public Identifier getTexture(T entity) {
 		return getTextureLocation(entity);
+	}
+
+	@Override
+	public Integer getUniqueID(T animatable) {
+		return animatable.getUuid().hashCode();
 	}
 
 }
