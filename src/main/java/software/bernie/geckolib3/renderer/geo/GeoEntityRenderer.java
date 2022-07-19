@@ -13,6 +13,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -171,8 +172,10 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		RenderLayer renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
 				getTexture(entity));
 		if (!entity.isInvisibleTo(MinecraftClient.getInstance().player))
-			render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn,
-					getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
+			render(model, entity, partialTicks, renderType, stack, bufferIn,
+					VertexConsumers.union(bufferIn.getBuffer(RenderLayer.getDirectEntityGlint()),
+							bufferIn.getBuffer(RenderLayer.getEntityTranslucentCull(getTextureLocation(entity)))),
+					packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
 					(float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f,
 					(float) renderColor.getAlpha() / 255);
 
