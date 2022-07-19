@@ -206,7 +206,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 	}
 
 	@Override
-	public Identifier getTextureLocation(T entity) {
+	public Identifier getTextureResource(T entity) {
 		return this.modelProvider.getTextureResource(entity);
 	}
 
@@ -271,7 +271,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 						VertexConsumer ivb = ItemRenderer
 								.getArmorGlintConsumer(rtb,
 										RenderLayer.getArmorCutoutNoCull(GeoArmorRenderer
-												.getRenderer(armorItem.getClass()).getTextureLocation(armorItem)),
+												.getRenderer(armorItem.getClass()).getTextureResource(armorItem)),
 										false, armorForBone.hasGlint());
 
 						geoArmorRenderer.render(this.currentPartialTicks, stack, ivb, packedLightIn);
@@ -380,7 +380,7 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 		Identifier tfb = this.getCurrentModelRenderCycle() != EModelRenderCycle.INITIAL ? null
 				: this.getTextureForBone(bone.getName(), this.currentEntityBeingRendered);
 		boolean customTextureMarker = tfb != null;
-		Identifier currentTexture = this.getTextureLocation(this.currentEntityBeingRendered);
+		Identifier currentTexture = this.getTextureResource(this.currentEntityBeingRendered);
 		if (customTextureMarker) {
 			currentTexture = tfb;
 			if (this.rtb != null) {

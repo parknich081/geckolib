@@ -123,10 +123,10 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 		this.fitToBiped();
 		this.applySlot(armorSlot);
 		stack.push();
-		MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation(currentArmorItem));
+		MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureResource(currentArmorItem));
 		Color renderColor = getRenderColor(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn);
 		RenderLayer renderType = getRenderType(currentArmorItem, partialTicks, stack, null, bufferIn, packedLightIn,
-				getTextureLocation(currentArmorItem));
+				getTextureResource(currentArmorItem));
 		render(model, currentArmorItem, partialTicks, renderType, stack, null, bufferIn, packedLightIn,
 				OverlayTexture.DEFAULT_UV, (float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
 				(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
@@ -152,10 +152,10 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 		this.fitToBiped();
 		this.applySlot(armorSlot);
 		stack.push();
-		MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation(currentArmorItem));
+		MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureResource(currentArmorItem));
 		Color renderColor = getRenderColor(currentArmorItem, 0, stack, bufferIn, null, packedLightIn);
 		RenderLayer renderType = getRenderType(currentArmorItem, 0, stack, bufferIn, null, packedLightIn,
-				getTextureLocation(currentArmorItem));
+				getTextureResource(currentArmorItem));
 		render(model, currentArmorItem, 0, renderType, stack, bufferIn, null, packedLightIn, OverlayTexture.DEFAULT_UV,
 				(float) renderColor.getRed() / 255f, (float) renderColor.getGreen() / 255f,
 				(float) renderColor.getBlue() / 255f, (float) renderColor.getAlpha() / 255);
@@ -235,7 +235,7 @@ public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeo
 	}
 
 	@Override
-	public Identifier getTextureLocation(T instance) {
+	public Identifier getTextureResource(T instance) {
 		return this.modelProvider.getTextureResource(instance);
 	}
 

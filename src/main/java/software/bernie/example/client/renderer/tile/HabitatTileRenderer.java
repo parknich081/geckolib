@@ -22,6 +22,6 @@ public class HabitatTileRenderer extends GeoBlockRenderer<HabitatTileEntity> {
 	public RenderLayer getRenderType(HabitatTileEntity animatable, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn,
 			Identifier textureLocation) {
-		return RenderLayer.getEntityTranslucent(this.getTextureLocation(animatable));
+		return RenderLayer.getEntityTranslucent(this.getTextureResource(animatable));
 	}
 }

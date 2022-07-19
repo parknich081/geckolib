@@ -19,6 +19,6 @@ public class FertilizerTileRenderer extends GeoBlockRenderer<FertilizerTileEntit
 	public RenderLayer getRenderType(FertilizerTileEntity animatable, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn,
 			Identifier textureLocation) {
-		return RenderLayer.getEntityTranslucent(this.getTextureLocation(animatable));
+		return RenderLayer.getEntityTranslucent(this.getTextureResource(animatable));
 	}
 }
