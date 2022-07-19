@@ -1,6 +1,7 @@
 package software.bernie.geckolib3.renderer.geo;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -95,7 +96,7 @@ public class GeoProjectilesRenderer<T extends Entity & IAnimatable> extends Enti
 
 	@Override
 	public Integer getUniqueID(T animatable) {
-		return animatable.getUuid().hashCode();
+		return UUID.randomUUID().hashCode();
 	}
 
 }
