@@ -8,6 +8,7 @@ import org.quiltmc.loader.api.QuiltLoader;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumers;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -173,8 +174,10 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		RenderLayer renderType = getRenderType(entity, partialTicks, stack, bufferIn, null, packedLightIn,
 				getTexture(entity));
 		if (!entity.isInvisibleTo(MinecraftClient.getInstance().player))
-			render(model, entity, partialTicks, renderType, stack, bufferIn, null, packedLightIn,
-					getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
+			render(model, entity, partialTicks, renderType, stack, bufferIn,
+					VertexConsumers.union(bufferIn.getBuffer(RenderLayer.getDirectEntityGlint()),
+							bufferIn.getBuffer(RenderLayer.getEntityTranslucentCull(getTextureResource(entity)))),
+					packedLightIn, getPackedOverlay(entity, 0), (float) renderColor.getRed() / 255f,
 					(float) renderColor.getGreen() / 255f, (float) renderColor.getBlue() / 255f,
 					(float) renderColor.getAlpha() / 255);
 
