@@ -108,7 +108,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 		}
 		stack.pop();
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		stack.translate(0.0D, -1.501F, 0.0D);
+		stack.translate(0.0D, -24 / 16F, 0.0D);
 	}
 
 	public void render(MatrixStack stack, VertexConsumer bufferIn, int packedLightIn) {
@@ -133,7 +133,7 @@ public abstract class GeoArmorRenderer<T extends ArmorItem & IAnimatable> extend
 		}
 		stack.pop();
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		stack.translate(0.0D, -1.501F, 0.0D);
+		stack.translate(0.0D, -24 / 16F, 0.0D);
 	}
 
 	private void fitToBiped() {
