@@ -87,11 +87,11 @@ public abstract class GeoAbstractTexture extends AbstractTexture {
 
 		NativeImage originalImage = originalTexture instanceof NativeImageBackedTexture
 				? ((NativeImageBackedTexture) originalTexture).getImage()
-				: NativeImage.read(resourceManager.method_14486(location).get().open());
-		Optional<TextureResourceMetadata> textureMetadata = resourceManager.method_14486(originalLocation).get()
+				: NativeImage.read(resourceManager.getResource(location).get().open());
+		Optional<TextureResourceMetadata> textureMetadata = resourceManager.getResource(originalLocation).get()
 				.getMetadata().readMetadata(TextureResourceMetadata.READER);
 		NativeImage newImage = new NativeImage(originalImage.getWidth(), originalImage.getHeight(), true);
-		boolean updateOriginal = this.onLoadTexture(resourceManager.method_14486(originalLocation).get(), originalImage,
+		boolean updateOriginal = this.onLoadTexture(resourceManager.getResource(originalLocation).get(), originalImage,
 				newImage);
 
 		boolean blur = textureMetadata != null && textureMetadata.get().shouldBlur();
