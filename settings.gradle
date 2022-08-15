@@ -7,6 +7,6 @@ pluginManagement {
 		mavenCentral()
     }
 }
-rootProject.name = 'geckolib'
+rootProject.name = 'geckolib-quilt-1.19'
 include ':geckolib-core'
 project(':geckolib-core').projectDir = new File('./core')
