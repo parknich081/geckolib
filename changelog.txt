@@ -1,4 +1,3 @@
-v3.0.20
+v3.0.21
 
-- Proper Scaling of Armor on ExtendedRenderEntities - DerToaster
-- Proper bone hiding on GeoRenderEntities -DerToaster 
+- Updated to the latest Quilt API changes.

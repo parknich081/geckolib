@@ -88,7 +88,7 @@ public abstract class GeoAbstractTexture extends AbstractTexture {
 		TextureResourceMetadata textureMetadata = null;
 		NativeImage newImage;
 		boolean updateOriginal;
-		try (Resource Resource = resourceManager.method_14486(originalLocation)) {
+		try (Resource Resource = resourceManager.getResource(originalLocation)) {
 			originalImage = originalTexture instanceof NativeImageBackedTexture
 					? ((NativeImageBackedTexture) originalTexture).getImage()
 					: NativeImage.read(Resource.getInputStream());
