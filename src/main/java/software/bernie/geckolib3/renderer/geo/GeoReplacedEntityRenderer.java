@@ -256,7 +256,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		if (d0 >= (double) (f * f)) {
 			return false;
 		} else {
-			return entity == this.dispatcher.targetedEntity && entity.hasCustomName();
+			return entity == this.dispatcher.targetedEntity && entity.hasCustomName() && MinecraftClient.isHudEnabled();
 		}
 	}
 
@@ -336,12 +336,12 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		int s = entity.world.getLightLevel(LightType.SKY, blockPos);
 		int t = entity.world.getLightLevel(LightType.SKY, blockPos2);
 		for (u = 0; u <= 24; ++u) {
-			GeoReplacedEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.025f, o, p, u,
-					false);
+			GeoReplacedEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.025f, o,
+					p, u, false);
 		}
 		for (u = 24; u >= 0; --u) {
-			GeoReplacedEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.0f, o, p, u,
-					true);
+			GeoReplacedEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.0f, o,
+					p, u, true);
 		}
 		poseStack.pop();
 	}
