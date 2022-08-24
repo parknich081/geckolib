@@ -392,9 +392,15 @@ public abstract class ExtendedGeoEntityRenderer<T extends LivingEntity & IAnimat
 			sourceLimb.yaw = -bone.getRotationY();
 			sourceLimb.roll = bone.getRotationZ();
 		} else {
+			// All those *= 2 calls ARE necessary, otherwise the geo armor will apply
+			// rotations twice, so to have it only applied one time in the correct direction
+			// we add 2x the negative rotation to it
 			float xRot = -bone.getRotationX();
+			xRot *= 2;
 			float yRot = -bone.getRotationY();
+			yRot *= 2;
 			float zRot = bone.getRotationZ();
+			zRot *= 2;
 			GeoBone tmpBone = bone.parent;
 			while (tmpBone != null) {
 				xRot -= tmpBone.getRotationX();
