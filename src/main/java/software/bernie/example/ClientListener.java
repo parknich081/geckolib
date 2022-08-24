@@ -77,6 +77,7 @@ public class ClientListener implements ClientModInitializer {
 	}
 
 	public static class EntityPacketOnClient {
+		@SuppressWarnings("resource")
 		@Environment(EnvType.CLIENT)
 		public static void onPacket(MinecraftClient context, PacketByteBuf byteBuf) {
 			EntityType<?> type = Registry.ENTITY_TYPE.get(byteBuf.readVarInt());

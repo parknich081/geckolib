@@ -80,6 +80,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		this.render(entityIn, this.animatable, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 
+	@SuppressWarnings("resource")
 	public void render(Entity entity, IAnimatable animatable, float entityYaw, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider bufferIn, int packedLightIn) {
 		this.currentAnimatable = animatable;
