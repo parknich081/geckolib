@@ -100,7 +100,6 @@ public interface IGeoRenderer<T> {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	GeoModelProvider getGeoModelProvider();
 
 	Identifier getTextureResource(T instance);
