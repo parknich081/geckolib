@@ -7,14 +7,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FacingBlock;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Material;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -22,43 +22,52 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 import software.bernie.example.registry.TileRegistry;
 
-public class HabitatBlock extends FacingBlock implements BlockEntityProvider {
+public class HabitatBlock extends BlockWithEntity implements BlockEntityProvider {
+
+	public static final DirectionProperty FACING = Properties.FACING;
 
 	public HabitatBlock() {
 		super(AbstractBlock.Settings.of(Material.GLASS).nonOpaque());
 	}
 
+	/*
+	 * Hides the normal block and only shows the block entity created below
+	 */
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
+	/*
+	 * Adds that our block is faceable
+	 */
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 
-	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return (BlockState) state.with(FACING, rotation.rotate((Direction) state.get(FACING)));
-	}
-
-	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state.rotate(mirror.getRotation((Direction) state.get(FACING)));
-	}
-
+	/*
+	 * Sets the correct facing, needed to flip this block on the 180, should have
+	 * done in the model in BB but eh
+	 */
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext context) {
-		return this.getDefaultState().with(FACING, context.getPlayerFacing().getOpposite());
+		return this.getDefaultState().with(FACING, context.getPlayerFacing().rotateYClockwise().rotateYClockwise());
 	}
 
+	/*
+	 * Creates the block entity that we have playing our animations and rendering
+	 * the block
+	 */
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return TileRegistry.HABITAT_TILE.instantiate(pos, state);
 	}
 
+	/*
+	 * Sets the correct shape depending on your facing
+	 */
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = (Direction) state.get(FACING);
@@ -77,21 +86,17 @@ public class HabitatBlock extends FacingBlock implements BlockEntityProvider {
 		}
 	}
 
+	/*
+	 * Tests for air 1 block out from the facing pos to ensure it's air so the block
+	 * doesn't place into another block
+	 */
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Direction direction = (Direction) state.get(FACING);
-		switch (direction) {
-		case NORTH: {
-			return world.getBlockState(pos.east()).isAir();
+		for (BlockPos testPos : BlockPos.iterate(pos,
+				pos.offset((Direction) state.get(FACING).rotateYClockwise(), 2))) {
+			if (!testPos.equals(pos) && !world.getBlockState(testPos).isAir())
+				return false;
 		}
-		case SOUTH: {
-			return world.getBlockState(pos.west()).isAir();
-		}
-		case WEST: {
-			return world.getBlockState(pos.north()).isAir();
-		}
-		default:
-			return world.getBlockState(pos.south()).isAir();
-		}
+		return true;
 	}
 }
