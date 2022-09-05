@@ -48,7 +48,6 @@ import software.bernie.geckolib3.renderer.geo.GeoItemRenderer;
 
 public class ClientListener implements ClientModInitializer {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onInitializeClient() {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment() && !GeckoLibMod.DISABLE_IN_DEV) {
@@ -77,7 +76,6 @@ public class ClientListener implements ClientModInitializer {
 	}
 
 	public static class EntityPacketOnClient {
-		@SuppressWarnings("resource")
 		@Environment(EnvType.CLIENT)
 		public static void onPacket(MinecraftClient context, PacketByteBuf byteBuf) {
 			EntityType<?> type = Registry.ENTITY_TYPE.get(byteBuf.readVarInt());

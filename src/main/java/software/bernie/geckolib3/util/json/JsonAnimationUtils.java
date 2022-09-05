@@ -67,7 +67,6 @@ public class JsonAnimationUtils {
 	 *         sure why the format stores the times as a string) and the JsonElement
 	 *         is the object, which has all the rotation keyframes.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Set<Map.Entry<String, JsonElement>> getRotationKeyFrames(JsonObject json) {
 		JsonElement rotationObject = json.get("rotation");
 		if (rotationObject.isJsonArray()) {
@@ -90,7 +89,6 @@ public class JsonAnimationUtils {
 	 *         sure why the format stores the times as a string) and the JsonElement
 	 *         is the object, which has all the position keyframes.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Set<Map.Entry<String, JsonElement>> getPositionKeyFrames(JsonObject json) {
 		JsonElement positionObject = json.get("position");
 		if (positionObject.isJsonArray()) {
@@ -113,7 +111,6 @@ public class JsonAnimationUtils {
 	 *         sure why the format stores the times as a string) and the JsonElement
 	 *         is the object, which has all the scale keyframes.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Set<Map.Entry<String, JsonElement>> getScaleKeyFrames(JsonObject json) {
 		JsonElement scaleObject = json.get("scale");
 		if (scaleObject.isJsonArray()) {
@@ -182,7 +179,6 @@ public class JsonAnimationUtils {
 	 * @return the animation
 	 * @throws ShaderParseException the json exception
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Map.Entry<String, JsonElement> getAnimation(JsonObject animationFile, String animationName)
 			throws ShaderParseException {
 		return new AbstractMap.SimpleEntry(animationName, getObjectByKey(getAnimations(animationFile), animationName));
@@ -213,7 +209,6 @@ public class JsonAnimationUtils {
 	 * @throws IllegalStateException Throws this exception if the JSON is formatted
 	 *                               incorrectly
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Animation deserializeJsonToAnimation(Map.Entry<String, JsonElement> element, MolangParser parser)
 			throws ClassCastException, IllegalStateException {
 		Animation animation = new Animation();
@@ -316,7 +311,6 @@ public class JsonAnimationUtils {
 		return longestLength == 0 ? Double.MAX_VALUE : longestLength;
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	static List<IValue> convertJsonArrayToList(JsonArray array) {
 		return new Gson().fromJson(array, ArrayList.class);
 	}

@@ -77,7 +77,6 @@ public class EntityRegistryBuilder<E extends Entity> {
 		return this;
 	}
 
-	@SuppressWarnings("deprecation")
 	public EntityType<E> build() {
 		EntityType.Builder<E> entityBuilder = EntityType.Builder.create(this.entityFactory, this.category)
 				.setDimensions(this.dimensions.width, this.dimensions.height);
@@ -86,7 +85,8 @@ public class EntityRegistryBuilder<E extends Entity> {
 		}
 		if (this.alwaysUpdateVelocity && this.updateIntervalTicks != 0 & this.trackingDistance != 0) {
 			FabricEntityTypeBuilder.create(this.category, this.entityFactory).dimensions(this.dimensions)
-					.trackable(this.trackingDistance, this.updateIntervalTicks, this.alwaysUpdateVelocity).build();
+					.trackedUpdateRate(updateIntervalTicks).trackRangeBlocks(trackingDistance)
+					.forceTrackedVelocityUpdates(alwaysUpdateVelocity).build();
 		}
 
 		EntityType<E> entityType = Registry.register(Registry.ENTITY_TYPE, name, entityBuilder.build(name.getPath()));

@@ -10,7 +10,6 @@ import vazkii.patchouli.client.book.gui.GuiBook;
 
 public class PatchouliCompat {
 
-	@SuppressWarnings("resource")
 	public static void patchouliLoaded(MatrixStack matrixStackIn) {
 		Class<GuiBook> patchouli = GuiBook.class;
 		boolean screen = MinecraftClient.getInstance().inGameHud.equals(patchouli);

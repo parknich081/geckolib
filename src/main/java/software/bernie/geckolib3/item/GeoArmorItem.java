@@ -17,7 +17,6 @@ public abstract class GeoArmorItem extends ArmorItem implements ArmorProvider {
 		super(materialIn, slot, builder);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Environment(EnvType.CLIENT)
 	public BipedEntityModel<LivingEntity> getArmorModel(LivingEntity entityLiving, ItemStack itemStack,
 			EquipmentSlot armorSlot, BipedEntityModel<LivingEntity> _default) {
@@ -25,7 +24,6 @@ public abstract class GeoArmorItem extends ArmorItem implements ArmorProvider {
 				.setCurrentItem(entityLiving, itemStack, armorSlot, _default);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Identifier getArmorTexture(LivingEntity entity, ItemStack stack, EquipmentSlot slot,
 			Identifier defaultTexture) {

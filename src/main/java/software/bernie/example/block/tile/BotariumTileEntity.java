@@ -17,7 +17,6 @@ public class BotariumTileEntity extends BlockEntity implements IAnimatable {
 		super(TileRegistry.BOTARIUM_TILE);
 	}
 
-	@SuppressWarnings("unchecked")
 	private <E extends BlockEntity & IAnimatable> PlayState predicate(AnimationEvent<E> event) {
 		event.getController().transitionLengthTicks = 0;
 		event.getController().setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));

@@ -17,7 +17,6 @@ public class FertilizerTileEntity extends BlockEntity implements IAnimatable {
 		super(TileRegistry.FERTILIZER);
 	}
 
-	@SuppressWarnings("unchecked")
 	private <E extends BlockEntity & IAnimatable> PlayState predicate(AnimationEvent<E> event) {
 		event.getController().transitionLengthTicks = 0;
 		if (event.getAnimatable().getWorld().isRaining()) {
