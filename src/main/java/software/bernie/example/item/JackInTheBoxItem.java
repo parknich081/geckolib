@@ -41,7 +41,6 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 
 	@Override
 	public void registerControllers(AnimationData data) {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		AnimationController<JackInTheBoxItem> controller = new AnimationController(this, controllerName, 20,
 				this::predicate);
 
@@ -54,7 +53,6 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 		data.addAnimationController(controller);
 	}
 
-	@SuppressWarnings("resource")
 	private <ENTITY extends IAnimatable> void soundListener(SoundKeyframeEvent<ENTITY> event) {
 		// The animation for the jackinthebox has a sound keyframe at time 0:00.
 		// As soon as that keyframe gets hit this method fires and it starts playing the
@@ -82,13 +80,11 @@ public class JackInTheBoxItem extends Item implements IAnimatable, ISyncable {
 		return super.use(world, user, hand);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public void onAnimationSync(int id, int state) {
 		if (state == ANIM_OPEN) {
 			// Always use GeckoLibUtil to get AnimationControllers when you don't have
 			// access to an AnimationEvent
-			@SuppressWarnings("rawtypes")
 			final AnimationController controller = GeckoLibUtil.getControllerForID(this.factory, id, controllerName);
 
 			if (controller.getAnimationState() == AnimationState.Stopped) {

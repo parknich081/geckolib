@@ -78,7 +78,6 @@ public class EntityRegistryBuilder<E extends Entity> {
 		return this;
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	public EntityType<E> build() {
 		EntityType.Builder<E> entityBuilder = EntityType.Builder.create(this.entityFactory, this.category)
 				.setDimensions(this.dimensions.width, this.dimensions.height);

@@ -28,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.ArmorRenderingRegistryImpl;
 
-@SuppressWarnings("rawtypes")
 @Mixin({ ArmorFeatureRenderer.class })
 @Environment(EnvType.CLIENT)
 public abstract class MixinArmorFeatureRenderer extends FeatureRenderer {
@@ -40,7 +39,6 @@ public abstract class MixinArmorFeatureRenderer extends FeatureRenderer {
 	@Unique
 	private EquipmentSlot gl_storedSlot;
 
-	@SuppressWarnings({ "unchecked" })
 	public MixinArmorFeatureRenderer(FeatureRendererContext context) {
 		super(context);
 	}
