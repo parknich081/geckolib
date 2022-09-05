@@ -44,7 +44,6 @@ import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends EntityRenderer implements IGeoRenderer {
 	private final AnimatedGeoModel<IAnimatable> modelProvider;
 	private final T animatable;
@@ -81,7 +80,6 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		this.render(entityIn, this.animatable, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
 	}
 
-	@SuppressWarnings({ "resource" })
 	public void render(Entity entity, IAnimatable animatable, float entityYaw, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider bufferIn, int packedLightIn) {
 		this.currentAnimatable = animatable;
@@ -327,7 +325,7 @@ public abstract class GeoReplacedEntityRenderer<T extends IAnimatable> extends E
 		float k = (float) (vec3d.y - h);
 		float l = (float) (vec3d.z - i);
 		VertexConsumer vertexConsumer = buffer.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = poseStack.peek().getPosition();
+		Matrix4f matrix4f = poseStack.peek().getModel();
 		float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025f / 2.0f;
 		float o = l * n;
 		float p = j * n;

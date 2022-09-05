@@ -71,7 +71,7 @@ public interface IGeoRenderer<T> {
 		RenderUtils.rotate(cube, stack);
 		RenderUtils.moveBackFromPivot(cube, stack);
 		Matrix3f matrix3f = stack.peek().getNormal();
-		Matrix4f matrix4f = stack.peek().getPosition();
+		Matrix4f matrix4f = stack.peek().getModel();
 
 		for (GeoQuad quad : cube.quads) {
 			if (quad == null) {
@@ -100,8 +100,7 @@ public interface IGeoRenderer<T> {
 			}
 		}
 	}
-
-	@SuppressWarnings("rawtypes")
+	
 	GeoModelProvider getGeoModelProvider();
 
 	Identifier getTextureResource(T instance);

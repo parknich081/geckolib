@@ -19,7 +19,6 @@ public class FertilizerTileEntity extends BlockEntity implements IAnimatable {
 		super(TileRegistry.FERTILIZER, pos, state);
 	}
 
-    @SuppressWarnings("unchecked")
 	private <E extends BlockEntity & IAnimatable> PlayState predicate(AnimationEvent<E> event) {
 		event.getController().transitionLengthTicks = 0;
 		event.getController().setAnimation(new AnimationBuilder().addAnimation("Botarium.anim.deploy", true));

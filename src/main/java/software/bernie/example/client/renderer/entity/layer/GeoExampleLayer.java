@@ -10,7 +10,6 @@ import software.bernie.geckolib3.GeckoLib;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-@SuppressWarnings("rawtypes")
 public class GeoExampleLayer extends GeoLayerRenderer {
 	// A resource location for the texture of the layer. This will be applied onto
 	// pre-existing cubes on the model
@@ -19,12 +18,10 @@ public class GeoExampleLayer extends GeoLayerRenderer {
 	// the normal one, which is then given the texture
 	private static final Identifier MODEL = new Identifier(GeckoLib.ModID, "geo/le.geo.json");
 
-	@SuppressWarnings("unchecked")
 	public GeoExampleLayer(IGeoRenderer<?> entityRendererIn) {
 		super(entityRendererIn);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn,
 			Entity entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks,

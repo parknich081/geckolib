@@ -51,7 +51,6 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.util.AnimationUtils;
 import software.bernie.geckolib3.util.RenderUtils;
 
-@SuppressWarnings("unchecked")
 public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
 	static {
@@ -100,7 +99,6 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		}
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public void render(T entity, float entityYaw, float partialTicks, MatrixStack stack,
 			VertexConsumerProvider bufferIn, int packedLightIn) {
@@ -219,7 +217,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 	public void renderEarly(T animatable, MatrixStack stackIn, float ticks, VertexConsumerProvider renderTypeBuffer,
 			VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue,
 			float partialTicks) {
-		renderEarlyMat = stackIn.peek().getPosition().copy();
+		renderEarlyMat = stackIn.peek().getModel().copy();
 		this.mainHand = animatable.getEquippedStack(EquipmentSlot.MAINHAND);
 		this.offHand = animatable.getEquippedStack(EquipmentSlot.OFFHAND);
 		this.helmet = animatable.getEquippedStack(EquipmentSlot.HEAD);
@@ -240,7 +238,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		RenderUtils.translate(bone, stack);
 		RenderUtils.moveToPivot(bone, stack);
 		if (rotOverride) {
-			stack.peek().getPosition().multiply(bone.rotMat);
+			stack.peek().getModel().multiply(bone.rotMat);
 			stack.peek().getNormal().multiply(new Matrix3f(bone.rotMat));
 		} else {
 			RenderUtils.rotate(bone, stack);
@@ -248,7 +246,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		RenderUtils.scale(bone, stack);
 		if (bone.isTrackingXform()) {
 			MatrixStack.Entry entry = stack.peek();
-			Matrix4f matBone = entry.getPosition().copy();
+			Matrix4f matBone = entry.getModel().copy();
 			bone.setWorldSpaceXform(matBone.copy());
 
 			Matrix4f renderEarlyMatInvert = renderEarlyMat.copy();
@@ -388,7 +386,7 @@ public abstract class GeoEntityRenderer<T extends LivingEntity & IAnimatable> ex
 		float k = (float) (vec3d.y - h);
 		float l = (float) (vec3d.z - i);
 		VertexConsumer vertexConsumer = buffer.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = poseStack.peek().getPosition();
+		Matrix4f matrix4f = poseStack.peek().getModel();
 		float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025f / 2.0f;
 		float o = l * n;
 		float p = j * n;

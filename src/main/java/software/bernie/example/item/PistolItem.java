@@ -2,7 +2,8 @@ package software.bernie.example.item;
 
 import java.util.List;
 
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import org.quiltmc.qsl.networking.api.PlayerLookup;
+
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +30,6 @@ import software.bernie.geckolib3.network.GeckoLibNetwork;
 import software.bernie.geckolib3.network.ISyncable;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-@SuppressWarnings("deprecation")
 public class PistolItem extends Item implements IAnimatable, ISyncable {
 
 	public AnimationFactory factory = new AnimationFactory(this);
@@ -98,7 +98,6 @@ public class PistolItem extends Item implements IAnimatable, ISyncable {
 		return PlayState.CONTINUE;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void registerControllers(AnimationData data) {
 		data.addAnimationController(new AnimationController(this, controllerName, 1, this::predicate));

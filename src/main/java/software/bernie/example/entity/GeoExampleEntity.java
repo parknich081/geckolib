@@ -56,7 +56,6 @@ public class GeoExampleEntity extends PathAwareEntity implements IAnimatable, IA
 		data.addAnimationController(controller);
 	}
 
-	@SuppressWarnings("resource")
 	private <ENTITY extends IAnimatable> void customListener(CustomInstructionKeyframeEvent<ENTITY> event) {
 		final ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		if (player != null) {

@@ -1,3 +1,5 @@
-3.1.17
+3.1.18
 
-- Fixed Extended Entity Render of armor - DerToaster
+- Cleaned up Habitat placment check and proper placement.
+- Code Clean up
+- More imports moved to Quilt versions over Fabric versions. 

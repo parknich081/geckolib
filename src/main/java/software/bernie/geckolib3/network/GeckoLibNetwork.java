@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
+
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib3.GeckoLib;
 
-@SuppressWarnings("deprecation")
 public class GeckoLibNetwork {
 	private static final Map<String, Supplier<ISyncable>> SYNCABLES = new HashMap<>();
 	public static final Identifier SYNCABLE = new Identifier(GeckoLib.ModID, "syncable");

@@ -1,6 +1,7 @@
 package software.bernie.example.registry;
 
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import org.quiltmc.qsl.item.group.api.QuiltItemGroup;
+
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.BlockItem;
@@ -13,11 +14,10 @@ import software.bernie.example.item.PistolItem;
 import software.bernie.example.item.PotatoArmorItem;
 import software.bernie.geckolib3.GeckoLib;
 
-@SuppressWarnings("deprecation")
 public class ItemRegistry {
 
-	public static ItemGroup geckolibItemGroup = FabricItemGroupBuilder
-			.create(new Identifier(GeckoLib.ModID, "geckolib_examples"))
+	public static ItemGroup geckolibItemGroup = QuiltItemGroup
+			.builder(new Identifier(GeckoLib.ModID, "geckolib_examples"))
 			.icon(() -> new ItemStack(ItemRegistry.JACK_IN_THE_BOX)).build();
 
 	public static final JackInTheBoxItem JACK_IN_THE_BOX = RegistryUtils.registerItem("jackintheboxitem",

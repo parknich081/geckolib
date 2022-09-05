@@ -50,7 +50,6 @@ public class AnimationFileLoader {
 		return JsonHelper.deserialize(GSON, content, JsonObject.class);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static String getResourceAsString(Identifier location, ResourceManager manager) {
 		try (InputStream inputStream = manager.getResourceOrThrow(location).open()) {
 			return IOUtils.toString(inputStream);
