@@ -22,7 +22,6 @@ import software.bernie.geckolib3q.geo.render.built.GeoModel;
 import software.bernie.geckolib3q.model.AnimatedGeoModel;
 import software.bernie.geckolib3q.util.GeckoLibUtil;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class GeoItemRenderer<T extends Item & IAnimatable>
 		implements IGeoRenderer<T>, BuiltinItemRendererRegistry.DynamicItemRenderer {
 	private static final Map<Class<? extends Item>, GeoItemRenderer> renderers = new ConcurrentHashMap<>();

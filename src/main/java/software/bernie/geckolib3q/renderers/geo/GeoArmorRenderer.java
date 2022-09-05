@@ -32,7 +32,6 @@ import software.bernie.geckolib3q.geo.render.built.GeoModel;
 import software.bernie.geckolib3q.model.AnimatedGeoModel;
 import software.bernie.geckolib3q.util.GeoUtils;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class GeoArmorRenderer<T extends ArmorItem & IAnimatable> implements IGeoRenderer<T>, ArmorRenderer {
 	public static final Map<Class<? extends ArmorItem>, GeoArmorRenderer> renderers = new ConcurrentHashMap<>();
 

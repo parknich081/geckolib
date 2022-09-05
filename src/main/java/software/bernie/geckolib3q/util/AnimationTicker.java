@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
-@SuppressWarnings("deprecation")
 public class AnimationTicker {
 
     private AnimationData manager;

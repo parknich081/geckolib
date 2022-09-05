@@ -20,7 +20,6 @@ import software.bernie.geckolib3.core.util.Color;
 import software.bernie.geckolib3q.geo.render.built.GeoModel;
 import software.bernie.geckolib3q.model.AnimatedGeoModel;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class GeoBlockRenderer<T extends BlockEntity & IAnimatable>
 		implements IGeoRenderer<T>, BlockEntityRenderer {
 	static {

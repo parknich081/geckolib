@@ -24,7 +24,6 @@ import software.bernie.geckolib3q.model.provider.GeoModelProvider;
 import software.bernie.geckolib3q.model.provider.data.EntityModelData;
 import software.bernie.geckolib3q.util.AnimationUtils;
 
-@SuppressWarnings("unchecked")
 public class GeoProjectilesRenderer<T extends Entity & IAnimatable> extends EntityRenderer<T>
 		implements IGeoRenderer<T> {
 
